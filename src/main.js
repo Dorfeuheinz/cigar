@@ -19,6 +19,7 @@ async function populateDeviceList() {
 function setConnectionStatus(status) {
   document.getElementById("connectionStatusIcon").innerText = status ? "🟢" : "🔴";
   document.getElementById("connectionStatusText").innerText = status ? "Connected" : "Not Connected";
+  document.getElementById("connectDisconnectBtnText").innerText = status ? "Disconnect" : "Connect";
 }
 
 async function connectToDevice() {
@@ -63,11 +64,9 @@ window.addEventListener("DOMContentLoaded", () => {
     let currentMode = document.getElementById("connectDisconnectBtnText").innerText;
     if (currentMode === "Connect") {
       // we want to connect to the device
-      document.getElementById("connectDisconnectBtnText").innerText = "Disconnect";
       connectToDevice();
     } else {
-      // we want to disconnect
-      document.getElementById("connectDisconnectBtnText").innerText = "Connect";
+      // we want to disconnect from the device
       disconnectFromDevice();
     }
   });
