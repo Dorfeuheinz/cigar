@@ -55,7 +55,11 @@ async function importConfigFromFile() {
 }
 
 async function sendBytes() {
-  console.info("Sending bytes");
+  let input = document.getElementById("msgTextArea").value;
+  console.log("input from text Area", input);
+  // create a u8 byte array
+  let result = await invoke("send_bytes", { input: input});
+  console.info(`Sending bytes. Result: ${result}`);
 }
 
 window.addEventListener("DOMContentLoaded", () => {

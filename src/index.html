@@ -17,14 +17,21 @@
         <div>Tiny CC Tool</div>
         <div class="space-x-4">
           <div class="inline-block">
-            <label for="baudRate" class="mr-2">Baud Rate</label>
+            <!-- <label for="baudRate" class="mr-2">Baud Rate</label> -->
             <!-- create an editable select with options -->
-            <select id="baudRate" class="rounded-md border-gray-300 text-black">
+            <!-- <select id="baudRate" class="rounded-md border-gray-300 text-black">
               <option>9600</option>
               <option>14400</option>
-              <option>19200</option>
+              <option>19200</option> -->
               <!-- Add more baud rates as needed -->
-            </select>
+            <!-- </select> -->
+            <label for="baudRate" class="mr-2">Baud Rate</label>
+            <input list="baudRateList" name="baudRate" id="baudRate" class="rounded-md border-gray-300 text-black">
+            <datalist id="baudRateList">
+                <option value="9600">
+                <option value="14400">
+                <option value="19200">
+            </datalist>
           </div>
           <div class="inline-block">
             <label for="deviceName" class="mr-2">Device Name</label>
@@ -197,7 +204,7 @@
               split 2 message window
               <div class="h-full p-5">
                 <form class="h-full w-full">
-                  <textarea class="h-full w-full border"> </textarea>
+                  <textarea id="msgTextArea" class="h-full w-full border"></textarea>
                 </form>
               </div>
             </div>

@@ -5,8 +5,10 @@
 use serialport;
 use serialport::SerialPort;
 use tauri::State;
+use tinymesh_cc_tool::input_processing;
 use std::sync::Mutex;
 use std::time::Duration;
+
 
 // create a DeviceEntity struct to hold SerialPort connection that can be shared across threads
 struct DeviceEntity(Mutex<Option<Box<dyn SerialPort>>>);
@@ -20,8 +22,11 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 fn get_devices() -> Vec<String> {
     println!("Message from Rust!");
-    let ports = serialport::available_ports().expect("No ports found!");
-    ports.iter().map(|port| port.port_name.clone()).collect()
+    let ports = serialport::available_ports();
+    if let Ok(ports) = ports {
+        return ports.iter().map(|port| port.port_name.clone()).collect();
+    }
+    return vec![];
 }
 
 #[tauri::command]
@@ -48,10 +53,25 @@ fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
     return false;
 }
 
+#[tauri::command]
+fn send_bytes(input: String, device_entity: State<DeviceEntity>) -> bool {
+    let bytes_to_send: Vec<u8> = input_processing::process_input(&input).unwrap_or(vec![]);
+    println!("Sending bytes: {:?}", bytes_to_send);
+    if let Ok(mut device) = device_entity.0.lock() {
+        if let Some(device) = device.as_mut() {
+            if let Ok(()) = device.write_all(&bytes_to_send) {
+                device.flush().unwrap_or_else(|e| println!("Error flushing: {}", e));
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 fn main() {
     tauri::Builder::default()
-    .manage(DeviceEntity(Default::default()))
-        .invoke_handler(tauri::generate_handler![greet, get_devices, connect_to_device, disconnect_from_device])
+        .manage(DeviceEntity(Default::default()))
+        .invoke_handler(tauri::generate_handler![greet, get_devices, connect_to_device, disconnect_from_device, send_bytes])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
