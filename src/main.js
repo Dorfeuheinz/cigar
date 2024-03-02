@@ -1,5 +1,5 @@
 const { invoke } = window.__TAURI__.tauri;
-const { once } = window.__TAURI__.event;
+const { listen } = window.__TAURI__.event;
 
 async function populateDeviceList() {
   let devices = await invoke("get_devices", {});
@@ -66,10 +66,11 @@ async function sendBytes() {
 }
 
 async function toggleConfigurationMode(shouldSwitchToConfigMode) {
+  let sendSuccessful = await invoke("send_bytes", { input: "X" });
   if (shouldSwitchToConfigMode) {
     let count = 10;
     let success = false;
-    const countdownInterval = setInterval(() => {
+    const countdownInterval = setInterval(async () => {
       if (count == 0 || success) {
         if (success) {
           document.getElementById("deviceModeText").innerText = "Config mode";
@@ -79,12 +80,12 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
         }
         clearInterval(countdownInterval);
       } else {
-        invoke("read_bytes", {})
-        .then((result) => {
-          if (result && result.length === 1 && result[0] === 62) {
+        if (sendSuccessful) {
+          let readResult = await invoke("read_bytes", {});
+          if (readResult && readResult.length === 1 && readResult[0] === 62) {
             success = true;
           }
-        });
+        }
         if (!success) {
           document.getElementById("deviceModeText").innerText = `Waiting for device (${count})`;
           count--;
@@ -94,8 +95,7 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
     
   } else {
     // switch back to communication mode
-    let result = await invoke("send_bytes", { input: "X" });
-    if (result) {
+    if (sendSuccessful) {
       document.getElementById("deviceModeText").innerText = "Communication mode";
     }
   }
@@ -145,3 +145,18 @@ window.addEventListener("DOMContentLoaded", () => {
   })
 
 });
+
+const unlisten = listen('connect_event', (event) => {
+  // event.event is the event name (useful if you want to use a single callback fn for multiple event types)
+  // event.payload is the payload object
+  console.log(event.event, event.payload);
+});
+
+const unlisten2 = listen('connect_event2', (event) => {
+  // event.event is the event name (useful if you want to use a single callback fn for multiple event types)
+  // event.payload is the payload object
+  console.log(event.event, event.payload);
+});
+
+unlisten2();
+unlisten();
