@@ -34,7 +34,7 @@ fn connect_to_device(device_name: &str, baud_rate: u32, device_entity: State<Dev
     println!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
-        .timeout(Duration::from_millis(5000))
+        .timeout(Duration::from_millis(500))
         .open();
     if let (Ok(mut device), Ok(open_port)) = (device_entity.0.lock(), port) {
         *device = Some(open_port);
@@ -68,10 +68,30 @@ fn send_bytes(input: String, device_entity: State<DeviceEntity>) -> bool {
     return false;
 }
 
+#[tauri::command]
+fn read_bytes(device_entity: State<DeviceEntity>) -> Vec<u8> {
+    let mut result = vec![];
+    if let Ok(mut device) = device_entity.0.lock() {
+        if let Some(device) = device.as_mut() {
+            device.clear(serialport::ClearBuffer::Output).unwrap_or_else(|e| println!("Error clearing: {}", e));
+            if let Ok(num_bytes_read) = device.read_to_end(&mut result) {
+                if num_bytes_read == result.len() {
+                    return result;
+                } else {
+                    return result[0..num_bytes_read].to_vec();
+                }
+            }
+        }
+    }
+    return result;
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(DeviceEntity(Default::default()))
-        .invoke_handler(tauri::generate_handler![greet, get_devices, connect_to_device, disconnect_from_device, send_bytes])
+        .invoke_handler(
+            tauri::generate_handler![greet, get_devices, connect_to_device, disconnect_from_device, send_bytes, read_bytes]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
