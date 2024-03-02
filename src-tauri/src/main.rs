@@ -12,7 +12,8 @@ fn main() {
                 connect_to_device,
                 disconnect_from_device,
                 send_bytes,
-                read_bytes
+                read_bytes,
+                clear_buffer
             ]
         )
         .run(tauri::generate_context!())

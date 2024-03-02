@@ -1,6 +1,6 @@
 use serialport;
 use serialport::SerialPort;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 use crate::input_processing;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -43,14 +43,30 @@ pub fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
 }
 
 #[tauri::command]
-pub fn send_bytes(input: String, device_entity: State<DeviceEntity>) -> bool {
+pub fn send_bytes(input: String, device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
     let bytes_to_send: Vec<u8> = input_processing::process_input(&input).unwrap_or(vec![]);
     println!("Sending bytes: {:?}", bytes_to_send);
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
             if let Ok(()) = device.write_all(&bytes_to_send) {
                 device.flush().unwrap_or_else(|e| println!("Error flushing: {}", e));
+                // convert bytes to send to a space-delimited string. each byte should be represented in hex
+                let bytes_to_send_str = bytes_to_send.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" ");
+                app_handle.emit_all("transmit_bytes_event", bytes_to_send_str).unwrap_or_else(|e| println!("Error emitting: {}", e));
                 return true;
+            }
+        }
+    }
+    return false;
+}
+
+#[tauri::command]
+pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
+    if let Ok(mut device) = device_entity.0.lock() {
+        if let Some(device) = device.as_mut() {
+            return match device.clear(serialport::ClearBuffer::Input) {
+                Ok(()) => true,
+                Err(_) => false,
             }
         }
     }
@@ -62,7 +78,6 @@ pub fn read_bytes(device_entity: State<DeviceEntity>) -> Vec<u8> {
     let mut result = vec![];
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
-            device.clear(serialport::ClearBuffer::Output).unwrap_or_else(|e| println!("Error clearing: {}", e));
             if let Ok(num_bytes_read) = device.read_to_end(&mut result) {
                 if num_bytes_read == result.len() {
                     return result;

@@ -66,6 +66,7 @@ async function sendBytes() {
 }
 
 async function toggleConfigurationMode(shouldSwitchToConfigMode) {
+  await invoke("clear_buffer", {});
   let sendSuccessful = await invoke("send_bytes", { input: "X" });
   if (shouldSwitchToConfigMode) {
     let count = 10;
@@ -103,7 +104,7 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
 
 window.addEventListener("DOMContentLoaded", () => {
   populateDeviceList();
-
+  document.getElementById("logWindow").innerText = "";
   document.getElementById("connectDisconnectBtn").addEventListener("click", () => {
     let currentMode = document.getElementById("connectDisconnectBtnText").innerText;
     if (currentMode === "Connect") {
@@ -146,17 +147,21 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
-const unlisten = listen('connect_event', (event) => {
-  // event.event is the event name (useful if you want to use a single callback fn for multiple event types)
-  // event.payload is the payload object
-  console.log(event.event, event.payload);
+function getCurrentTime() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+
+  const formattedTime = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+  return formattedTime;
+}
+
+const unlisten = listen('transmit_bytes_event', (event) => {
+  document.getElementById("logWindow").innerHTML += "<b>TX [" + getCurrentTime() + "]</b>: " + event.payload + "<br/>";
+  // scroll to the end
+  document.getElementById("logWindow").scrollTop = document.getElementById("logWindow").scrollHeight;
 });
 
-const unlisten2 = listen('connect_event2', (event) => {
-  // event.event is the event name (useful if you want to use a single callback fn for multiple event types)
-  // event.payload is the payload object
-  console.log(event.event, event.payload);
-});
-
-unlisten2();
 unlisten();
