@@ -44,7 +44,7 @@ async function disconnectFromDevice() {
 async function getConfigFromDevice() {
   console.info("Getting config from device");
   let result = await invoke("get_device_config", {});
-  console.info(`Getting config from device. Result: ${result}`);
+  console.info(`Getting config from device. Result: ${JSON.stringify(result)}`);
 }
 
 async function setConfigOnDevice() {
