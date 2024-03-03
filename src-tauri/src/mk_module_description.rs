@@ -14,6 +14,7 @@ pub struct MkDeviceCell {
     pub description: String,
     pub min_value: u32,
     pub max_value: u32,
+    pub allowed_values: Vec<u32>,
 }
 
 #[derive(Default, Debug)]
