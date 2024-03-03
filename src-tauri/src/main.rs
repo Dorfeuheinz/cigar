@@ -13,7 +13,8 @@ fn main() {
                 disconnect_from_device,
                 send_bytes,
                 read_bytes,
-                clear_buffer
+                clear_buffer,
+                get_device_config
             ]
         )
         .run(tauri::generate_context!())
