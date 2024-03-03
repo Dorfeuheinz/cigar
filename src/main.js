@@ -161,8 +161,8 @@ function getCurrentTime() {
   return formattedTime;
 }
 
-const unlisten = listen('transmit_bytes_event', (event) => {
-  document.getElementById("logWindow").innerHTML += "<b>TX [" + getCurrentTime() + "]</b>: " + event.payload + "<br/>";
+const unlisten = listen('exchange_bytes_event', (event) => {
+  document.getElementById("logWindow").innerHTML += "<b>" + event.payload.data_type + " [" + getCurrentTime() + "]</b>: " + event.payload.data + "<br/>";
   // scroll to the end
   document.getElementById("logWindow").scrollTop = document.getElementById("logWindow").scrollHeight;
 });

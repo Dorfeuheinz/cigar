@@ -8,6 +8,12 @@ use std::time::Duration;
 // create a DeviceEntity struct to hold SerialPort connection that can be shared across threads
 pub struct DeviceEntity(pub Mutex<Option<Box<dyn SerialPort>>>);
 
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+    pub data_type: String,
+    pub data: String,
+}
+
 #[tauri::command]
 pub fn get_devices() -> Vec<String> {
     println!("Getting available devices");
@@ -52,7 +58,7 @@ pub fn send_bytes(input: String, device_entity: State<DeviceEntity>, app_handle:
                 device.flush().unwrap_or_else(|e| println!("Error flushing: {}", e));
                 // convert bytes to send to a space-delimited string. each byte should be represented in hex
                 let bytes_to_send_str = bytes_to_send.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" ");
-                app_handle.emit_all("transmit_bytes_event", bytes_to_send_str).unwrap_or_else(|e| println!("Error emitting: {}", e));
+                app_handle.emit_all("exchange_bytes_event", Payload { data_type: "TX".to_string(), data: bytes_to_send_str }).unwrap_or_else(|e| println!("Error emitting: {}", e));
                 return true;
             }
         }
@@ -74,17 +80,20 @@ pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
 }
 
 #[tauri::command]
-pub fn read_bytes(device_entity: State<DeviceEntity>) -> Vec<u8> {
+pub fn read_bytes(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> Vec<u8> {
     let mut result = vec![];
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
-            if let Ok(num_bytes_read) = device.read_to_end(&mut result) {
-                if num_bytes_read == result.len() {
-                    return result;
-                } else {
-                    return result[0..num_bytes_read].to_vec();
-                }
+            let _ = device.read_to_end(&mut result).unwrap_or_else(|e| {
+                println!("Error reading: {}", e);
+                0
+            });
+            println!("Read bytes: {:?}", result);
+            if result.len() > 0 {
+                let bytes_to_read_str = result.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(" ");
+                app_handle.emit_all("exchange_bytes_event", Payload { data_type: "RX".to_string(), data: bytes_to_read_str }).unwrap_or_else(|e| println!("Error emitting: {}", e));
             }
+            return result;
         }
     }
     return result;
