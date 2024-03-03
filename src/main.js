@@ -30,15 +30,15 @@ async function connectToDevice() {
   let result = await invoke("connect_to_device", { deviceName: selectedDevice, baudRate: parseInt(selectedBaudRate) });
   setConnectionStatus(result);
   console.info(`Connecting to ${selectedDevice} at ${selectedBaudRate}. Result: ${result}`);
-  toggleConfigurationMode(false);
+  await toggleConfigurationMode(false);
 }
 
 async function disconnectFromDevice() {
   console.info("Disconnecting from device");
+  await toggleConfigurationMode(false);
   let result = await invoke("disconnect_from_device", {});
   setConnectionStatus(!result);
   console.info(`Disconnecting from device. Result: ${result}`);
-  toggleConfigurationMode(false);
 }
 
 async function getConfigFromDevice() {
@@ -66,6 +66,7 @@ async function sendBytes() {
 }
 
 async function toggleConfigurationMode(shouldSwitchToConfigMode) {
+  console.info(`Toggling configuration mode. Should switch to config mode: ${shouldSwitchToConfigMode}`);
   await invoke("clear_buffer", {});
   let sendSuccessful = await invoke("send_bytes", { input: "X" });
   if (shouldSwitchToConfigMode) {
@@ -75,6 +76,7 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
       if (count == 0 || success) {
         if (success) {
           document.getElementById("deviceModeText").innerText = "Config mode";
+          document.getElementById("deviceMode").checked = true;
         } else {
           document.getElementById("deviceModeText").innerText = "Communication mode";
           document.getElementById("deviceMode").checked = false;
@@ -98,6 +100,7 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
     // switch back to communication mode
     if (sendSuccessful) {
       document.getElementById("deviceModeText").innerText = "Communication mode";
+      document.getElementById("deviceMode").checked = false;
     }
   }
 }

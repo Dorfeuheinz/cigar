@@ -10,7 +10,7 @@ pub struct DeviceEntity(pub Mutex<Option<Box<dyn SerialPort>>>);
 
 #[tauri::command]
 pub fn get_devices() -> Vec<String> {
-    println!("Message from Rust!");
+    println!("Getting available devices");
     let ports = serialport::available_ports();
     if let Ok(ports) = ports {
         return ports.iter().map(|port| port.port_name.clone()).collect();
