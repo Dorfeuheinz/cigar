@@ -4,7 +4,10 @@ use crate::module_description_parser::parse_module_description;
 #[derive(Debug)]
 pub struct MkDeviceTestMode {
     pub testmode_id: u32,
+    pub name: String,
     pub description: String,
+    pub sequence_on: String,
+    pub sequence_off: String,
 }
 
 #[derive(Clone, Default, Debug)]
@@ -95,6 +98,22 @@ fn get_cells_and_remove_from_unknown(module_description: &mut MkModuleDescriptio
 
     // remove all keys starting from "M "
     module_description.unknown_data.retain(|k, _| !k.starts_with("M "));
+    return result;
+}
+
+fn get_testmodes_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<MkDeviceTestMode> {
+    let mut result = vec![];
+    let number_of_testmodes = module_description.number_of_testmodes;
+    for i in 1..number_of_testmodes {
+        result.push(MkDeviceTestMode {
+            testmode_id: i,
+            name: String::new(),
+            description: String::new(),
+            sequence_on: String::new(),
+            sequence_off: String::new(),
+        });
+    }
+    module_description.unknown_data.retain(|k, _| !k.starts_with("TESTMODE "));
     return result;
 }
 
