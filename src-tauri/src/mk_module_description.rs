@@ -7,7 +7,7 @@ pub struct MkDeviceTestMode {
     pub description: String,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct MkDeviceCell {
     pub address: u8,
     pub name: String,
@@ -60,6 +60,44 @@ fn get_device_model_and_remove_from_unknown(module_description: &mut MkModuleDes
     return String::new();
 }
 
+fn get_cells_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<MkDeviceCell> {
+    // find all keys of the format "M 0x<some hex number> <some text>"
+    let mut result: Vec<MkDeviceCell> = vec![Default::default();256];
+    for i in 0..255 {
+        result[i].address = i as u8;
+    }
+    for (key, value) in &module_description.unknown_data {
+        if key.starts_with("M ") {
+            let mut splitted = key.split_whitespace();
+            splitted.next();
+            let address = splitted.next().unwrap();
+            // convert the address to u8
+            let address = u8::from_str_radix(address, 16).unwrap();
+            splitted.next();
+            let name = splitted.next().unwrap();
+
+            if name == "NAME" {
+                result[address as usize].name = value.clone();
+            } else if name == "HINT" {
+                result[address as usize].description = value.clone();
+            } else if name == "DEF" {
+                result[address as usize].default_value = value.parse::<u8>().unwrap();
+                result[address as usize].current_value = result[address as usize].default_value;
+            } else if name == "MIN_MAX" {
+                let (min, max) = value.split_once(' ').unwrap();
+                result[address as usize].min_value = min.parse::<u8>().unwrap();
+                result[address as usize].max_value = max.parse::<u8>().unwrap();
+            } else if name == "ALLOW" {
+                result[address as usize].allowed_values = value.split_whitespace().map(|s| s.parse::<u8>().unwrap()).collect();
+            }
+        }
+    }
+
+    // remove all keys starting from "M "
+    module_description.unknown_data.retain(|k, _| !k.starts_with("M "));
+    return result;
+}
+
 impl MkModuleDescription {
     fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
@@ -68,6 +106,7 @@ impl MkModuleDescription {
         result.locked_cells = get_locked_cells_and_remove_from_unknown(&mut result);
         result.device_model = get_device_model_and_remove_from_unknown(&mut result);
         result.number_of_testmodes = get_number_of_testmodes_and_remove_from_unknown(&mut result);
+        result.cells = get_cells_and_remove_from_unknown(&mut result);
         result
     }
 
