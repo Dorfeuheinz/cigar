@@ -5,6 +5,11 @@ use tinymesh_cc_tool::tinymesh_comm::*;
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            tauri_plugin_log::LogTarget::Folder(std::env::current_exe().unwrap().parent().unwrap().join("logs")),
+        ])
+        .log_name("custom-name")
+        .build())
         .manage(DeviceEntity(Default::default()))
         .invoke_handler(
             tauri::generate_handler![

@@ -1,0 +1,21 @@
+{
+  "name": "tinymesh-cc-tool",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.5.3",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.10",
+    "typescript": "^5.0.2",
+    "vite": "^5.0.0"
+  }
+}

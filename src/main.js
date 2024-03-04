@@ -1,5 +1,6 @@
-const { invoke } = window.__TAURI__.tauri;
-const { listen } = window.__TAURI__.event;
+import { invoke } from "@tauri-apps/api";
+import { listen } from "@tauri-apps/api/event";
+import { info } from "tauri-plugin-log-api";
 
 async function populateDeviceList() {
   let devices = await invoke("get_devices", {});
@@ -36,13 +37,13 @@ function setConnectionStatus(status) {
 async function connectToDevice() {
   let selectedDevice = document.getElementById("deviceName").value;
   let selectedBaudRate = document.getElementById("baudRate").value;
-  console.info(`Connecting to ${selectedDevice} at ${selectedBaudRate}.`);
+  info(`Connecting to ${selectedDevice} at ${selectedBaudRate}.`);
   let result = await invoke("connect_to_device", {
     deviceName: selectedDevice,
     baudRate: parseInt(selectedBaudRate),
   });
   setConnectionStatus(result);
-  console.info(
+  info(
     `Connecting to ${selectedDevice} at ${selectedBaudRate}. Result: ${result}`
   );
   await toggleConfigurationMode(false);
