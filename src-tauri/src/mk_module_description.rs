@@ -107,13 +107,12 @@ fn get_testmodes_and_remove_from_unknown(module_description: &mut MkModuleDescri
     for i in 1..number_of_testmodes {
         result.push(MkDeviceTestMode {
             testmode_id: i,
-            name: String::new(),
-            description: String::new(),
-            sequence_on: String::new(),
-            sequence_off: String::new(),
+            name: module_description.unknown_data.remove(&format!("TESTMODE {} NAME", i)).unwrap_or(String::new()),
+            description: module_description.unknown_data.remove(&format!("TESTMODE {} HINT", i)).unwrap_or(String::new()),
+            sequence_on: module_description.unknown_data.remove(&format!("TESTMODE {} SEQUENCE_ON", i)).unwrap_or(String::new()),
+            sequence_off: module_description.unknown_data.remove(&format!("TESTMODE {} SEQUENCE_OFF", i)).unwrap_or(String::new()),
         });
     }
-    module_description.unknown_data.retain(|k, _| !k.starts_with("TESTMODE "));
     return result;
 }
 
@@ -126,6 +125,7 @@ impl MkModuleDescription {
         result.device_model = get_device_model_and_remove_from_unknown(&mut result);
         result.number_of_testmodes = get_number_of_testmodes_and_remove_from_unknown(&mut result);
         result.cells = get_cells_and_remove_from_unknown(&mut result);
+        result.testmodes = get_testmodes_and_remove_from_unknown(&mut result);
         result
     }
 
