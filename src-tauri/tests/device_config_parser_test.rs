@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use tinymesh_cc_tool::device_config_parser::parse_device_information;
+    use tinymesh_cc_tool::device_config_parser::parse_device_config;
     use std::fs::read_to_string;
     use std::path::PathBuf;
 
@@ -14,9 +14,10 @@ mod tests {
             .map(|s| u8::from_str_radix(s, 16).unwrap_or_else(|_| panic!("Invalid hex string: {}", s)))
             .collect::<Vec<_>>();
         println!("{:#?}", device_config);
-        let map = parse_device_information(&device_config).unwrap();
-        assert_eq!(map.get("model").unwrap(), "RF TM4070");
-        assert_eq!(map.get("hw_version").unwrap(), "1.00");
-        assert_eq!(map.get("firmware_version").unwrap(), "1.53");
+        let rmd_file_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources/tests/RF TM4070.rmd");
+        let device_config = parse_device_config(&device_config, Some(&rmd_file_path)).unwrap();
+        assert_eq!(device_config.model, "RF TM4070");
+        assert_eq!(device_config.hw_version, "1.00");
+        assert_eq!(device_config.firmware_version, "1.53");
     }
 }

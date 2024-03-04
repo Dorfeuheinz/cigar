@@ -1,10 +1,10 @@
 // ---------------------------------------------------------
-// TINY MESH (c) 2018
+// TINYMESH (c) 2020
 // DO NOT EDIT!
 // EDITING THIS FILE MAY CAUSE APPLICATIONS CRASHING OR EVEN
 // MODULE'S DAMAGE!
 // ---------------------------------------------------------
-// For TM FW version 1.52
+// For TM FW version 1.54
 
 //Device Model to match device ID in Config memory
 // TM4070 is Tinymesh stack on full size board (TM 4070.0xx)
@@ -12,7 +12,7 @@
 // TM4070.3 Is Tinymesh stack on compact SMD-board (TM 4070.3xx)
 
 [DEVICE_MODEL]
-RF TM4070.3
+RF TM4070
 
 [FILE_VERSION]
 1.00
@@ -37,8 +37,8 @@ RF TM4070.3
 
 [EDITABLE_CELLS]
 0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0A 0x0B 0x0C 0x0D 0x0E 0x0F
-          0x12 0x13                0x17           0x1A 0x1B  
-0x20                                                   0x2B 0x2C 0x2D 0x2E 0x2F  
+0x10 0x11 0x12 0x13 0x14 0x15 0x16 0x17 0x18 0x19 0x1A 0x1B 0x1C 0x1D 0x1E 0x1F 
+0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27 0x28 0x29 0x2A 0x2B 0x2C 0x2D 0x2E 0x2F  
 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38      0x3A 0x3B 
 
      0x51           0x54 0x55 0x56 0x57 0x58 0x59 0x5A 0x5B      0x5D 0x5E 0x5F 
@@ -214,7 +214,7 @@ Display basic info for valid received, Tinymesh packets
 // ---------- 0X00 RF CHANNEL
 
 [M 0x00 MIN_MAX]
-1 15
+1 10
 
 [M 0x00 NAME]
 RF Channel
@@ -232,11 +232,7 @@ Ch   7:	866.300 MHz
 Ch   8:	866.500 MHz
 Ch   9:	866.700 MHz
 Ch 10:	866.900 MHz
-Ch 11:	867.100 MHz
-Ch 12:	867.300 MHz
-Ch 13:	867.500 MHz
-Ch 14:	867.700 MHz
-Ch 15:	867.900 MHz
+
 []
 
 // ---------- 0x01 RF POWER
@@ -304,6 +300,8 @@ RSSI acceptance level
 
 [M 0x04 HINT]
 Minimum RSSI level to accept network connection
+Default value 255 automatically sets value corresponding to selected RF bit rate 
+
 
 Min: 160
 Max: 255
@@ -666,19 +664,20 @@ Options:
 // ---------- 0x17 Set GPIO 7 function
 
 [M 0x17 ALLOW]
-0 3
+0 1 3 4
 
 [M 0x17 NAME]
-Select Connect LED /PWM function
+Set GPIO 7 function
 
 [M 0x17 HINT]
 Set function  for 
-Connect LED output
+GPIO 7, module Pin 23
 
 Options:
-0 : Normal operation
-3 : Connect LED pin is Pulse Width Modulated (Dimmer) output
-
+0 : GPIO is Digital output, set HIGH on Reset
+1 : GPIO is Digital input (Default)
+3 : GPIO is Pulse Width Modulated (Dimmer) output
+4 : GPIO is Digital output, set LOW on Reset
 []
 
 // ---------- 0x18 Input trig 0
@@ -1251,7 +1250,7 @@ CCTool Toolbar, the baud rate may be typed in manually.
 8 9
 
 [M 0x36 NAME]
-Serial Port Parity Enable
+UART Bits
 
 [M 0x36 HINT]
 Select 9-bit word size to enable parity bit
@@ -1307,11 +1306,18 @@ Bit 6 (Bit value 64): Gateway Packet CRC enable
 Add bit values to set desired combination.
 
 Example:
-4  = RXTX direction control
-65 = CTS output + packet CRC
-81 = CTS output + Ack / NAK protocol + packet CRC 
-
-
+1   : CTS Output (Default)
+3   : CTS + RTS
+4   : RXTX (RS485 control)
+9   : CTS + Xon/ Xoff 
+17 : CTS + Gateway ACK / NAK
+19 : CTS + RTS + Gateway ACK / NAK
+33 : CTS + Gateway waits for Host ACK
+35 : CTS + RTS + Gateway waits for Host ACK
+49 : CTS + Gateway ACK / NAK+ Gateway waits for Host ACK
+51 : CTS + RTS + Gateway ACK / NAK + Gateway waits for Host ACK
+65 : CTS output + packet CRC
+81 : CTS output + Ack / NAK protocol + packet CRC 
 []
 
 // ---------- 0x3B SERIAL BUFFER ALMOST FULL MARGIN
@@ -1394,7 +1400,7 @@ Periods of 0.1 seconds
 to wait for command from Gateway, 
 before End device returning to sleep.
 
-Default = 0 
+Default = 10 (1 second)
    
 []
 
@@ -2255,40 +2261,40 @@ THIS ADDRESS HAS BEEN LOCKED FOR EDITING
 48 // hex 0x30 '0'
 
 [M 0x45 DEF]
-46 // hex 0x2E '.'
+44 // hex 0x2C ','
 
 [M 0x46 DEF]
-51 // hex 0x33 '3'
+49 // hex 0x31 '1'
 
 [M 0x47 DEF]
-44 // hex 0x2C ','
+46 // hex 0x2E '.'
 
 [M 0x48 DEF]
-49 // hex 0x31 '1'
+48 // hex 0x30 '0'
 
 [M 0x49 DEF]
-46 // hex 0x2E '.'
+48 // hex 0x30 '0'
 
 [M 0x4A DEF]
-48 // hex 0x30 '0'
-
-[M 0x4B DEF]
-48 // hex 0x30 '0'
-
-[M 0x4C DEF]
 44 // hex 0x2C ','
 
-[M 0x4D DEF]
+[M 0x4B DEF]
 49 // hex 0x31 '1'
 
-[M 0x4E DEF]
+[M 0x4C DEF]
 46 // hex 0x2E '.'
 
-[M 0x4f DEF]
+[M 0x4D DEF]
 53 // hex 0x35 '5'
 
+[M 0x4E DEF]
+52 // hex 0x34 '4' 
+
+[M 0x4f DEF]
+0 // hex 0x00 Un used (Used in .2 version)
+
 [M 0x50 DEF]
-50 // hex 0x32 '2'
+0 // hex 0x00 Un used (Used in .2 version)
 
 [M 0x51 DEF]
 0 // hex 0x00 Encrypt mode ( 0= unencrypted)
@@ -2306,7 +2312,7 @@ THIS ADDRESS HAS BEEN LOCKED FOR EDITING
 6 // hex 0x06 IMA Time Base
 
 [M 0x56 DEF]
-0 // hex 0x00 Wait For Command
+10 // hex 0x0A Wait For Command
 
 [M 0x57 DEF]
 8 // hex 0x08 Wakeup Enable
@@ -2414,7 +2420,7 @@ THIS ADDRESS HAS BEEN LOCKED FOR EDITING
 10 // hex 0x0A Time out since last command 
 
 [M 0x7A DEF]
-3 // hex 0x03 Command retry
+4 // hex 0x04 Command retry
 
 [M 0x7B DEF]
 31 // hex 0x1F MAC Timer Rnd Mask 2

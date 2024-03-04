@@ -2,10 +2,9 @@ use serialport;
 use serialport::SerialPort;
 use tauri::{AppHandle, Manager, State};
 use crate::input_processing;
-use std::collections::HashMap;
 use std::sync::Mutex;
 use std::time::Duration;
-use crate::device_config_parser::parse_device_information;
+use crate::device_config_parser::{parse_device_config, MkDeviceConfig};
 
 // create a DeviceEntity struct to hold SerialPort connection that can be shared across threads
 pub struct DeviceEntity(pub Mutex<Option<Box<dyn SerialPort>>>);
@@ -14,11 +13,6 @@ pub struct DeviceEntity(pub Mutex<Option<Box<dyn SerialPort>>>);
 struct Payload {
     pub data_type: String,
     pub data: String,
-}
-
-#[derive(Clone, serde::Serialize)]
-pub struct MkDeviceConfig {
-    pub values: HashMap<String, String>,
 }
 
 #[tauri::command]
@@ -91,25 +85,18 @@ pub fn read_bytes(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> 
 }
 
 #[tauri::command]
-pub fn get_device_config(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> MkDeviceConfig {
-    let mut result = MkDeviceConfig {
-        values: HashMap::new(),
-    };
-
+pub fn get_device_config(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> Result<MkDeviceConfig, String> {
     let mut config_bytes_buffer = vec![];
 
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
             if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
                 read_bytes_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
-                result.values = parse_device_information(&config_bytes_buffer).unwrap_or_else(|e| {
-                    println!("Error parsing device config: {}", e);
-                    HashMap::new()
-                });
+                return parse_device_config(&config_bytes_buffer, None);
             }
         }
     }
-    return result;
+    return Err("Unable to get config".to_string());
 }
 
 fn clear_output_buffer_of_device(device: &mut Box<dyn SerialPort>) -> bool {

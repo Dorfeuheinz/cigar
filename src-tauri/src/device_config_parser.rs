@@ -1,29 +1,42 @@
-use std::collections::HashMap;
+use std::path::Path;
 
-use crate::mk_module_description::{self, MkDeviceCell, MkModuleDescription};
+use crate::mk_module_description::{MkDeviceCell, MkModuleDescription};
 
-pub fn parse_device_information(data: &[u8]) -> Result<HashMap<String, String>, String> {
-    let mut result = HashMap::new();
+#[derive(Clone, serde::Serialize, Default, Debug)]
+pub struct MkDeviceConfig {
+    pub model: String,
+    pub hw_version: String,
+    pub firmware_version: String,
+    pub cells: Vec<MkDeviceCell>,
+}
+
+
+pub fn parse_device_config(data: &[u8], rmd_file_path: Option<&Path>) -> Result<MkDeviceConfig, String> {
     let (model, hw_version, firmware_version) = get_device_information(data)?;
-    result.insert("model".to_string(), model);
-    result.insert("hw_version".to_string(), hw_version);
-    result.insert("firmware_version".to_string(), firmware_version);
+    // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
+    let module_description = if let Some(rmd_file_path) = rmd_file_path {
+        let file_contents = std::fs::read_to_string(rmd_file_path).map_err(|err| err.to_string())?;
+        MkModuleDescription::new(&file_contents)
+    } else {
+        MkModuleDescription::new_from_device_model(&model)?
+    };
+    
+    let cells = read_cells(data, &module_description);
+    let result = MkDeviceConfig {
+        model,
+        hw_version,
+        firmware_version,
+        cells
+    };
     Ok(result)
 }
 
-fn read_cell(data: &[u8], addr: usize, module_description: &MkModuleDescription) -> MkDeviceCell {
-    let result = MkDeviceCell {
-        address: addr as u8,
-        name: String::new(),
-        description: String::new(),
-        min_value: 0,
-        max_value: 0,
-        allowed_values: vec![],
-        default_value: 0,
-        current_value: 0,
-    };
-
-    result
+fn read_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
+    module_description.cells.iter().map(|cell| {
+        let mut cell = cell.clone();
+        cell.current_value = data[cell.address as usize];
+        cell
+    }).collect()
 }
 
 fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {

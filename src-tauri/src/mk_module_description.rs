@@ -10,7 +10,7 @@ pub struct MkDeviceTestMode {
     pub sequence_off: String,
 }
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, serde::Serialize)]
 pub struct MkDeviceCell {
     pub address: u8,
     pub name: String,
@@ -63,22 +63,25 @@ fn get_device_model_and_remove_from_unknown(module_description: &mut MkModuleDes
     return String::new();
 }
 
+fn check_cell_key(input: &str) -> Result<(u8, String), ()> {
+    let parts: Vec<&str> = input.split_whitespace().collect();
+    if parts.len() == 3 && parts[0] == "M" && parts[1].starts_with("0x") {
+        let hex_number = parts[1].trim_start_matches("0x").parse().map_err(|_| ())?;
+        return Ok((hex_number, parts[2].to_string()));
+    }
+    Err(())
+}
+
 fn get_cells_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<MkDeviceCell> {
     // find all keys of the format "M 0x<some hex number> <some text>"
     let mut result: Vec<MkDeviceCell> = vec![Default::default();256];
-    for i in 0..255 {
+    for i in 0..127 {
         result[i].address = i as u8;
     }
     for (key, value) in &module_description.unknown_data {
-        if key.starts_with("M ") {
-            let mut splitted = key.split_whitespace();
-            splitted.next();
-            let address = splitted.next().unwrap();
-            // convert the address to u8
-            let address = u8::from_str_radix(address, 16).unwrap();
-            splitted.next();
-            let name = splitted.next().unwrap();
-
+        // use regex matching on key. the format of the key is "M 0x<some hex number> <some text>"
+        // we want to extract the hex number and some text
+        if let Ok((address, name)) = check_cell_key(key) {
             if name == "NAME" {
                 result[address as usize].name = value.clone();
             } else if name == "HINT" {
@@ -117,7 +120,7 @@ fn get_testmodes_and_remove_from_unknown(module_description: &mut MkModuleDescri
 }
 
 impl MkModuleDescription {
-    fn new(input: &str) -> MkModuleDescription {
+    pub fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
         result.unknown_data = parse_module_description(input);
         result.editable_cells = get_editable_cells_and_remove_from_unknown(&mut result);
@@ -129,7 +132,12 @@ impl MkModuleDescription {
         result
     }
 
-    fn validate_device_config() -> Result<(), ()> {
-        Ok(())
+    pub fn new_from_device_model(model: &str) -> Result<MkModuleDescription, String> {
+        let current_exe_path = std::env::current_exe().map_err(|err| err.to_string())?;
+        let current_exe_dir = current_exe_path.parent().unwrap();
+        let modules_dir = current_exe_dir.join("modules");
+        let file_path = modules_dir.join(format!("{}.rmd", model));
+        let file_contents = std::fs::read_to_string(file_path).map_err(|err| err.to_string())?;
+        Ok(MkModuleDescription::new(&file_contents))
     }
 }
