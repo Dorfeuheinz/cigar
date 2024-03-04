@@ -13,12 +13,14 @@ pub fn parse_device_information(data: &[u8]) -> Result<HashMap<String, String>, 
 
 fn read_cell(data: &[u8], addr: usize, module_description: &MkModuleDescription) -> MkDeviceCell {
     let result = MkDeviceCell {
-        address: addr as u32,
+        address: addr as u8,
         name: String::new(),
         description: String::new(),
         min_value: 0,
         max_value: 0,
         allowed_values: vec![],
+        default_value: 0,
+        current_value: 0,
     };
 
     result

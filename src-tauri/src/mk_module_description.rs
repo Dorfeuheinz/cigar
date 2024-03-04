@@ -9,12 +9,14 @@ pub struct MkDeviceTestMode {
 
 #[derive(Debug)]
 pub struct MkDeviceCell {
-    pub address: u32,
+    pub address: u8,
     pub name: String,
     pub description: String,
-    pub min_value: u32,
-    pub max_value: u32,
-    pub allowed_values: Vec<u32>,
+    pub min_value: u8,
+    pub max_value: u8,
+    pub allowed_values: Vec<u8>,
+    pub default_value: u8,
+    pub current_value: u8,
 }
 
 #[derive(Default, Debug)]
