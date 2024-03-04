@@ -16,13 +16,13 @@
       <header class="flex h-full items-center justify-between bg-blue-500 p-4 text-lg text-white">
         <div>Tiny CC Tool</div>
         <div class="space-x-4">
-          <div class="inline-block">
+          <div id="baudRateInputBox" class="inline-block">
             <label for="baudRate" class="mr-2">Baud Rate</label>
             <input list="baudRateList" name="baudRate" id="baudRate" class="rounded-md border-gray-300 text-black">
             <datalist id="baudRateList">
-                <option value="9600">
-                <option value="14400">
-                <option value="19200">
+              <option value="9600">
+              <option value="14400">
+              <option value="19200">
             </datalist>
           </div>
           <div class="inline-block">
@@ -43,7 +43,7 @@
             </button>
           </div>
 
-          <div class="inline-block">
+          <div id="deviceModeSwitchBox" class="inline-block hidden">
             <span>
               <label class="switch">
                 <input id="deviceMode" type="checkbox">
@@ -208,8 +208,7 @@
             </div>
           </div>
         </div>
-        <div class="mb-2 mt-2 h-1/5 border">content 2 RSSI -Chart</div>
-        <div id="logWindow" class="h-1/5 border overflow-y-auto text-wrap">
+        <div id="logWindow" class="mb-2 mt-2 h-2/5 border overflow-y-auto text-wrap">
           <!-- TX/RX logging here -->
         </div>
       </div>

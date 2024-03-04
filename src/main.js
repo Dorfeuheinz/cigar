@@ -18,18 +18,33 @@ async function populateDeviceList() {
 }
 
 function setConnectionStatus(status) {
-  document.getElementById("connectionStatusIcon").innerText = status ? "🟢" : "🔴";
-  document.getElementById("connectionStatusText").innerText = status ? "Connected" : "Not Connected";
-  document.getElementById("connectDisconnectBtnText").innerText = status ? "Disconnect" : "Connect";
+  if (status) {
+    document.getElementById("connectionStatusIcon").innerText = "🟢";
+    document.getElementById("connectionStatusText").innerText = "Connected";
+    document.getElementById("baudRateInputBox").classList.add("hidden");
+    document.getElementById("deviceModeSwitchBox").classList.remove("hidden");
+    document.getElementById("connectDisconnectBtnText").innerText = "Disconnect";
+  } else {
+    document.getElementById("connectionStatusIcon").innerText = "🔴";
+    document.getElementById("connectionStatusText").innerText = "Not Connected";
+    document.getElementById("baudRateInputBox").classList.remove("hidden");
+    document.getElementById("deviceModeSwitchBox").classList.add("hidden");
+    document.getElementById("connectDisconnectBtnText").innerText = "Connect";
+  }
 }
 
 async function connectToDevice() {
   let selectedDevice = document.getElementById("deviceName").value;
   let selectedBaudRate = document.getElementById("baudRate").value;
   console.info(`Connecting to ${selectedDevice} at ${selectedBaudRate}.`);
-  let result = await invoke("connect_to_device", { deviceName: selectedDevice, baudRate: parseInt(selectedBaudRate) });
+  let result = await invoke("connect_to_device", {
+    deviceName: selectedDevice,
+    baudRate: parseInt(selectedBaudRate),
+  });
   setConnectionStatus(result);
-  console.info(`Connecting to ${selectedDevice} at ${selectedBaudRate}. Result: ${result}`);
+  console.info(
+    `Connecting to ${selectedDevice} at ${selectedBaudRate}. Result: ${result}`
+  );
   await toggleConfigurationMode(false);
 }
 
@@ -68,7 +83,9 @@ async function sendBytes() {
 }
 
 async function toggleConfigurationMode(shouldSwitchToConfigMode) {
-  console.info(`Toggling configuration mode. Should switch to config mode: ${shouldSwitchToConfigMode}`);
+  console.info(
+    `Toggling configuration mode. Should switch to config mode: ${shouldSwitchToConfigMode}`
+  );
   await invoke("clear_buffer", {});
   let sendSuccessful = await invoke("send_bytes", { input: "X" });
   if (shouldSwitchToConfigMode) {
@@ -80,7 +97,8 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
           document.getElementById("deviceModeText").innerText = "Config mode";
           document.getElementById("deviceMode").checked = true;
         } else {
-          document.getElementById("deviceModeText").innerText = "Communication mode";
+          document.getElementById("deviceModeText").innerText =
+            "Communication mode";
           document.getElementById("deviceMode").checked = false;
         }
         clearInterval(countdownInterval);
@@ -92,16 +110,18 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
           }
         }
         if (!success) {
-          document.getElementById("deviceModeText").innerText = `Waiting for device (${count})`;
+          document.getElementById(
+            "deviceModeText"
+          ).innerText = `Waiting for device (${count})`;
           count--;
         }
       }
     }, 1000);
-    
   } else {
     // switch back to communication mode
     if (sendSuccessful) {
-      document.getElementById("deviceModeText").innerText = "Communication mode";
+      document.getElementById("deviceModeText").innerText =
+        "Communication mode";
       document.getElementById("deviceMode").checked = false;
     }
   }
@@ -110,21 +130,26 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
 window.addEventListener("DOMContentLoaded", () => {
   populateDeviceList();
   document.getElementById("logWindow").innerText = "";
-  document.getElementById("connectDisconnectBtn").addEventListener("click", () => {
-    let currentMode = document.getElementById("connectDisconnectBtnText").innerText;
-    if (currentMode === "Connect") {
-      // we want to connect to the device
-      connectToDevice();
-    } else {
-      // we want to disconnect from the device
-      disconnectFromDevice();
-    }
-  });
+  document
+    .getElementById("connectDisconnectBtn")
+    .addEventListener("click", () => {
+      let currentMode = document.getElementById(
+        "connectDisconnectBtnText"
+      ).innerText;
+      if (currentMode === "Connect") {
+        // we want to connect to the device
+        connectToDevice();
+      } else {
+        // we want to disconnect from the device
+        disconnectFromDevice();
+      }
+    });
 
   document.getElementById("deviceMode").addEventListener("click", () => {
-    let shouldSwitchToConfigMode = document.getElementById("deviceMode").checked;
+    let shouldSwitchToConfigMode =
+      document.getElementById("deviceMode").checked;
     toggleConfigurationMode(shouldSwitchToConfigMode);
-  })
+  });
 
   document.getElementById("getConfigBtn").addEventListener("click", () => {
     getConfigFromDevice();
@@ -148,25 +173,32 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("sendRepeatedlyBtn").addEventListener("click", () => {
     sendBytes();
-  })
-
+  });
 });
 
 function getCurrentTime() {
   const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+  const hours = now.getHours().toString().padStart(2, "0");
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const seconds = now.getSeconds().toString().padStart(2, "0");
+  const milliseconds = now.getMilliseconds().toString().padStart(3, "0");
 
   const formattedTime = `${hours}:${minutes}:${seconds}.${milliseconds}`;
   return formattedTime;
 }
 
-const unlisten = listen('exchange_bytes_event', (event) => {
-  document.getElementById("logWindow").innerHTML += "<b>" + event.payload.data_type + " [" + getCurrentTime() + "]</b>: " + event.payload.data + "<br/>";
+const unlisten = listen("exchange_bytes_event", (event) => {
+  document.getElementById("logWindow").innerHTML +=
+    "<b>" +
+    event.payload.data_type +
+    " [" +
+    getCurrentTime() +
+    "]</b>: " +
+    event.payload.data +
+    "<br/>";
   // scroll to the end
-  document.getElementById("logWindow").scrollTop = document.getElementById("logWindow").scrollHeight;
+  document.getElementById("logWindow").scrollTop =
+    document.getElementById("logWindow").scrollHeight;
 });
 
 unlisten();
