@@ -87,7 +87,6 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
     `Toggling configuration mode. Should switch to config mode: ${shouldSwitchToConfigMode}`
   );
   await invoke("clear_buffer", {});
-  let sendSuccessful = await invoke("send_bytes", { input: "X" });
   if (shouldSwitchToConfigMode) {
     let count = 10;
     let success = false;
@@ -103,11 +102,9 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
         }
         clearInterval(countdownInterval);
       } else {
-        if (sendSuccessful) {
-          let readResult = await invoke("read_bytes", {});
-          if (readResult && readResult.length === 1 && readResult[0] === 62) {
-            success = true;
-          }
+        let readResult = await invoke("read_bytes", {});
+        if (readResult && readResult.length === 1 && readResult[0] === 62) {
+          success = true;
         }
         if (!success) {
           document.getElementById(
@@ -119,6 +116,7 @@ async function toggleConfigurationMode(shouldSwitchToConfigMode) {
     }, 1000);
   } else {
     // switch back to communication mode
+    let sendSuccessful = await invoke("send_bytes", { input: "X" });
     if (sendSuccessful) {
       document.getElementById("deviceModeText").innerText =
         "Communication mode";
