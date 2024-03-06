@@ -1,64 +1,68 @@
 import Switcher12 from "./Switcher12";
+import { HiOutlineArrowRight } from "react-icons/hi";
+import { useContext, useState } from "react";
+import DeviceSelect from "./DeviceSelect";
+import InputWithDatalist from "./InputWithDatalist";
+import StateButton from "./StateButton";
+import {
+  connectToDevice,
+  disconnectFromDevice,
+} from "../utils/connection_util";
+
+import { ConnectionContext } from "../App";
+import Timer from "./Timer";
 
 function Header() {
+  const [baudRate, setBaudRate] = useState<number>(19200);
+  const [deviceName, setDeviceName] = useState("");
+  const { isConnected, setIsConnected } = useContext(ConnectionContext);
+
   return (
     <header className="w-full justify-between bg-blue-500 p-2 text-white">
       <div className="space-x-4">
         <div className="inline-block">
           <b>Tiny CC Tool</b>
         </div>
-        <div id="baudRateInputBox" className="inline-block">
-          <label htmlFor="baudRate" className="mr-2">
-            Baud Rate
-          </label>
-          <input
-            list="baudRateList"
-            name="baudRate"
-            id="baudRate"
+        <div className="inline-block">
+          <InputWithDatalist
+            optionsProvider={() => ["19200", "115200"]}
+            onValueChanged={(value) => {
+              let parsedValue = parseInt(value);
+              setBaudRate(parsedValue);
+            }}
             className="rounded-md border-gray-300 text-black"
-            size={8}
+            placeholder="Baud Rate"
           />
-          <datalist id="baudRateList">
-            <option value="9600" />
-            <option value="14400" />
-            <option value="19200" />
-          </datalist>
         </div>
         <div className="inline-block">
-          <label htmlFor="deviceName" className="mr-2">
-            Device Name
-          </label>
-          <select
-            id="deviceName"
+          <DeviceSelect
             className="rounded-md border-gray-300 text-black"
-          ></select>
+            onSelected={setDeviceName}
+          />
         </div>
         <div className="inline-block">
-          <button
-            id="connectDisconnectBtn"
-            type="button"
+          <StateButton
+            text1="Connect"
+            text2="Disconnect"
+            asyncFunction1={async () => {
+              return await connectToDevice(deviceName, baudRate);
+            }}
+            asyncFunction2={async () => {
+              return await disconnectFromDevice();
+            }}
+            onStateChange={(state) => {
+              setIsConnected(state === "Disconnect");
+            }}
             className="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            <div id="connectDisconnectBtnText">Connect</div>&nbsp;
-            <svg
-              className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 10"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 5h12m0 0L9 1m4 4L9 9"
-              />
-            </svg>
-          </button>
+          />
         </div>
-        <div id="deviceModeSwitchBox" className="inline-block">
-          <Switcher12 />
+        <div className="inline-block">
+          {/* <Switcher12
+            checked={isConnected}
+            label="Communication Mode"
+            onChange={setIsConnected}
+          /> */}
+          <Timer />
         </div>
       </div>
     </header>
