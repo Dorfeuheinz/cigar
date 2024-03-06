@@ -62,7 +62,7 @@ function Header() {
             label="Communication Mode"
             onChange={setIsConnected}
           /> */}
-          <Timer />
+          {/* <Timer /> */}
         </div>
       </div>
     </header>

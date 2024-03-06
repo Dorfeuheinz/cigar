@@ -4,11 +4,12 @@ import ConfigPanel from "./ConfigPanel";
 function ConfigAndCommunicationTab() {
   return (
     <>
-      <div className="flex flex-row space-x-2 mx-2">
-        <div className="w-1/2 h-full w-1/2">
-          <ConfigPanel />
+      <div className="flex flex-1 space-x-2 mx-2">
+        <div className="w-1/2">
+          {/* <ConfigPanel /> */}
+          <CommunicationPanel />
         </div>
-        <div className="w-1/2 h-full w-1/2">
+        <div className="w-1/2">
           <CommunicationPanel />
         </div>
       </div>
