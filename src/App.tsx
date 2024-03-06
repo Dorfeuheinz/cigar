@@ -4,6 +4,7 @@ import { MdDashboard } from "react-icons/md";
 
 import Header from "./components/Header";
 import ConfigAndCommunicationTab from "./components/ConfigAndCommunicationTab";
+import AppTabs from "./components/AppTabs";
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <div className="flex flex-col h-screen overflow-hidden">
         <Header />
         <div className="flex-1 overflow-y-scroll">
-          <Tabs aria-label="Tabs with underline" style="underline">
+          <AppTabs aria-label="Tabs with underline" style="underline">
             <Tabs.Item
               title="Configuration and Communication"
               icon={HiAdjustments}
@@ -35,7 +36,7 @@ function App() {
             >
               Disabled content
             </Tabs.Item>
-          </Tabs>
+          </AppTabs>
         </div>
         <div
           className="flex-1 w-full border-t overflow-y-scroll"
