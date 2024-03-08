@@ -7,6 +7,7 @@ import {
 } from "../utils/connection_util";
 
 import ConnectDisconnectButton from "./ConnectDisconnectButton";
+import ConfigModeToggle from "./ConfigModeToggle";
 
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
@@ -47,12 +48,7 @@ function Header() {
           />
         </div>
         <div className="inline-block">
-          {/* <Switcher12
-            checked={isConnected}
-            label="Communication Mode"
-            onChange={setIsConnected}
-          /> */}
-          {/* <Timer /> */}
+          <ConfigModeToggle retries={10} interval={1} />
         </div>
       </div>
     </header>
