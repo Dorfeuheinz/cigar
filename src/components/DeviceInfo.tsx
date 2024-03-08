@@ -1,4 +1,6 @@
 import Buttoncomp from "./ButtonComp";
+import RSSIChart from "./RSSIChart";
+
 const Device_info = () => {
   function button_function() {
     return 85;
@@ -18,7 +20,9 @@ const Device_info = () => {
         className="p-2 w-full pt-0 sm:overflow-y-auto md:flex lg:flex-row md:flex-row"
         style={{ minHeight: "50vh", maxHeight: "50vh" }}
       >
-        <div className=" border-4 md:w-2/3 max-h-full">pankaj</div>
+        <div className="border-4 md:w-2/3 max-h-full flex-grow">
+          <RSSIChart />
+        </div>
         <div className="md:w-1/3 overflow-y-scroll max-h-full">
           <Buttoncomp
             name="get 35"
