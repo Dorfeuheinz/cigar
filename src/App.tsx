@@ -13,10 +13,13 @@ import Device_info from "./components/DeviceInfo";
 export const ConnectionContext = createContext({
   isConnected: false,
   setIsConnected: (_: boolean) => {},
+  currentMode: "communication",
+  setCurrentMode: (_: string) => {},
 });
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
+  const [currentMode, setCurrentMode] = useState("communication");
 
   useEffect(() => {
     getConnectedDevice().then((result) => {
@@ -32,7 +35,12 @@ function App() {
     <>
       <div className="flex flex-col h-screen overflow-hidden md:max-h-screen md:min-h-screen">
         <ConnectionContext.Provider
-          value={{ isConnected: isConnected, setIsConnected: setIsConnected }}
+          value={{
+            isConnected: isConnected,
+            setIsConnected: setIsConnected,
+            currentMode: currentMode,
+            setCurrentMode: setCurrentMode,
+          }}
         >
           <div style={{ minHeight: "10vh", maxHeight: "10vh" }}>
             <Header />
@@ -66,7 +74,7 @@ function App() {
             className="flex-1 w-full border-t overflow-y-scroll relative t-1"
             style={{ minHeight: "25vh", maxHeight: "25vh" }}
           >
-            <TerminalPanel />
+            <TerminalPanel size={300} />
           </div>
           <footer
             className="w-full p-1 bg-gray-500"
