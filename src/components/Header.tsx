@@ -1,21 +1,16 @@
-import Switcher12 from "./Switcher12";
-import { HiOutlineArrowRight } from "react-icons/hi";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import DeviceSelect from "./DeviceSelect";
 import InputWithDatalist from "./InputWithDatalist";
-import StateButton from "./StateButton";
 import {
   connectToDevice,
   disconnectFromDevice,
 } from "../utils/connection_util";
 
-import { ConnectionContext } from "../App";
-import Timer from "./Timer";
+import ConnectDisconnectButton from "./ConnectDisconnectButton";
 
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
   const [deviceName, setDeviceName] = useState("");
-  const { isConnected, setIsConnected } = useContext(ConnectionContext);
 
   return (
     <header className="w-full justify-between bg-blue-500 p-2 text-white">
@@ -41,17 +36,12 @@ function Header() {
           />
         </div>
         <div className="inline-block">
-          <StateButton
-            text1="Connect"
-            text2="Disconnect"
-            asyncFunction1={async () => {
+          <ConnectDisconnectButton
+            connectFunction={async () => {
               return await connectToDevice(deviceName, baudRate);
             }}
-            asyncFunction2={async () => {
+            disconnectFunction={async () => {
               return await disconnectFromDevice();
-            }}
-            onStateChange={(state) => {
-              setIsConnected(state === "Disconnect");
             }}
             className="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           />
@@ -62,7 +52,7 @@ function Header() {
             label="Communication Mode"
             onChange={setIsConnected}
           /> */}
-          <Timer />
+          {/* <Timer /> */}
         </div>
       </div>
     </header>

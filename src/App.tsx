@@ -5,7 +5,9 @@ import Header from "./components/Header";
 import ConfigAndCommunicationTab from "./components/ConfigAndCommunicationTab";
 import AppTabs from "./components/AppTabs";
 import TerminalPanel from "./components/TerminalPanel";
-import { useState, createContext } from "react";
+
+import { useState, createContext, useEffect } from "react";
+import { getConnectedDevice } from "./utils/connection_util";
 import Device_info from "./components/DeviceInfo";
 
 export const ConnectionContext = createContext({
@@ -15,6 +17,16 @@ export const ConnectionContext = createContext({
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    getConnectedDevice().then((result) => {
+      if (result) {
+        setIsConnected(true);
+      } else {
+        setIsConnected(false);
+      }
+    });
+  });
 
   return (
     <>
