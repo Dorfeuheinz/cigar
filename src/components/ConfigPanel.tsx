@@ -1,295 +1,133 @@
-import { Table } from "flowbite-react";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
-function ConfigPanel() {
+import React, { useState } from "react";
+import { invoke } from "@tauri-apps/api";
+
+async function getDeviceConfig() {
+  let result: MkDeviceConfig = await invoke("get_device_config");
+  return result;
+}
+
+type MkDeviceConfig = {
+  model: string;
+  hw_version: string;
+  firmware_version: string;
+  cells: MkDeviceCell[];
+};
+
+type MkDeviceCell = {
+  address: number;
+  name: string;
+  description: string;
+  min_value: number;
+  max_value: number;
+  allowed_values: number[];
+  default_value: number;
+  current_value: number;
+};
+
+const columnHelper = createColumnHelper<MkDeviceCell>();
+
+const columns = [
+  columnHelper.accessor((row) => row.address, {
+    id: "Address",
+    cell: (info) => <i>{info.getValue()}</i>,
+    header: () => <span>Address</span>,
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor((row) => row.name, {
+    id: "Name",
+    cell: (info) => info.getValue(),
+    header: () => <span>Name</span>,
+    footer: (info) => info.column.id,
+  }),
+  // columnHelper.accessor((row) => row.description, {
+  //   id: "Description",
+  //   cell: (info) => info.getValue(),
+  //   header: () => <span>Description</span>,
+  //   footer: (info) => info.column.id,
+  // }),
+  columnHelper.accessor((row) => row.current_value, {
+    id: "Current Value",
+    cell: (info) => info.getValue(),
+    header: () => <span>Current Value</span>,
+    footer: (info) => info.column.id,
+  }),
+];
+
+const ConfigPanel: React.FC = () => {
+  const [data, setData] = useState<MkDeviceCell[]>(() => []);
+  const rerender = () => {
+    getDeviceConfig().then((result) => {
+      console.log(JSON.stringify(result));
+      setData(result.cells);
+    });
+  };
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
-    <div>
-      <Table hoverable>
-        <Table.Head>
-          <Table.HeadCell>Product name</Table.HeadCell>
-          <Table.HeadCell>Color</Table.HeadCell>
-          <Table.HeadCell>Category</Table.HeadCell>
-          <Table.HeadCell>Price</Table.HeadCell>
-          <Table.HeadCell>
-            <span className="sr-only">Edit</span>
-          </Table.HeadCell>
-        </Table.Head>
-        <Table.Body className="divide-y overflow-y-scroll">
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              {'Apple MacBook Pro 17"'}
-            </Table.Cell>
-            <Table.Cell>Sliver</Table.Cell>
-            <Table.Cell>Laptop</Table.Cell>
-            <Table.Cell>$2999</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Microsoft Surface Pro
-            </Table.Cell>
-            <Table.Cell>White</Table.Cell>
-            <Table.Cell>Laptop PC</Table.Cell>
-            <Table.Cell>$1999</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              Magic Mouse 2
-            </Table.Cell>
-            <Table.Cell>Black</Table.Cell>
-            <Table.Cell>Accessories</Table.Cell>
-            <Table.Cell>$99</Table.Cell>
-            <Table.Cell>
-              <a
-                href="#"
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-              >
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
+    <div className="p-2">
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          {table.getFooterGroups().map((footerGroup) => (
+            <tr key={footerGroup.id}>
+              {footerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.footer,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </tfoot>
+      </table>
+      <div className="h-4" />
+      <button onClick={() => rerender()} className="border p-2">
+        Rerender
+      </button>
     </div>
   );
-}
+};
 
 export default ConfigPanel;

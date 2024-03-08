@@ -6,8 +6,7 @@ function ConfigAndCommunicationTab() {
     <>
       <div className="flex flex-1 space-x-2 mx-2">
         <div className="w-1/2">
-          {/* <ConfigPanel /> */}
-          <CommunicationPanel />
+          <ConfigPanel />
         </div>
         <div className="w-1/2">
           <CommunicationPanel />
