@@ -23,7 +23,7 @@ function getCurrentTime() {
 }
 
 const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
-  let [logs, setLogs] = useState<string[]>([]);
+  let [logs, setLogs] = useState<EventPayload[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,13 +32,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
   useEffect(() => {
     const unlisten = listen<EventPayload>("exchange_bytes_event", (event) => {
       console.log("Received event:", event.payload);
-      setLogs((logs) =>
-        logs.concat(
-          `[${event.payload.data_type} ${getCurrentTime()}] ${
-            event.payload.data
-          }`
-        )
-      );
+      setLogs((logs) => logs.concat(event.payload));
     });
     scrollToBottom();
     return () => {
@@ -49,7 +43,14 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
   return (
     <>
       {logs.map((log, index) => (
-        <p key={index}>{log}</p>
+        <>
+          <p key={index}>
+            <b>[{log.data_type}]</b>&nbsp;
+            <b>[{getCurrentTime()}]</b>&nbsp;
+            {log.data}
+          </p>
+          <hr />
+        </>
       ))}
       <div ref={messagesEndRef} />
     </>
