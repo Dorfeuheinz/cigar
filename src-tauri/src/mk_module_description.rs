@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::module_description_parser::parse_module_description;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct MkDeviceTestMode {
@@ -31,32 +31,46 @@ pub struct MkModuleDescription {
 
     pub editable_cells: Vec<u32>,
     pub locked_cells: Vec<u32>,
-    
+
     pub unknown_data: HashMap<String, String>,
 }
 
-fn get_number_of_testmodes_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> u32 {
+fn get_number_of_testmodes_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> u32 {
     if let Some(number_of_testmodes) = module_description.unknown_data.remove("TESTMODE NUMBER") {
         return number_of_testmodes.parse::<u32>().unwrap();
     }
     return 0;
 }
 
-fn get_editable_cells_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<u32> {
+fn get_editable_cells_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<u32> {
     if let Some(editable_cells) = module_description.unknown_data.remove("EDITABLE_CELLS") {
-        return editable_cells.split_whitespace().filter_map(|s| s.parse::<u32>().ok()).collect();
+        return editable_cells
+            .split_whitespace()
+            .filter_map(|s| s.parse::<u32>().ok())
+            .collect();
     }
     return vec![];
 }
 
-fn get_locked_cells_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<u32> {
+fn get_locked_cells_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<u32> {
     if let Some(locked_cells) = module_description.unknown_data.remove("LOCKED_CELLS") {
-        return locked_cells.split_whitespace().filter_map(|s| s.parse::<u32>().ok()).collect();
+        return locked_cells
+            .split_whitespace()
+            .filter_map(|s| s.parse::<u32>().ok())
+            .collect();
     }
     return vec![];
 }
 
-fn get_device_model_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> String {
+fn get_device_model_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> String {
     if let Some(device_model) = module_description.unknown_data.remove("DEVICE_MODEL") {
         return device_model.clone();
     }
@@ -66,16 +80,19 @@ fn get_device_model_and_remove_from_unknown(module_description: &mut MkModuleDes
 fn check_cell_key(input: &str) -> Result<(u8, String), ()> {
     let parts: Vec<&str> = input.split_whitespace().collect();
     if parts.len() == 3 && parts[0] == "M" && parts[1].starts_with("0x") {
-        let hex_number = parts[1].trim_start_matches("0x").parse().map_err(|_| ())?;
+        let hex_number =
+            u8::from_str_radix(&parts[1].trim_start_matches("0x"), 16).map_err(|_| ())?;
         return Ok((hex_number, parts[2].to_string()));
     }
     Err(())
 }
 
-fn get_cells_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<MkDeviceCell> {
+fn get_cells_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<MkDeviceCell> {
     // find all keys of the format "M 0x<some hex number> <some text>"
-    let mut result: Vec<MkDeviceCell> = vec![Default::default();256];
-    for i in 0..127 {
+    let mut result: Vec<MkDeviceCell> = vec![Default::default(); 256];
+    for i in 0..256 {
         result[i].address = i as u8;
     }
     for (key, value) in &module_description.unknown_data {
@@ -94,26 +111,45 @@ fn get_cells_and_remove_from_unknown(module_description: &mut MkModuleDescriptio
                 result[address as usize].min_value = min.parse::<u8>().unwrap();
                 result[address as usize].max_value = max.parse::<u8>().unwrap();
             } else if name == "ALLOW" {
-                result[address as usize].allowed_values = value.split_whitespace().map(|s| s.parse::<u8>().unwrap()).collect();
+                result[address as usize].allowed_values = value
+                    .split_whitespace()
+                    .map(|s| s.parse::<u8>().unwrap())
+                    .collect();
             }
         }
     }
 
     // remove all keys starting from "M "
-    module_description.unknown_data.retain(|k, _| !k.starts_with("M "));
+    module_description
+        .unknown_data
+        .retain(|k, _| !k.starts_with("M "));
     return result;
 }
 
-fn get_testmodes_and_remove_from_unknown(module_description: &mut MkModuleDescription) -> Vec<MkDeviceTestMode> {
+fn get_testmodes_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<MkDeviceTestMode> {
     let mut result = vec![];
     let number_of_testmodes = module_description.number_of_testmodes;
     for i in 1..number_of_testmodes {
         result.push(MkDeviceTestMode {
             testmode_id: i,
-            name: module_description.unknown_data.remove(&format!("TESTMODE {} NAME", i)).unwrap_or(String::new()),
-            description: module_description.unknown_data.remove(&format!("TESTMODE {} HINT", i)).unwrap_or(String::new()),
-            sequence_on: module_description.unknown_data.remove(&format!("TESTMODE {} SEQUENCE_ON", i)).unwrap_or(String::new()),
-            sequence_off: module_description.unknown_data.remove(&format!("TESTMODE {} SEQUENCE_OFF", i)).unwrap_or(String::new()),
+            name: module_description
+                .unknown_data
+                .remove(&format!("TESTMODE {} NAME", i))
+                .unwrap_or(String::new()),
+            description: module_description
+                .unknown_data
+                .remove(&format!("TESTMODE {} HINT", i))
+                .unwrap_or(String::new()),
+            sequence_on: module_description
+                .unknown_data
+                .remove(&format!("TESTMODE {} SEQUENCE_ON", i))
+                .unwrap_or(String::new()),
+            sequence_off: module_description
+                .unknown_data
+                .remove(&format!("TESTMODE {} SEQUENCE_OFF", i))
+                .unwrap_or(String::new()),
         });
     }
     return result;

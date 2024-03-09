@@ -1,5 +1,7 @@
 use std::path::Path;
 
+use log::kv::value;
+
 use crate::mk_module_description::{MkDeviceCell, MkModuleDescription};
 
 #[derive(Clone, serde::Serialize, Default, Debug)]
@@ -10,33 +12,40 @@ pub struct MkDeviceConfig {
     pub cells: Vec<MkDeviceCell>,
 }
 
-
-pub fn parse_device_config(data: &[u8], rmd_file_path: Option<&Path>) -> Result<MkDeviceConfig, String> {
+pub fn parse_device_config(
+    data: &[u8],
+    rmd_file_path: Option<&Path>,
+) -> Result<MkDeviceConfig, String> {
     let (model, hw_version, firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
     let module_description = if let Some(rmd_file_path) = rmd_file_path {
-        let file_contents = std::fs::read_to_string(rmd_file_path).map_err(|err| err.to_string())?;
+        let file_contents =
+            std::fs::read_to_string(rmd_file_path).map_err(|err| err.to_string())?;
         MkModuleDescription::new(&file_contents)
     } else {
         MkModuleDescription::new_from_device_model(&model)?
     };
-    
+
     let cells = read_cells(data, &module_description);
     let result = MkDeviceConfig {
         model,
         hw_version,
         firmware_version,
-        cells
+        cells,
     };
     Ok(result)
 }
 
 fn read_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
-    module_description.cells.iter().map(|cell| {
-        let mut cell = cell.clone();
-        cell.current_value = data[cell.address as usize];
-        cell
-    }).collect()
+    data.iter()
+        .enumerate()
+        .map(|(i, val)| -> MkDeviceCell {
+            let mut cell = module_description.cells[i].clone();
+            cell.address = i as u8;
+            cell.current_value = *val;
+            cell
+        })
+        .collect()
 }
 
 fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
@@ -47,10 +56,13 @@ fn get_device_information(data: &[u8]) -> Result<(String, String, String), Strin
                 let model = String::from_utf8_lossy(&data[offset..offset + model_end]).to_string();
                 offset += model_end + 1;
                 if let Some(hw_end) = data[offset..].iter().position(|&x| x == b',') {
-                    let hw_version = String::from_utf8_lossy(&data[offset..offset + hw_end]).to_string();
+                    let hw_version =
+                        String::from_utf8_lossy(&data[offset..offset + hw_end]).to_string();
                     offset += hw_end + 1;
                     if let Some(firmware_end) = data[offset..].iter().position(|&x| !x.is_ascii()) {
-                        let firmware_version = String::from_utf8_lossy(&data[offset..offset + firmware_end]).to_string();
+                        let firmware_version =
+                            String::from_utf8_lossy(&data[offset..offset + firmware_end])
+                                .to_string();
                         return Ok((model, hw_version, firmware_version));
                     }
                 }
