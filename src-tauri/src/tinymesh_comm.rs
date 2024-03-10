@@ -71,7 +71,10 @@ pub fn send_bytes(
     device_entity: State<DeviceEntity>,
     app_handle: AppHandle,
 ) -> bool {
-    let bytes_to_send: Vec<u8> = input_processing::process_input(&input).unwrap_or(vec![]);
+    let bytes_to_send: Vec<u8> = input_processing::process_input(&input).unwrap_or_else(|e| {
+        println!("Error processing input: {:#?}", e);
+        vec![]
+    });
     println!("Sending bytes: {:?}", bytes_to_send);
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
