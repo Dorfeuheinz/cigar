@@ -33,33 +33,6 @@ type MkDeviceCell = {
 
 const columnHelper = createColumnHelper<MkDeviceCell>();
 
-const columns = [
-  columnHelper.accessor((row) => row.address, {
-    id: "Address",
-    cell: (info) => <i>{info.getValue()}</i>,
-    header: () => <span>Address</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor((row) => row.name, {
-    id: "Name",
-    cell: (info) => info.getValue(),
-    header: () => <span>Name</span>,
-    footer: (info) => info.column.id,
-  }),
-  // columnHelper.accessor((row) => row.description, {
-  //   id: "Description",
-  //   cell: (info) => info.getValue(),
-  //   header: () => <span>Description</span>,
-  //   footer: (info) => info.column.id,
-  // }),
-  columnHelper.accessor((row) => row.current_value, {
-    id: "Current Value",
-    cell: (info) => info.getValue(),
-    header: () => <span>Current Value</span>,
-    footer: (info) => info.column.id,
-  }),
-];
-
 const ConfigPanel: React.FC = () => {
   const [data, setData] = useState<MkDeviceCell[]>(() => []);
   const rerender = () => {
@@ -69,6 +42,49 @@ const ConfigPanel: React.FC = () => {
     });
   };
 
+  const handleCellValueChange = (
+    rowId: string,
+    columnId: string,
+    value: string
+  ) => {
+    console.info(`Setting cell ${rowId} ${columnId} to ${value}`);
+    setData((old) =>
+      old.map((row) =>
+        row.address == parseInt(rowId)
+          ? { ...row, current_value: parseInt(value) }
+          : row
+      )
+    );
+  };
+
+  const columns = [
+    columnHelper.accessor((row) => row.address, {
+      id: "Address",
+      cell: (info) => <i>{info.getValue()}</i>,
+      header: () => <span>Address</span>,
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor((row) => row.name, {
+      id: "Name",
+      cell: (info) => info.getValue(),
+      header: () => <span>Name</span>,
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor((row) => row.current_value, {
+      id: "Current Value",
+      cell: (info) => (
+        <input
+          value={info.getValue()}
+          onChange={(e) =>
+            handleCellValueChange(info.row.id, info.column.id, e.target.value)
+          }
+        />
+      ),
+      header: () => <span>Current Value</span>,
+      footer: (info) => info.column.id,
+    }),
+  ];
+
   const table = useReactTable({
     data,
     columns,
@@ -77,8 +93,8 @@ const ConfigPanel: React.FC = () => {
 
   return (
     <div className="p-2">
-      <table>
-        <thead>
+      <table className="w-full h-96">
+        <thead className="sticky top-0 bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -94,7 +110,7 @@ const ConfigPanel: React.FC = () => {
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="overflow-y-auto">
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
@@ -105,26 +121,13 @@ const ConfigPanel: React.FC = () => {
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
       </table>
       <div className="h-4" />
       <button onClick={() => rerender()} className="border p-2">
         Rerender
+      </button>
+      <button onClick={() => saveChanges()} className="border p-2">
+        Save Changes
       </button>
     </div>
   );
