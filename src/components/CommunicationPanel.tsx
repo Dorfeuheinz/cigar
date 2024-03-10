@@ -22,6 +22,7 @@ function CommunicationPanel() {
             </label>
             <textarea
               rows={4}
+              spellCheck={false}
               className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
               placeholder="Write a message..."
               onChange={(e) => setCommunicationInput(e.target.value)}
