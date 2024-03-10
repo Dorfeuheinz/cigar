@@ -1,7 +1,5 @@
 use std::path::Path;
 
-use log::kv::value;
-
 use crate::mk_module_description::{MkDeviceCell, MkModuleDescription};
 
 #[derive(Clone, serde::Serialize, Default, Debug)]
@@ -41,7 +39,7 @@ fn read_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDe
         .enumerate()
         .map(|(i, val)| -> MkDeviceCell {
             let mut cell = module_description.cells[i].clone();
-            cell.address = i as u8;
+            cell.address = i;
             cell.current_value = *val;
             cell
         })

@@ -12,7 +12,7 @@ pub struct MkDeviceTestMode {
 
 #[derive(Clone, Default, Debug, serde::Serialize)]
 pub struct MkDeviceCell {
-    pub address: u8,
+    pub address: usize,
     pub name: String,
     pub description: String,
     pub min_value: u8,
@@ -77,11 +77,11 @@ fn get_device_model_and_remove_from_unknown(
     return String::new();
 }
 
-fn check_cell_key(input: &str) -> Result<(u8, String), ()> {
+fn check_cell_key(input: &str) -> Result<(usize, String), ()> {
     let parts: Vec<&str> = input.split_whitespace().collect();
     if parts.len() == 3 && parts[0] == "M" && parts[1].starts_with("0x") {
         let hex_number =
-            u8::from_str_radix(&parts[1].trim_start_matches("0x"), 16).map_err(|_| ())?;
+            usize::from_str_radix(&parts[1].trim_start_matches("0x"), 16).map_err(|_| ())?;
         return Ok((hex_number, parts[2].to_string()));
     }
     Err(())
@@ -92,13 +92,18 @@ fn get_cells_and_remove_from_unknown(
 ) -> Vec<MkDeviceCell> {
     // find all keys of the format "M 0x<some hex number> <some text>"
     let mut result: Vec<MkDeviceCell> = vec![Default::default(); 256];
-    for i in 0..256 {
-        result[i].address = i as u8;
+    for i in 0..result.len() {
+        result[i].address = i;
     }
     for (key, value) in &module_description.unknown_data {
         // use regex matching on key. the format of the key is "M 0x<some hex number> <some text>"
         // we want to extract the hex number and some text
         if let Ok((address, name)) = check_cell_key(key) {
+            // resize vector to fit the address
+            if address >= result.len() {
+                result.resize(address as usize + 1, Default::default());
+                result[address as usize].address = address;
+            }
             if name == "NAME" {
                 result[address as usize].name = value.clone();
             } else if name == "HINT" {
