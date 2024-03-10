@@ -5,6 +5,7 @@ import React from "react";
 interface EventPayload {
   data_type: string;
   data: string;
+  time: string;
 }
 
 interface TerminalPanelProps {
@@ -31,8 +32,13 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
 
   useEffect(() => {
     const unlisten = listen<EventPayload>("exchange_bytes_event", (event) => {
-      console.log("Received event:", event.payload);
-      setLogs((logs) => logs.concat(event.payload));
+      setLogs((logs) =>
+        logs.concat({
+          data: event.payload.data,
+          data_type: event.payload.data_type,
+          time: getCurrentTime(),
+        })
+      );
     });
     scrollToBottom();
     return () => {
@@ -46,7 +52,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
         <>
           <p key={index}>
             <b>[{log.data_type}]</b>&nbsp;
-            <b>[{getCurrentTime()}]</b>&nbsp;
+            <b>[{log.time}]</b>&nbsp;
             {log.data}
           </p>
           <hr />
