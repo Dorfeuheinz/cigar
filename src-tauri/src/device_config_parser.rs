@@ -1,6 +1,8 @@
 use std::path::Path;
 
-use crate::mk_module_description::{MkDeviceCell, MkModuleDescription};
+use crate::mk_module_description::{
+    MkDeviceCell, MkDeviceQuickMode, MkDeviceTestMode, MkModuleDescription,
+};
 
 #[derive(Clone, serde::Serialize, Default, Debug)]
 pub struct MkDeviceConfig {
@@ -8,6 +10,8 @@ pub struct MkDeviceConfig {
     pub hw_version: String,
     pub firmware_version: String,
     pub cells: Vec<MkDeviceCell>,
+    pub test_modes: Vec<MkDeviceTestMode>,
+    pub quick_modes: Vec<MkDeviceQuickMode>,
 }
 
 pub fn parse_device_config(
@@ -25,11 +29,15 @@ pub fn parse_device_config(
     };
 
     let cells = read_cells(data, &module_description);
+    let test_modes = module_description.testmodes;
+    let quick_modes = module_description.quickmodes;
     let result = MkDeviceConfig {
         model,
         hw_version,
         firmware_version,
         cells,
+        test_modes,
+        quick_modes,
     };
     Ok(result)
 }
@@ -46,7 +54,7 @@ fn read_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDe
         .collect()
 }
 
-fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
+pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
     while offset < data.len() {
         if offset == 0x3c {

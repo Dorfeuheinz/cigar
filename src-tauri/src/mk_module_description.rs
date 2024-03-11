@@ -1,8 +1,17 @@
 use crate::module_description_parser::parse_module_description;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub struct MkDeviceTestMode {
+    pub testmode_id: u32,
+    pub name: String,
+    pub description: String,
+    pub sequence_on: String,
+    pub sequence_off: String,
+}
+
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct MkDeviceQuickMode {
     pub testmode_id: u32,
     pub name: String,
     pub description: String,
@@ -27,6 +36,8 @@ pub struct MkModuleDescription {
     pub device_model: String,
     pub number_of_testmodes: u32,
     pub testmodes: Vec<MkDeviceTestMode>,
+    pub number_of_quickmodes: u32,
+    pub quickmodes: Vec<MkDeviceQuickMode>,
     pub cells: Vec<MkDeviceCell>,
 
     pub editable_cells: Vec<u32>,
@@ -40,6 +51,15 @@ fn get_number_of_testmodes_and_remove_from_unknown(
 ) -> u32 {
     if let Some(number_of_testmodes) = module_description.unknown_data.remove("TESTMODE NUMBER") {
         return number_of_testmodes.parse::<u32>().unwrap();
+    }
+    return 0;
+}
+
+fn get_number_of_quickmodes_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> u32 {
+    if let Some(number_of_quickmodes) = module_description.unknown_data.remove("QUICKMODE NUMBER") {
+        return number_of_quickmodes.parse::<u32>().unwrap();
     }
     return 0;
 }
@@ -136,7 +156,7 @@ fn get_testmodes_and_remove_from_unknown(
 ) -> Vec<MkDeviceTestMode> {
     let mut result = vec![];
     let number_of_testmodes = module_description.number_of_testmodes;
-    for i in 1..number_of_testmodes {
+    for i in 1..=number_of_testmodes {
         result.push(MkDeviceTestMode {
             testmode_id: i,
             name: module_description
@@ -160,6 +180,35 @@ fn get_testmodes_and_remove_from_unknown(
     return result;
 }
 
+fn get_quick_modes_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<MkDeviceQuickMode> {
+    let mut result = vec![];
+    let number_of_quickmodes = module_description.number_of_quickmodes;
+    for i in 1..=number_of_quickmodes {
+        result.push(MkDeviceQuickMode {
+            testmode_id: i,
+            name: module_description
+                .unknown_data
+                .remove(&format!("QUICKMODE {} NAME", i))
+                .unwrap_or(String::new()),
+            description: module_description
+                .unknown_data
+                .remove(&format!("QUICKMODE {} HINT", i))
+                .unwrap_or(String::new()),
+            sequence_on: module_description
+                .unknown_data
+                .remove(&format!("QUICKMODE {} SEQUENCE_ON", i))
+                .unwrap_or(String::new()),
+            sequence_off: module_description
+                .unknown_data
+                .remove(&format!("QUICKMODE {} SEQUENCE_OFF", i))
+                .unwrap_or(String::new()),
+        });
+    }
+    return result;
+}
+
 impl MkModuleDescription {
     pub fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
@@ -168,8 +217,10 @@ impl MkModuleDescription {
         result.locked_cells = get_locked_cells_and_remove_from_unknown(&mut result);
         result.device_model = get_device_model_and_remove_from_unknown(&mut result);
         result.number_of_testmodes = get_number_of_testmodes_and_remove_from_unknown(&mut result);
-        result.cells = get_cells_and_remove_from_unknown(&mut result);
         result.testmodes = get_testmodes_and_remove_from_unknown(&mut result);
+        result.number_of_quickmodes = get_number_of_quickmodes_and_remove_from_unknown(&mut result);
+        result.quickmodes = get_quick_modes_and_remove_from_unknown(&mut result);
+        result.cells = get_cells_and_remove_from_unknown(&mut result);
         result
     }
 
