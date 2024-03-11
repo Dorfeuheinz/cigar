@@ -1,20 +1,9 @@
-import { invoke } from "@tauri-apps/api";
 import ButtonComp from "./ButtonComp";
 import RSSIChart from "./RSSIChart";
 
+import { getRSSI, getTemperature, getVoltage } from "../utils/device_info_util";
+
 const Device_info = () => {
-  const getRSSI = async () => {
-    return await invoke("get_device_rssi");
-  };
-
-  const getTemperature = async () => {
-    return await invoke("get_device_temperature");
-  };
-
-  const getVoltage = async () => {
-    return await invoke("get_device_voltage");
-  };
-
   return (
     <>
       <div
