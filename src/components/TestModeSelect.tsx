@@ -23,27 +23,42 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
   };
   return (
     <>
-      <select value={selectedOption} onChange={handleSelectChange}>
-        <option value="" selected>
-          Select Quick Mode / Test Mode
-        </option>
-        <optgroup label="Quick Options">
-          {quickOptions.map((option, index) => (
-            <option key={index} value={`QUICKMODE_${option.testmode_id}`}>
-              {option.name}
+      <div className="h-full flex">
+        <div>
+          <select
+            value={selectedOption}
+            onChange={handleSelectChange}
+            className="w-fit h-full bg-gray-50 text-sm rounded-lg "
+          >
+            <option value="" selected>
+              Select Mode
             </option>
-          ))}
-        </optgroup>
-        <optgroup label="Test Mode">
-          {testModeOptions.map((option, index) => (
-            <option key={index} value={`TESTMODE_${option.testmode_id}`}>
-              {option.name}
-            </option>
-          ))}
-        </optgroup>
-      </select>
+            <optgroup label="Quick Options">
+              {quickOptions.map((option, index) => (
+                <option key={index} value={`QUICKMODE_${option.testmode_id}`}>
+                  {option.name}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Test Mode">
+              {testModeOptions.map((option, index) => (
+                <option key={index} value={`TESTMODE_${option.testmode_id}`}>
+                  {option.name}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
 
-      <button onClick={handleExecuteSelectedTestMode}>Go</button>
+        <div className="ml-5">
+          <button
+            className="sm:mt-2 pl-5 pr-5 bg-blue-700 text-white text-sm rounded-lg"
+            onClick={handleExecuteSelectedTestMode}
+          >
+            Go
+          </button>
+        </div>
+      </div>
     </>
   );
 };

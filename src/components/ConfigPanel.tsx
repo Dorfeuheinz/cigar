@@ -104,9 +104,9 @@ const ConfigPanel: React.FC = () => {
   });
 
   return (
-    <div className="p-2">
-      <table className="w-full h-96">
-        <thead className="sticky top-0 bg-white">
+    <div className="h-full overflow-y-scroll border rounded-lg">
+      <table className="w-full text-center table border border-collapse ">
+        <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -122,9 +122,9 @@ const ConfigPanel: React.FC = () => {
             </tr>
           ))}
         </thead>
-        <tbody className="overflow-y-auto">
+        <tbody className="text-center ">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.id} className="border border-separate ">
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -134,14 +134,23 @@ const ConfigPanel: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <div className="h-4">
-        <button onClick={() => readConfig()} className="border p-2">
+      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-around sm:flex-wrap">
+        <button
+          onClick={() => readConfig()}
+          className=" bg-blue-700 text-white border rounded-lg text-sm p-2"
+        >
           Read Config
         </button>
-        <button onClick={() => writeConfig()} className="border p-2">
+        <button
+          onClick={() => writeConfig()}
+          className=" bg-blue-700 text-white border rounded-lg  text-sm p-2"
+        >
           Save Config
         </button>
-        <button onClick={() => factoryReset()} className="border p-2">
+        <button
+          onClick={() => factoryReset()}
+          className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
+        >
           Factory Reset
         </button>
         <TestModeSelect

@@ -46,7 +46,7 @@ function App() {
             <Header />
           </div>
           <div
-            className="flex-1 overflow-y-scroll"
+            className="flex-1 "
             style={{ minHeight: "60vh", maxHeight: "60vh" }}
           >
             <AppTabs aria-label="Tabs with underline" style="underline">
@@ -71,7 +71,7 @@ function App() {
             </AppTabs>
           </div>
           <div
-            className="flex-1 w-full border-t overflow-y-scroll relative t-1"
+            className="flex-1 w-full border-t overflow-y-scroll"
             style={{ minHeight: "25vh", maxHeight: "25vh" }}
           >
             <TerminalPanel size={300} />
