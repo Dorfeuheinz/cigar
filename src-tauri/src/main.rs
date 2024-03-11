@@ -26,7 +26,12 @@ fn main() {
             read_bytes,
             clear_buffer,
             get_device_config,
-            get_connected_device
+            get_connected_device,
+            get_device_rssi,
+            get_device_analog,
+            get_device_digital,
+            get_device_temperature,
+            get_device_voltage
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
