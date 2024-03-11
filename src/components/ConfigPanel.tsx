@@ -7,38 +7,50 @@ import {
 
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
+import { ask } from "@tauri-apps/api/dialog";
+import TestModeSelect from "./TestModeSelect";
+
+import {
+  MkDeviceCell,
+  MkDeviceConfig,
+  MkDeviceTestMode,
+  MkDeviceQuickMode,
+} from "../DataTypes";
 
 async function getDeviceConfig() {
   let result: MkDeviceConfig = await invoke("get_device_config");
   return result;
 }
 
-type MkDeviceConfig = {
-  model: string;
-  hw_version: string;
-  firmware_version: string;
-  cells: MkDeviceCell[];
-};
-
-type MkDeviceCell = {
-  address: number;
-  name: string;
-  description: string;
-  min_value: number;
-  max_value: number;
-  allowed_values: number[];
-  default_value: number;
-  current_value: number;
-};
-
 const columnHelper = createColumnHelper<MkDeviceCell>();
 
 const ConfigPanel: React.FC = () => {
   const [data, setData] = useState<MkDeviceCell[]>(() => []);
-  const rerender = () => {
+  const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>(
+    []
+  );
+  const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>(
+    []
+  );
+  const readConfig = () => {
     getDeviceConfig().then((result) => {
-      console.log(JSON.stringify(result));
       setData(result.cells);
+      setTestModeOptions(result.test_modes);
+      setQuickModeOptions(result.quick_modes);
+    });
+  };
+
+  const writeConfig = () => {};
+
+  const factoryReset = () => {
+    ask(
+      "This action will factory reset the device and cannot be reverted. Are you sure?",
+      {
+        title: "Tiny CC Tool",
+        type: "warning",
+      }
+    ).then((result) => {
+      console.info(`User said ${result}`);
     });
   };
 
@@ -122,13 +134,21 @@ const ConfigPanel: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <div className="h-4" />
-      <button onClick={() => rerender()} className="border p-2">
-        Rerender
-      </button>
-      <button onClick={() => saveChanges()} className="border p-2">
-        Save Changes
-      </button>
+      <div className="h-4">
+        <button onClick={() => readConfig()} className="border p-2">
+          Read Config
+        </button>
+        <button onClick={() => writeConfig()} className="border p-2">
+          Save Config
+        </button>
+        <button onClick={() => factoryReset()} className="border p-2">
+          Factory Reset
+        </button>
+        <TestModeSelect
+          testModeOptions={testModeOptions}
+          quickOptions={quickModeOptions}
+        />
+      </div>
     </div>
   );
 };

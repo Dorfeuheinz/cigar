@@ -77,134 +77,137 @@ RF TM4070
 
 // total number of testmodes
 // Each testmode must be numbered in sequence
-[TESTMODE NUMBER]
-8
+[QUICKMODE NUMBER]
+3
 
 // ---------- 1 1 1
 // displayed name for this testmode
-[TESTMODE 1 NAME]
+[QUICKMODE 1 NAME]
 Set Gateway Mode
 
 // a sequence for turning on the sequenc
-[TESTMODE 1 SEQUENCE_ON]
+[QUICKMODE 1 SEQUENCE_ON]
 aG #>
 
 // a sequence, that is sent before X or before going into different
 // test mode if module is in this test mode
-[TESTMODE 1 SEQUENCE_OFF]
+[QUICKMODE 1 SEQUENCE_OFF]
 
 // hint for this test mode
-[TESTMODE 1 HINT]
+[QUICKMODE 1 HINT]
 Set deafult parameters for Gateway mode
 
 []
 
 // ---------- 2 2 2 
 // displayed name for this testmode
-[TESTMODE 2 NAME]
+[QUICKMODE 2 NAME]
 Set Router Mode
 
-[TESTMODE 2 SEQUENCE_ON]
+[QUICKMODE 2 SEQUENCE_ON]
 aR #> 
-[TESTMODE 2 SEQUENCE_OFF]
+[QUICKMODE 2 SEQUENCE_OFF]
 
-[TESTMODE 2 HINT]
+[QUICKMODE 2 HINT]
 Set default parameters for Router mode.
 
 []
 
 // ---------- 3 3 3
 // displayed name for this testmode
-[TESTMODE 3 NAME]
+[QUICKMODE 3 NAME]
 Set End Device Mode
 
 // a sequence for turning on the sequenc
-[TESTMODE 3 SEQUENCE_ON]
+[QUICKMODE 3 SEQUENCE_ON]
 aN #>
 
 // a sequence, that is sent before X or before going into different
 // test mode if module is in this test mode
-[TESTMODE 3 SEQUENCE_OFF]
+[QUICKMODE 3 SEQUENCE_OFF]
 
 // hint for this test mode
-[TESTMODE 3 HINT]
+[QUICKMODE 3 HINT]
 Set deafult parameters for End Device mode
 []
 
+[TESTMODE NUMBER]
+5
+
 // ---------- 4 4 4
 // displayed name for this testmode
-[TESTMODE 4 NAME]
+[TESTMODE 1 NAME]
 Test Mode 1 (TX On)
 
 // a sequence for turning ont the sequence
-[TESTMODE 4 SEQUENCE_ON]
+[TESTMODE 1 SEQUENCE_ON]
 a1 #>
 
 // a sequence, that is sent before X or before going into different
 // test mode if module is in this test mode
-[TESTMODE 4 SEQUENCE_OFF]
+[TESTMODE 1 SEQUENCE_OFF]
 a3 #>
 
 // hint for this test mode
-[TESTMODE 4 HINT]
+[TESTMODE 1 HINT]
 TX carrier (lower FSK frequency)
 []
 
 // ---------- 5 5 5 
 // displayed name for this testmode
-[TESTMODE 5 NAME]
+[TESTMODE 2 NAME]
 Test Mode 2 (Modulated TX On)
 
 // a sequence for turning ont the sequence
-[TESTMODE 5 SEQUENCE_ON]
+[TESTMODE 2 SEQUENCE_ON]
 a2 #>
 
 // a sequence, that is sent before X or before going into different
 // test mode if module is in this test mode
-[TESTMODE 5 SEQUENCE_OFF]
+[TESTMODE 2 SEQUENCE_OFF]
 a3 #>
 
 // hint for this test mode
-[TESTMODE 5 HINT]
+[TESTMODE 2 HINT]
 Modulated TX signal, PN9 sequence
 []
 
 // ---------- 6 6 6 
-[TESTMODE 6 NAME]
+[TESTMODE 3 NAME]
 Test Mode 3 (RX)
 
-[TESTMODE 6 SEQUENCE_ON]
+[TESTMODE 3 SEQUENCE_ON]
 a3 #>
-[TESTMODE 6 SEQUENCE_OFF]
+[TESTMODE 3 SEQUENCE_OFF]
 
-[TESTMODE 6 HINT]
+[TESTMODE 3 HINT]
 TX off, RX mode.
 []
 
 // ---------- 7 7 7 
 
-[TESTMODE 7 NAME]
+[TESTMODE 4 NAME]
 Test Mode 5, RSSI Sniffer
 
-[TESTMODE 7 SEQUENCE_ON]
+[TESTMODE 4 SEQUENCE_ON]
 a5 
-[TESTMODE 7 SEQUENCE_OFF]
+[TESTMODE 4 SEQUENCE_OFF]
 
-[TESTMODE 7 HINT]
+[TESTMODE 4 HINT]
 Display RSSI for any received, valid Tinymesh package
 []
 
 // ---------- 8 8 8 
 
-[TESTMODE 8 NAME]
+[TESTMODE 5 NAME]
 Test Mode 6 Simple Packet Sniffer
 
-[TESTMODE 8 SEQUENCE_ON]
+[TESTMODE 5 SEQUENCE_ON]
 a6
 
-[TESTMODE 8 SEQUENCE_OFF]
+[TESTMODE 5 SEQUENCE_OFF]
 
-[TESTMODE 8 HINT]
+[TESTMODE 5 HINT]
 Display basic info for valid received, Tinymesh packets
 
 []
