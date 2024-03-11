@@ -1,13 +1,22 @@
 import { useState } from "react";
 import { Button, TextInput } from "flowbite-react";
 
-const Buttoncomp = (props: any) => {
-  const { name, button_function } = props;
+type ButtonCompProps = {
+  name: string;
+  placeholder: string;
+  buttonFunction: () => Promise<any>;
+};
 
-  const [input_value, setInput_value] = useState();
+const ButtonComp: React.FC<ButtonCompProps> = ({
+  name,
+  buttonFunction,
+  placeholder,
+}) => {
+  const [inputValue, setInputValue] = useState<any>();
 
-  const handlebutton = () => {
-    return setInput_value(button_function);
+  const handlebutton = async () => {
+    let result = await buttonFunction();
+    setInputValue(result);
   };
 
   return (
@@ -15,8 +24,8 @@ const Buttoncomp = (props: any) => {
       <div className="mt-2 mb-2 md:w-1/3">
         <TextInput
           className=""
-          placeholder={`${name}`}
-          value={input_value}
+          placeholder={`${placeholder}`}
+          value={inputValue}
         ></TextInput>
       </div>
       <div className="md:w-1/2 mt-2">
@@ -29,4 +38,4 @@ const Buttoncomp = (props: any) => {
   );
 };
 
-export default Buttoncomp;
+export default ButtonComp;

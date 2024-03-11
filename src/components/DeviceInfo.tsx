@@ -1,18 +1,19 @@
-import Buttoncomp from "./ButtonComp";
+import { invoke } from "@tauri-apps/api";
+import ButtonComp from "./ButtonComp";
 import RSSIChart from "./RSSIChart";
 
 const Device_info = () => {
-  function button_function() {
-    return 85;
-  }
+  const getRSSI = async () => {
+    return await invoke("get_device_rssi");
+  };
 
-  function button_function_beta() {
-    return "734u85";
-  }
+  const getTemperature = async () => {
+    return await invoke("get_device_temperature");
+  };
 
-  function button_function_shiva() {
-    return "SHIVAY";
-  }
+  const getVoltage = async () => {
+    return await invoke("get_device_voltage");
+  };
 
   return (
     <>
@@ -24,38 +25,31 @@ const Device_info = () => {
           <RSSIChart />
         </div>
         <div className="md:w-1/3 overflow-y-scroll max-h-full">
-          <Buttoncomp
-            name="get 35"
-            button_function={button_function()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get 35"
-            button_function={button_function()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get 35"
-            button_function={button_function()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get 76"
-            button_function={button_function_beta()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get shivay"
-            button_function={button_function_shiva()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get shivay"
-            button_function={button_function_shiva()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get shivay"
-            button_function={button_function_shiva()}
-          ></Buttoncomp>
-          <Buttoncomp
-            name="get shivay"
-            button_function={button_function_shiva()}
-          ></Buttoncomp>
+          <ButtonComp
+            name="Get RSSI"
+            buttonFunction={getRSSI}
+            placeholder="RSSI"
+          />
+          <ButtonComp
+            name="Get Analog (A)"
+            buttonFunction={getRSSI}
+            placeholder="Analog Value"
+          />
+          <ButtonComp
+            name="Get Digital (D)"
+            buttonFunction={getRSSI}
+            placeholder="Digital Value"
+          />
+          <ButtonComp
+            name="Get Temperature (U)"
+            buttonFunction={getTemperature}
+            placeholder="Device Temperature"
+          />
+          <ButtonComp
+            name="Get Voltage (V)"
+            buttonFunction={getVoltage}
+            placeholder="Power Supply Voltage"
+          />
         </div>
       </div>
     </>
