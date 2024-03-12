@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ask } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
+import { Tooltip } from "flowbite-react";
 
 import {
   MkDeviceCell,
@@ -73,13 +74,22 @@ const ConfigPanel: React.FC = () => {
     columnHelper.accessor((row) => row.address, {
       id: "Address",
       cell: (info) => <i>{info.getValue()}</i>,
-      header: () => <span>Address</span>,
+      header: () => <div>Address</div>,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor((row) => row.name, {
       id: "Name",
-      cell: (info) => info.getValue(),
-      header: () => <span>Name</span>,
+      cell: (info) => (
+        <Tooltip
+          content={toolTipData(data[info.row.id].description)}
+          placement="right"
+          style="light"
+        >
+          {info.getValue()}
+        </Tooltip>
+      ),
+      header: () => <div>Name</div>,
+
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor((row) => row.current_value, {
@@ -102,6 +112,21 @@ const ConfigPanel: React.FC = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  function toolTipData(discription: string) {
+    const array = discription.split("\n");
+
+    return (
+      <div className="text-left">
+        {array.map((element) => (
+          <>
+            {element}
+            <br />
+          </>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="h-full overflow-y-scroll border rounded-lg">
