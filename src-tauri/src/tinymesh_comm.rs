@@ -46,7 +46,7 @@ pub fn connect_to_device(
     println!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
-        .timeout(Duration::from_millis(500))
+        .timeout(Duration::from_millis(50))
         .open();
     if let (Ok(mut device), Ok(open_port)) = (device_entity.0.lock(), port) {
         *device = Some(open_port);
@@ -132,7 +132,13 @@ pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
-            return get_rssi_from_device(device, &app_handle);
+            if let Ok(result) = get_rssi_from_device(device, &app_handle) {
+                return format!(
+                    "RSSI: -{} dBm, DEC: {}",
+                    ((result as f64) * 0.5) as f64,
+                    result
+                );
+            }
         }
     }
     return "RSSI: Bad".to_string();
@@ -204,6 +210,64 @@ pub fn execute_mode_sequence(
     return false;
 }
 
+#[derive(Clone, serde::Serialize)]
+pub struct RSSIEvent {
+    pub rssi: f64,
+    pub channel: u8,
+}
+
+#[tauri::command]
+pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
+    if let Ok(mut device) = device_entity.0.lock() {
+        if let Some(device) = device.as_mut() {
+            if let Ok(cloned_device) = device.try_clone() {
+                let mut cloned_device = cloned_device;
+                let _stream = tauri::async_runtime::spawn(async move {
+                    loop {
+                        for i in 1..=10 {
+                            clear_output_buffer_of_device(&mut cloned_device);
+                            let channel_switch_success =
+                                switch_to_channel(i, &mut cloned_device, &app_handle);
+                            if channel_switch_success {
+                                if let Ok(rssi) =
+                                    get_rssi_from_device(&mut cloned_device, &app_handle)
+                                {
+                                    app_handle
+                                        .emit_all(
+                                            "rssi_event",
+                                            RSSIEvent {
+                                                rssi: -(rssi as f64) / 2.0,
+                                                channel: i,
+                                            },
+                                        )
+                                        .unwrap();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+}
+
+fn switch_to_channel(
+    channel: u8,
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> bool {
+    let mut read_bytes_result = vec![];
+    let send_bytes_result = send_bytes_to_device(device, &[b'C'], app_handle);
+    read_bytes_from_device_to_buffer(device, &mut read_bytes_result, app_handle);
+    if send_bytes_result && read_bytes_result.len() > 0 && read_bytes_result[0] == 0x3e {
+        let mut read_bytes_result2 = vec![];
+        let send_bytes_result2 = send_bytes_to_device(device, &[channel], app_handle);
+        read_bytes_from_device_to_buffer(device, &mut read_bytes_result2, app_handle);
+        return send_bytes_result2 && read_bytes_result2.len() > 0 && read_bytes_result2[0] == 0x3e;
+    }
+    return false;
+}
+
 fn extract_send_recv_seq(sequence_str: &str) -> Option<(Vec<u8>, Vec<u8>)> {
     if let [send_seq, recv_seq] = sequence_str
         .trim()
@@ -218,20 +282,19 @@ fn extract_send_recv_seq(sequence_str: &str) -> Option<(Vec<u8>, Vec<u8>)> {
     None
 }
 
-fn get_rssi_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {
+fn get_rssi_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<i32, String> {
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'S'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
         if let [rssi_dec, 0x3e] = &buffer[..] {
-            return format!(
-                "RSSI: -{} dBm, DEC: {}",
-                ((*rssi_dec as f64) / 2.0) as f64,
-                *rssi_dec as i32
-            );
+            return Ok(*rssi_dec as i32);
         }
     }
-    return "RSSI: Bad".to_string();
+    return Err("RSSI: Bad".to_string());
 }
 
 fn get_analog_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {

@@ -2,43 +2,15 @@ import { Button } from "flowbite-react";
 import Chart from "react-google-charts";
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api";
+import { listen } from "@tauri-apps/api/event";
 
-import { getRSSI } from "../utils/device_info_util";
-
-const switchToChannel = async (channel: number) => {
-  // convert channel to hex
-  let channelHex = channel.toString(16).padStart(2, "0");
-  let inputStr = `'0x${channelHex}'`;
-
-  let sendBytesResult: boolean = await invoke("send_bytes", {
-    input: "C",
-  });
-  let readBytesResult: number[] = await invoke("read_bytes", {});
-  if (
-    sendBytesResult &&
-    readBytesResult.length > 0 &&
-    readBytesResult[0] === 62
-  ) {
-    let sendBytesResult2: boolean = await invoke("send_bytes", {
-      input: inputStr,
-    });
-    let readBytesResult2: number[] = await invoke("read_bytes", {});
-    if (
-      sendBytesResult2 &&
-      readBytesResult2.length > 0 &&
-      readBytesResult2[0] === 62
-    ) {
-      return true;
-    }
-  }
-  return false;
+type RSSIEvent = {
+  rssi: number;
+  channel: number;
 };
 
 const RSSIChart: React.FC = () => {
-  const [intervalRunning, setIntervalRunning] = useState(false);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
-  const [sendInterval, setSendInterval] = useState(1000);
-  const [currentChannel, setCurrentChannel] = useState(0);
+  const [rssiStreamRunning, setRSSIStreamRunning] = useState(false);
 
   const [chartOptions, setChartOptions] = useState<any>({
     chart: {
@@ -49,35 +21,36 @@ const RSSIChart: React.FC = () => {
 
   const [chartData, setChartData] = useState([
     ["Channel", "RSSI"],
-    [1, 1],
-    [2, 2],
-    [3, 3],
-    [4, 4],
-    [5, 5],
-    [6, 6],
-    [7, 7],
-    [8, 8],
-    [9, 9],
-    [10, 10],
+    [1, -100],
+    [2, -100],
+    [3, -100],
+    [4, -100],
+    [5, -100],
+    [6, -100],
+    [7, -100],
+    [8, -100],
+    [9, -100],
+    [10, -100],
   ]);
 
-  const handleDecrementInterval = () => {
-    if (sendInterval > 1) {
-      setSendInterval(sendInterval - 1);
-    }
-  };
-
-  const handleIncrementInterval = () => {
-    setSendInterval(sendInterval + 1);
-  };
+  useEffect(() => {
+    const unlisten = listen<RSSIEvent>("rssi_event", (event) => {
+      setChartData((prevData) => {
+        return prevData.map((row) => {
+          if (row[0] === event.payload.channel) {
+            return [row[0], event.payload.rssi];
+          } else {
+            return row;
+          }
+        });
+      });
+    });
+    return () => {
+      unlisten.then((f) => f());
+    };
+  }, []);
 
   const handleSubmit = async () => {
-    setCurrentChannel((currentChannel + 1) % 10 == 0 ? 1 : currentChannel + 1);
-    console.info(`Switching to channel ${currentChannel}`);
-    if (await switchToChannel(currentChannel)) {
-      // console.info(`RSSI for channel ${currentChannel}: ${await getRSSI()}`);
-    }
-
     setChartData([
       ["Channel", "RSSI"],
       [1, 2],
@@ -94,26 +67,15 @@ const RSSIChart: React.FC = () => {
   };
 
   const handleRepeatToggle = () => {
-    if (intervalRunning) {
-      clearInterval(intervalId!);
-      setIntervalRunning(false);
-      setSendInterval(sendInterval); // Reset the interval to default value
+    if (rssiStreamRunning) {
+      setRSSIStreamRunning(false);
     } else {
-      const id = setInterval(async () => {
-        await handleSubmit();
-      }, sendInterval);
-      setIntervalId(id);
-      setIntervalRunning(true);
+      invoke("start_rssi_stream", {}).then(() => {
+        // do nothing
+      });
+      setRSSIStreamRunning(true);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [intervalId]);
 
   return (
     <>
@@ -125,7 +87,7 @@ const RSSIChart: React.FC = () => {
         options={chartOptions}
       />
       <Button onClick={handleRepeatToggle}>
-        {intervalRunning ? "Cancel" : "Start Analysis"}
+        {rssiStreamRunning ? "Cancel" : "Start Analysis"}
       </Button>
     </>
   );

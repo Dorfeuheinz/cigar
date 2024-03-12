@@ -32,7 +32,8 @@ fn main() {
             get_device_digital,
             get_device_temperature,
             get_device_voltage,
-            execute_mode_sequence
+            execute_mode_sequence,
+            start_rssi_stream
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
