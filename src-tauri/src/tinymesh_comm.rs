@@ -131,6 +131,7 @@ pub fn get_device_config(
 pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
             return get_rssi_from_device(device, &app_handle);
         }
     }
@@ -141,6 +142,7 @@ pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle
 pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
             return get_analog_from_device(device, &app_handle);
         }
     }
@@ -151,6 +153,7 @@ pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHand
 pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
             return get_digital_from_device(device, &app_handle);
         }
     }
@@ -161,6 +164,7 @@ pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHan
 pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
             return get_temperature_from_device(device, &app_handle);
         }
     }
@@ -171,10 +175,47 @@ pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: Ap
 pub fn get_device_voltage(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.0.lock() {
         if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
             return get_voltage_from_device(device, &app_handle);
         }
     }
     return "Voltage: [UNABLE TO READ]".to_string();
+}
+
+#[tauri::command]
+pub fn execute_mode_sequence(
+    sequence_str: String,
+    device_entity: State<DeviceEntity>,
+    app_handle: AppHandle,
+) -> bool {
+    let mut recv_buffer = vec![];
+    if let Ok(mut device) = device_entity.0.lock() {
+        if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
+            if let Some((send_seq, recv_seq)) = extract_send_recv_seq(&sequence_str) {
+                let send_result = send_bytes_to_device(device, &send_seq, &app_handle);
+                read_bytes_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
+                if send_result && recv_buffer == recv_seq {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+fn extract_send_recv_seq(sequence_str: &str) -> Option<(Vec<u8>, Vec<u8>)> {
+    if let [send_seq, recv_seq] = sequence_str
+        .trim()
+        .split_whitespace()
+        .collect::<Vec<&str>>()
+        .as_slice()
+    {
+        let send = send_seq.trim_start_matches('a').as_bytes().to_vec();
+        let recv = recv_seq.trim_start_matches('#').as_bytes().to_vec();
+        return Some((send, recv));
+    }
+    None
 }
 
 fn get_rssi_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {

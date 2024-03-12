@@ -31,7 +31,8 @@ fn main() {
             get_device_analog,
             get_device_digital,
             get_device_temperature,
-            get_device_voltage
+            get_device_voltage,
+            execute_mode_sequence
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
