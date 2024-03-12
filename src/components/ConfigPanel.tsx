@@ -50,7 +50,13 @@ const ConfigPanel: React.FC = () => {
         type: "warning",
       }
     ).then((result) => {
-      console.info(`User said ${result}`);
+      if (result) {
+        invoke("send_bytes", { input: "@TM" }).then(() => {
+          invoke("read_bytes", {}).then(() => {
+            readConfig();
+          });
+        });
+      }
     });
   };
 
