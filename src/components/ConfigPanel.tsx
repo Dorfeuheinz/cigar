@@ -1,4 +1,5 @@
 import {
+  RowData,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -17,6 +18,12 @@ import {
   MkDeviceTestMode,
   MkDeviceQuickMode,
 } from "../DataTypes";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+  }
+}
 
 async function getDeviceConfig() {
   let result: MkDeviceConfig = await invoke("get_device_config");
@@ -67,13 +74,14 @@ const ConfigPanel: React.FC = () => {
     value: string
   ) => {
     console.info(`Setting cell ${rowId} ${columnId} to ${value}`);
-    setData((old) =>
-      old.map((row) =>
-        row.address == parseInt(rowId)
-          ? { ...row, current_value: parseInt(value) }
-          : row
-      )
-    );
+    setData((old) => {
+      return old.map((row) => {
+        if (row.address === parseInt(rowId)) {
+          row.current_value = parseInt(value);
+        }
+        return row;
+      });
+    });
   };
 
   const columns = [
@@ -87,7 +95,7 @@ const ConfigPanel: React.FC = () => {
       id: "Name",
       cell: (info) => (
         <Tooltip
-          content={toolTipData(data[info.row.id].description)}
+          content={toolTipData(data[parseInt(info.row.id)].description)}
           placement="right"
           style="light"
         >
@@ -103,7 +111,7 @@ const ConfigPanel: React.FC = () => {
       cell: (info) => (
         <input
           value={info.getValue()}
-          onChange={(e) =>
+          onBlur={(e) =>
             handleCellValueChange(info.row.id, info.column.id, e.target.value)
           }
         />

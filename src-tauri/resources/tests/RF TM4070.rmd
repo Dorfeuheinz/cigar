@@ -2827,3 +2827,305 @@ THIS ADDRESS HAS BEEN LOCKED FOR EDITING
 [M 0xFF DEF]
 255 // hex 0xFF Un used
 []
+
+[C 0x00 NAME]
+Temp Offset
+
+[C 0x00 MIN_MAX]
+0 255
+
+[C 0x00 DEF]
+128
+
+[C 0x00 HINT]
+Offset added to TEMP.
+
+Temperature offset in 0.25
+
+degree (C) increments.
+Increase for positive
+adjustment, decrease for
+negative adjustment of TEMP
+value
+[]
+
+[C 0x01 NAME]
+RF Power5
+
+[C 0x01 MIN_MAX]
+0 255
+
+[C 0x00 HINT]
+Factory set, do not change
+[]
+
+[C 0x02 NAME]
+FREQOFF
+
+[C 0x02 MIN_MAX]
+0 255
+
+[C 0x02 HINT]
+Factory set, do not change
+[]
+
+[C 0x03 NAME]
+Configuration Mode Time Out
+
+[C 0x03 MIN_MAX]
+0 255
+
+[C 0x03 DEF]
+2
+
+[C 0x03 HINT]
+Automatic Time Out setting for Configuration Mode.
+Minutes timer. 
+Activated by Configuration Entry Control setting
+[]
+
+[C 0x04 NAME]
+Configuration Mode Entry Key
+
+[C 0x04 MIN_MAX]
+0 255
+
+[C 0x04 DEF]
+hex 0x4B 'K'
+
+[C 0x04 HINT]
+Key Entry for Two Step Configuration Mode Entry.
+Activated by Configuration Entry Control setting.
+[]
+
+[C 0x05 NAME]
+Flash Erase Delay
+
+[C 0x05 MIN_MAX]
+0 255
+
+[C 0x05 DEF]
+255
+
+[C 0x05 HINT]
+Delay time from ‘M’
+
+command initiated in
+Configuration Mode,
+until the Flash Erase
+procedure is initiated.
+
+Delayed Flash Erase will limit
+possibility of failed flash write
+in systems with external MCU
+that performs flash
+configuration at Power On
+Reset, under conditions where
+Reset Input may bounce from
+
+unstable or noisy conditions.
+[]
+
+[C 0x17 NAME]
+Network ID
+
+[C 0x17 MIN_MAX]
+0 255
+
+[C 0x17 DEF]
+0
+
+[C 0x17 HINT]
+NID 0
+
+Unique identifier for host
+network and Tinymesh CloudTM
+NID=
+NID3:NID2:NID1:NID0
+[]
+
+[C 0x18 NAME]
+Network ID
+
+[C 0x18 MIN_MAX]
+0 255
+
+[C 0x18 DEF]
+0
+
+[C 0x18 HINT]
+NID 1
+
+Unique identifier for host
+network and Tinymesh CloudTM
+NID=
+NID3:NID2:NID1:NID0
+[]
+
+[C 0x19 NAME]
+Network ID
+
+[C 0x19 MIN_MAX]
+0 255
+
+[C 0x19 DEF]
+0
+
+[C 0x19 HINT]
+NID 2
+
+Unique identifier for host
+network and Tinymesh CloudTM
+NID=
+NID3:NID2:NID1:NID0
+[]
+
+[C 0x1A NAME]
+Network ID
+
+[C 0x1A MIN_MAX]
+0 255
+
+[C 0x1A DEF]
+0
+
+[C 0x1A HINT]
+NID 3
+
+Unique identifier for host
+network and Tinymesh CloudTM
+NID=
+NID3:NID2:NID1:NID0
+[]
+
+[C 0x1B NAME]
+Fixed Destination ID 
+
+[C 0x1B MIN_MAX]
+0 255
+
+[C 0x1B DEF]
+0
+
+[C 0x1B HINT]
+FDID 0
+
+Permanent Router or End
+Device connection address.
+FDID=
+FDID3:FDID2:FDID1:
+FDID0
+Default = 0:0:0:0 Function
+disabledD0
+[]
+
+[C 0x1C NAME]
+Fixed Destination ID 
+
+[C 0x1C MIN_MAX]
+0 255
+
+[C 0x1C DEF]
+0
+
+[C 0x1C HINT]
+FDID 1
+
+Permanent Router or End
+Device connection address.
+FDID=
+FDID3:FDID2:FDID1:
+FDID0
+Default = 0:0:0:0 Function
+disabledD0
+[]
+
+[C 0x1D NAME]
+Fixed Destination ID 
+
+[C 0x1D MIN_MAX]
+0 255
+
+[C 0x1D DEF]
+0
+
+[C 0x1D HINT]
+FDID 2
+
+Permanent Router or End
+Device connection address.
+FDID=
+FDID3:FDID2:FDID1:
+FDID0
+Default = 0:0:0:0 Function
+disabledD0
+[]
+
+[C 0x1E NAME]
+Fixed Destination ID 
+
+[C 0x1E MIN_MAX]
+0 255
+
+[C 0x1E DEF]
+0
+
+[C 0x1E HINT]
+FDID 3
+
+Permanent Router or End
+Device connection address.
+FDID=
+FDID3:FDID2:FDID1:
+FDID0
+Default = 0:0:0:0 Function
+disabledD0
+[]
+
+[C 0x1F NAME]
+S4 TimeOut
+
+[C 0x1F MIN_MAX]
+0 255
+
+[C 0x1F DEF]
+0
+
+[C 0x1F HINT]
+Additional delay in
+RF State 4
+
+Do not Change
+[]
+
+[C 0x20 NAME]
+Dispatch Delay
+
+[C 0x20 MIN_MAX]
+0 255
+
+[C 0x20 DEF]
+0
+
+[C 0x20 HINT]
+Additional delay for
+Dispatch Timer
+
+Do not Change
+[]
+
+[C 0x21 NAME]
+S4 Command Wait
+
+[C 0x21 MIN_MAX]
+0 255
+
+[C 0x21 DEF]
+0
+
+[C 0x21 HINT]
+Additional command
+response wait time in
+RF State 4
+Do not Change
+[]
