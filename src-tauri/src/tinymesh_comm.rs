@@ -2,12 +2,16 @@ use crate::device_config_parser::{parse_device_config, MkDeviceConfig};
 use crate::input_processing;
 use serialport;
 use serialport::SerialPort;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::{AppHandle, Manager, State};
 
 // create a DeviceEntity struct to hold SerialPort connection that can be shared across threads
-pub struct DeviceEntity(pub Mutex<Option<Box<dyn SerialPort>>>);
+pub struct DeviceEntity {
+    pub port: Arc<Mutex<Option<Box<dyn SerialPort>>>>,
+    pub rssi_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
+    pub is_rssi_task_running: Arc<Mutex<bool>>,
+}
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -28,7 +32,7 @@ pub fn get_devices() -> Vec<String> {
 #[tauri::command]
 pub fn get_connected_device(device_entity: State<DeviceEntity>) -> Option<String> {
     println!("Getting connected device");
-    if let Ok(device) = device_entity.0.lock() {
+    if let Ok(device) = device_entity.port.lock() {
         if let Some(device) = device.as_ref() {
             println!("Connected device: {}", device.name().unwrap_or_default());
             return device.name();
@@ -48,7 +52,7 @@ pub fn connect_to_device(
         .data_bits(serialport::DataBits::Eight)
         .timeout(Duration::from_millis(50))
         .open();
-    if let (Ok(mut device), Ok(open_port)) = (device_entity.0.lock(), port) {
+    if let (Ok(mut device), Ok(open_port)) = (device_entity.port.lock(), port) {
         *device = Some(open_port);
         return true;
     }
@@ -57,7 +61,7 @@ pub fn connect_to_device(
 
 #[tauri::command]
 pub fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         println!("Disconnecting from device");
         *device = None;
         return true;
@@ -76,7 +80,7 @@ pub fn send_bytes(
         vec![]
     });
     println!("Sending bytes: {:?}", bytes_to_send);
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             let send_result = send_bytes_to_device(device, &bytes_to_send, &app_handle);
             return send_result;
@@ -87,7 +91,7 @@ pub fn send_bytes(
 
 #[tauri::command]
 pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             return clear_output_buffer_of_device(device);
         }
@@ -98,7 +102,7 @@ pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
 #[tauri::command]
 pub fn read_bytes(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> Vec<u8> {
     let mut result = vec![];
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             read_bytes_from_device_to_buffer(device, &mut result, &app_handle);
             return result;
@@ -114,7 +118,7 @@ pub fn get_device_config(
 ) -> Result<MkDeviceConfig, String> {
     let mut config_bytes_buffer = vec![];
 
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             if clear_output_buffer_of_device(device)
                 && send_bytes_to_device(device, &[0x30], &app_handle)
@@ -129,7 +133,7 @@ pub fn get_device_config(
 
 #[tauri::command]
 pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             if let Ok(result) = get_rssi_from_device(device, &app_handle) {
@@ -146,7 +150,7 @@ pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle
 
 #[tauri::command]
 pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             return get_analog_from_device(device, &app_handle);
@@ -157,7 +161,7 @@ pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHand
 
 #[tauri::command]
 pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             return get_digital_from_device(device, &app_handle);
@@ -168,7 +172,7 @@ pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHan
 
 #[tauri::command]
 pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             return get_temperature_from_device(device, &app_handle);
@@ -179,7 +183,7 @@ pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: Ap
 
 #[tauri::command]
 pub fn get_device_voltage(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             return get_voltage_from_device(device, &app_handle);
@@ -195,7 +199,7 @@ pub fn execute_mode_sequence(
     app_handle: AppHandle,
 ) -> bool {
     let mut recv_buffer = vec![];
-    if let Ok(mut device) = device_entity.0.lock() {
+    if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             if let Some((send_seq, recv_seq)) = extract_send_recv_seq(&sequence_str) {
@@ -218,36 +222,66 @@ pub struct RSSIEvent {
 
 #[tauri::command]
 pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
-    if let Ok(mut device) = device_entity.0.lock() {
-        if let Some(device) = device.as_mut() {
-            if let Ok(cloned_device) = device.try_clone() {
-                let mut cloned_device = cloned_device;
-                let _stream = tauri::async_runtime::spawn(async move {
-                    loop {
-                        for i in 1..=10 {
-                            clear_output_buffer_of_device(&mut cloned_device);
-                            let channel_switch_success =
-                                switch_to_channel(i, &mut cloned_device, &app_handle);
-                            if channel_switch_success {
-                                if let Ok(rssi) =
-                                    get_rssi_from_device(&mut cloned_device, &app_handle)
-                                {
-                                    app_handle
-                                        .emit_all(
-                                            "rssi_event",
-                                            RSSIEvent {
-                                                rssi: -(rssi as f64) / 2.0,
-                                                channel: i,
-                                            },
-                                        )
-                                        .unwrap();
-                                }
+    println!("Starting RSSI stream");
+    let device_port = device_entity.port.clone();
+    if let Ok(mut is_rssi_task_running) = device_entity.is_rssi_task_running.lock() {
+        *is_rssi_task_running = true;
+    }
+    let is_rssi_task_running = device_entity.is_rssi_task_running.clone();
+    let stream = tauri::async_runtime::spawn(async move {
+        if let Ok(mut device) = device_port.lock() {
+            if let Some(mut device) = device.as_mut() {
+                loop {
+                    if let Ok(is_rssi_task_running) = is_rssi_task_running.lock() {
+                        if !*is_rssi_task_running {
+                            println!("Stopping RSSI stream 1");
+                            return;
+                        }
+                    }
+                    for i in 1..=10 {
+                        if let Ok(is_rssi_task_running) = is_rssi_task_running.lock() {
+                            if !*is_rssi_task_running {
+                                println!("Stopping RSSI stream 2");
+                                return;
+                            }
+                        }
+                        clear_output_buffer_of_device(&mut device);
+                        let channel_switch_success = switch_to_channel(i, &mut device, &app_handle);
+                        if channel_switch_success {
+                            if let Ok(rssi) = get_rssi_from_device(&mut device, &app_handle) {
+                                app_handle
+                                    .emit_all(
+                                        "rssi_event",
+                                        RSSIEvent {
+                                            rssi: -(rssi as f64) / 2.0,
+                                            channel: i,
+                                        },
+                                    )
+                                    .unwrap();
                             }
                         }
                     }
-                });
+                }
             }
         }
+    });
+    if let Ok(mut rssi_task) = device_entity.rssi_task.lock() {
+        *rssi_task = Some(stream);
+    }
+}
+
+#[tauri::command]
+pub fn stop_rssi_stream(device_entity: State<DeviceEntity>) {
+    println!("Stoppig RSSI stream");
+    if let (Ok(mut rssi_task), Ok(mut is_rssi_task_running)) = (
+        device_entity.rssi_task.lock(),
+        device_entity.is_rssi_task_running.lock(),
+    ) {
+        if let Some(rssi_task) = rssi_task.as_mut() {
+            *is_rssi_task_running = false;
+            rssi_task.abort();
+        }
+        *rssi_task = None;
     }
 }
 

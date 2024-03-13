@@ -68,10 +68,13 @@ const RSSIChart: React.FC = () => {
 
   const handleRepeatToggle = () => {
     if (rssiStreamRunning) {
+      invoke("stop_rssi_stream", {}).then(() => {
+        // do nothing for now
+      });
       setRSSIStreamRunning(false);
     } else {
       invoke("start_rssi_stream", {}).then(() => {
-        // do nothing
+        // do nothing for now
       });
       setRSSIStreamRunning(true);
     }

@@ -1,6 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::sync::Arc;
+use std::sync::Mutex;
+
 use tinymesh_cc_tool::tinymesh_comm::*;
 
 fn main() {
@@ -17,7 +20,11 @@ fn main() {
                 .log_name("custom-name")
                 .build(),
         )
-        .manage(DeviceEntity(Default::default()))
+        .manage(DeviceEntity {
+            port: Default::default(),
+            rssi_task: Default::default(),
+            is_rssi_task_running: Arc::new(Mutex::new(false)),
+        })
         .invoke_handler(tauri::generate_handler![
             get_devices,
             connect_to_device,
@@ -33,7 +40,8 @@ fn main() {
             get_device_temperature,
             get_device_voltage,
             execute_mode_sequence,
-            start_rssi_stream
+            start_rssi_stream,
+            stop_rssi_stream
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
