@@ -13,24 +13,32 @@ const RSSIChart: React.FC = () => {
   const [rssiStreamRunning, setRSSIStreamRunning] = useState(false);
 
   const [chartOptions, setChartOptions] = useState<any>({
-    chart: {
-      title: "RSSI Spectrum Analyzer",
-      subtitle: "RSSI trends for different channels",
+    title: "RSSI Spectrum Analyzer",
+    subtitle: "RSSI trends for different channels",
+    isStacked: true,
+    chartArea: { width: "80%" },
+    legend: { position: "none" },
+    colors: ["transparent", "blue"],
+    hAxis: {
+      title: "Channel",
+    },
+    vAxis: {
+      title: "RSSI",
     },
   });
 
   const [chartData, setChartData] = useState([
-    ["Channel", "RSSI"],
-    [1, -100],
-    [2, -100],
-    [3, -100],
-    [4, -100],
-    [5, -100],
-    [6, -100],
-    [7, -100],
-    [8, -100],
-    [9, -100],
-    [10, -100],
+    ["Channel", "RSSI", ""],
+    [1, -100, -100 - -100],
+    [2, -100, -100 - -100],
+    [3, -100, -100 - -100],
+    [4, -100, -100 - -100],
+    [5, -100, -100 - -100],
+    [6, -100, -100 - -100],
+    [7, -100, -100 - -100],
+    [8, -80, -100 - -80],
+    [9, -100, -100 - -100],
+    [10, -100, -100 - -100],
   ]);
 
   useEffect(() => {
@@ -38,10 +46,8 @@ const RSSIChart: React.FC = () => {
       setChartData((prevData) => {
         return prevData.map((row) => {
           if (row[0] === event.payload.channel) {
-            return [
-              row[0],
-              100 + event.payload.rssi > 0 ? 100 + event.payload.rssi : 0,
-            ];
+            let rssi = event.payload.rssi > -100 ? event.payload.rssi : -100;
+            return [row[0], rssi, -100 - rssi];
           } else {
             return row;
           }
@@ -86,7 +92,7 @@ const RSSIChart: React.FC = () => {
   return (
     <>
       <Chart
-        chartType="Bar"
+        chartType="ColumnChart"
         data={chartData}
         width="100%"
         height="80%"
