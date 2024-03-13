@@ -145,7 +145,7 @@ pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle
             }
         }
     }
-    return "RSSI: Bad".to_string();
+    return "RSSI: [UNABLE TO READ]".to_string();
 }
 
 #[tauri::command]
