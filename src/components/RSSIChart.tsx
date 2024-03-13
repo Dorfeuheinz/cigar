@@ -38,7 +38,10 @@ const RSSIChart: React.FC = () => {
       setChartData((prevData) => {
         return prevData.map((row) => {
           if (row[0] === event.payload.channel) {
-            return [row[0], event.payload.rssi];
+            return [
+              row[0],
+              100 + event.payload.rssi > 0 ? 100 + event.payload.rssi : 0,
+            ];
           } else {
             return row;
           }
