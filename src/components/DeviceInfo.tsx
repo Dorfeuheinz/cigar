@@ -1,7 +1,13 @@
 import ButtonComp from "./ButtonComp";
 import RSSIChart from "./RSSIChart";
 
-import { getRSSI, getTemperature, getVoltage } from "../utils/device_info_util";
+import {
+  getRSSI,
+  getTemperature,
+  getVoltage,
+  getAnalog,
+  getDigital,
+} from "../utils/device_info_util";
 
 const Device_info = () => {
   return (
@@ -21,12 +27,12 @@ const Device_info = () => {
           />
           <ButtonComp
             name="Get Analog (A)"
-            buttonFunction={getRSSI}
+            buttonFunction={getAnalog}
             placeholder="Analog Value"
           />
           <ButtonComp
             name="Get Digital (D)"
-            buttonFunction={getRSSI}
+            buttonFunction={getDigital}
             placeholder="Digital Value"
           />
           <ButtonComp

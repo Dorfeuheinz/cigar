@@ -11,3 +11,11 @@ export async function getTemperature() {
 export async function getVoltage() {
   return await invoke("get_device_voltage");
 }
+
+export async function getAnalog() {
+  return await invoke("get_device_analog");
+}
+
+export async function getDigital() {
+  return await invoke("get_device_digital");
+}

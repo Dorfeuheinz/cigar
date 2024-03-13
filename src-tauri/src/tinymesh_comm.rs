@@ -50,7 +50,7 @@ pub fn connect_to_device(
     println!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
-        .timeout(Duration::from_millis(50))
+        .timeout(Duration::from_millis(30))
         .open();
     if let (Ok(mut device), Ok(open_port)) = (device_entity.port.lock(), port) {
         *device = Some(open_port);
@@ -153,10 +153,17 @@ pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHand
     if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
-            return get_analog_from_device(device, &app_handle);
+            if let Ok(analog) = get_analog_from_device(device, &app_handle) {
+                let result_str = analog
+                    .iter()
+                    .map(|byte| format!("{:02X}", byte))
+                    .collect::<Vec<String>>()
+                    .join(" ");
+                return format!("Analog: [{}]", result_str);
+            }
         }
     }
-    return "RSSI: Bad".to_string();
+    return "Analog: [UNABLE TO READ]".to_string();
 }
 
 #[tauri::command]
@@ -164,10 +171,12 @@ pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHan
     if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
-            return get_digital_from_device(device, &app_handle);
+            if let Ok(digital) = get_digital_from_device(device, &app_handle) {
+                return format!("Digital: {:02X}", digital);
+            }
         }
     }
-    return "RSSI: Bad".to_string();
+    return "Digital: [UNABLE TO READ]".to_string();
 }
 
 #[tauri::command]
@@ -175,7 +184,9 @@ pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: Ap
     if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
-            return get_temperature_from_device(device, &app_handle);
+            if let Ok(temperature_dec) = get_temperature_from_device(device, &app_handle) {
+                return format!("Temperature: {} \u{00B0}C", (temperature_dec as i32) - 128);
+            }
         }
     }
     return "Temperature: [UNABLE TO READ]".to_string();
@@ -186,7 +197,9 @@ pub fn get_device_voltage(device_entity: State<DeviceEntity>, app_handle: AppHan
     if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
-            return get_voltage_from_device(device, &app_handle);
+            if let Ok(voltage) = get_voltage_from_device(device, &app_handle) {
+                return format!("Voltage: {:.2} V", (voltage as f64) * 0.030);
+            }
         }
     }
     return "Voltage: [UNABLE TO READ]".to_string();
@@ -272,7 +285,7 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
 
 #[tauri::command]
 pub fn stop_rssi_stream(device_entity: State<DeviceEntity>) {
-    println!("Stoppig RSSI stream");
+    println!("Stopping RSSI stream");
     if let (Ok(mut rssi_task), Ok(mut is_rssi_task_running)) = (
         device_entity.rssi_task.lock(),
         device_entity.is_rssi_task_running.lock(),
@@ -319,80 +332,76 @@ fn extract_send_recv_seq(sequence_str: &str) -> Option<(Vec<u8>, Vec<u8>)> {
 fn get_rssi_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
-) -> Result<i32, String> {
+) -> Result<u8, String> {
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'S'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
         if let [rssi_dec, 0x3e] = &buffer[..] {
-            return Ok(*rssi_dec as i32);
+            return Ok(*rssi_dec);
         }
     }
     return Err("RSSI: Bad".to_string());
 }
 
-fn get_analog_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {
+fn get_analog_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<Vec<u8>, String> {
     let mut buffer = vec![];
-    let send_result = send_bytes_to_device(device, &[0x53], app_handle);
+    let send_result = send_bytes_to_device(device, &[b'A'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [rssi_dec, 0x3e] = &buffer[..] {
-            return format!(
-                "RSSI: -{} dBm, DEC: {}",
-                ((*rssi_dec as f64) / 2.0) as f64,
-                *rssi_dec as i32
-            );
+        if buffer.len() > 1 && buffer.ends_with(&[0x3e]) {
+            return Ok(buffer[..buffer.len() - 1].to_vec());
         }
     }
-    return "RSSI: Bad".to_string();
+    return Err("Analog: [UNABLE TO READ]".to_string());
 }
 
-fn get_digital_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {
+fn get_digital_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<u8, String> {
     let mut buffer = vec![];
-    let send_result = send_bytes_to_device(device, &[0x53], app_handle);
+    let send_result = send_bytes_to_device(device, &[b'D'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [rssi_dec, 0x3e] = &buffer[..] {
-            return format!(
-                "RSSI: -{} dBm, DEC: {}",
-                ((*rssi_dec as f64) / 2.0) as f64,
-                *rssi_dec as i32
-            );
+        if let [digital_dec, 0x3e] = &buffer[..] {
+            return Ok(*digital_dec);
         }
     }
-    return "RSSI: Bad".to_string();
+    return Err("Digital: [UNABLE TO READ]".to_string());
 }
 
-fn get_temperature_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {
+fn get_temperature_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<u8, String> {
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'U'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
         if let [temp_dec, 0x3e] = &buffer[..] {
-            return format!(
-                "Temperature: {} \u{00B0}C, DEC: {}",
-                ((*temp_dec as f64) - 128.0) as f64,
-                *temp_dec as i32
-            );
+            return Ok(*temp_dec);
         }
     }
-    return "Temperature: [UNABLE TO READ]".to_string();
+    return Err("Temperature: [UNABLE TO READ]".to_string());
 }
 
-fn get_voltage_from_device(device: &mut Box<dyn SerialPort>, app_handle: &AppHandle) -> String {
+fn get_voltage_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<u8, String> {
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'V'], app_handle);
     if send_result {
         read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [rssi_dec, 0x3e] = &buffer[..] {
-            return format!(
-                "Voltage: {} V, DEC: {}",
-                ((*rssi_dec as f64) * 0.030) as f64,
-                *rssi_dec as i32
-            );
+        if let [voltage_dec, 0x3e] = &buffer[..] {
+            return Ok(*voltage_dec);
         }
     }
-    return "Voltage: [UNABLE TO READ]".to_string();
+    return Err("Voltage: [UNABLE TO READ]".to_string());
 }
 
 fn clear_output_buffer_of_device(device: &mut Box<dyn SerialPort>) -> bool {
