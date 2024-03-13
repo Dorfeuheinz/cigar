@@ -2891,7 +2891,7 @@ Configuration Mode Entry Key
 0 255
 
 [C 0x04 DEF]
-hex 0x4B 'K'
+75 // hex 0x4B 'K'
 
 [C 0x04 HINT]
 Key Entry for Two Step Configuration Mode Entry.
