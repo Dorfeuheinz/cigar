@@ -93,7 +93,17 @@ const ConfigPanel: React.FC = () => {
       {
         header: "Name",
         footer: (props) => props.column.id,
-        accessorFn: (row) => row.name,
+        accessorFn: (row) => (
+          <>
+            <Tooltip
+              content={toolTipData(row.description)}
+              placement="right"
+              style="light"
+            >
+              {`${row.name}`}
+            </Tooltip>
+          </>
+        ),
         id: "name",
       },
       {
@@ -133,18 +143,6 @@ const ConfigPanel: React.FC = () => {
             />
           </>
         );
-      } else if (id === "name") {
-        return (
-          <>
-            <Tooltip
-              content={toolTipData(data[index].description)}
-              placement="right"
-              style="light"
-            >
-              {`${value}`}
-            </Tooltip>
-          </>
-        );
       } else {
         return <>{value}</>;
       }
@@ -164,16 +162,16 @@ const ConfigPanel: React.FC = () => {
     debugTable: true,
   });
 
-  function toolTipData(discription: string) {
-    const array = discription.split("\n");
+  function toolTipData(description: string) {
+    const array = description.split("\n");
 
     return (
       <div className="text-left">
-        {array.map((element) => (
-          <>
+        {array.map((element, index) => (
+          <div key={index}>
             {element}
             <br />
-          </>
+          </div>
         ))}
       </div>
     );
