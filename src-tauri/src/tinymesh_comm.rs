@@ -1,5 +1,6 @@
 use crate::device_config_parser::{parse_device_config, MkDeviceConfig};
 use crate::input_processing;
+use crate::mk_module_description::MkDeviceCell;
 use serialport;
 use serialport::SerialPort;
 use std::sync::{Arc, Mutex};
@@ -11,6 +12,7 @@ pub struct DeviceEntity {
     pub port: Arc<Mutex<Option<Box<dyn SerialPort>>>>,
     pub rssi_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub is_rssi_task_running: Arc<Mutex<bool>>,
+    pub device_config: Arc<Mutex<Option<MkDeviceConfig>>>,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -124,11 +126,77 @@ pub fn get_device_config(
                 && send_bytes_to_device(device, &[0x30], &app_handle)
             {
                 read_bytes_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
-                return parse_device_config(&config_bytes_buffer, None);
+                if let Ok(device_config) = parse_device_config(&config_bytes_buffer, None) {
+                    if let Ok(mut device_config_from_state) = device_entity.device_config.lock() {
+                        let cloned_config = device_config.clone();
+                        *device_config_from_state = Some(cloned_config);
+                    }
+                    return Ok(device_config);
+                }
             }
         }
     }
     return Err("Unable to get config".to_string());
+}
+
+#[tauri::command]
+pub fn set_device_config(
+    cells: Vec<MkDeviceCell>,
+    device_entity: State<DeviceEntity>,
+    app_handle: AppHandle,
+) -> bool {
+    if let Ok(mut device) = device_entity.port.lock() {
+        if let Some(device) = device.as_mut() {
+            if clear_output_buffer_of_device(device) {
+                let mut bytes_to_send = vec![];
+                if let Ok(device_config_optional) = device_entity.device_config.lock() {
+                    if let Some(device_config) = &*device_config_optional {
+                        bytes_to_send = get_bytes_to_send_for_config_change(device_config, &cells);
+                    }
+                }
+                if bytes_to_send.is_empty() {
+                    return false;
+                }
+                println!("Sending bytes: {:?}", bytes_to_send);
+                let send_result = send_bytes_to_device(device, &[b'M'], &app_handle);
+                if send_result {
+                    let mut buffer = vec![];
+                    read_bytes_from_device_to_buffer(device, &mut buffer, &app_handle);
+                    println!("Received bytes 1: {:?}", buffer);
+                    clear_output_buffer_of_device(device);
+                    if buffer.len() > 0 && buffer[0] == b'>' {
+                        let send_changes_result =
+                            send_bytes_to_device(device, &bytes_to_send, &app_handle);
+                        if send_changes_result {
+                            let mut buffer2 = vec![];
+                            while (device.bytes_to_read().unwrap_or(0)) == 0 {}
+                            read_bytes_from_device_to_buffer(device, &mut buffer2, &app_handle);
+                            println!("Received bytes 2: {:?}", buffer2);
+                            return buffer2.len() > 0 && buffer2[0] == b'>';
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+fn get_bytes_to_send_for_config_change(
+    device_config: &MkDeviceConfig,
+    cells: &[MkDeviceCell],
+) -> Vec<u8> {
+    let mut bytes_to_send = vec![];
+    for (index, cell) in cells.iter().enumerate() {
+        if cell.current_value != device_config.cells[index].current_value {
+            bytes_to_send.push(cell.address as u8);
+            bytes_to_send.push(cell.current_value);
+        }
+    }
+    if bytes_to_send.len() > 0 {
+        bytes_to_send.push(0xff);
+    }
+    return bytes_to_send;
 }
 
 #[tauri::command]
@@ -274,6 +342,7 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
                             }
                         }
                     }
+                    // std::thread::sleep(std::time::Duration::from_millis(10));
                 }
             }
         }

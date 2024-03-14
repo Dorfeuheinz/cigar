@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { MkDeviceConfig, MkDeviceCell } from "../DataTypes";
 
 export async function getRSSI() {
   return await invoke("get_device_rssi");
@@ -18,4 +19,14 @@ export async function getAnalog() {
 
 export async function getDigital() {
   return await invoke("get_device_digital");
+}
+
+export async function getDeviceConfig() {
+  let result: MkDeviceConfig = await invoke("get_device_config");
+  return result;
+}
+
+export async function setDeviceConfig(cells: MkDeviceCell[]) {
+  let result: boolean = await invoke("set_device_config", { cells: cells });
+  return result;
 }

@@ -24,6 +24,7 @@ fn main() {
             port: Default::default(),
             rssi_task: Default::default(),
             is_rssi_task_running: Arc::new(Mutex::new(false)),
+            device_config: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             get_devices,
@@ -33,6 +34,7 @@ fn main() {
             read_bytes,
             clear_buffer,
             get_device_config,
+            set_device_config,
             get_connected_device,
             get_device_rssi,
             get_device_analog,

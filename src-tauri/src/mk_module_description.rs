@@ -19,7 +19,7 @@ pub struct MkDeviceQuickMode {
     pub sequence_off: String,
 }
 
-#[derive(Clone, Default, Debug, serde::Serialize)]
+#[derive(Clone, Default, Debug, serde::Serialize, serde::Deserialize)]
 pub struct MkDeviceCell {
     pub address: usize,
     pub name: String,

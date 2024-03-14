@@ -11,10 +11,10 @@ import { invoke } from "@tauri-apps/api";
 import { ask } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
 import { Tooltip } from "flowbite-react";
+import { getDeviceConfig, setDeviceConfig } from "../utils/device_info_util";
 
 import {
   MkDeviceCell,
-  MkDeviceConfig,
   MkDeviceTestMode,
   MkDeviceQuickMode,
 } from "../DataTypes";
@@ -25,11 +25,6 @@ declare module "@tanstack/react-table" {
   }
 }
 
-async function getDeviceConfig() {
-  let result: MkDeviceConfig = await invoke("get_device_config");
-  return result;
-}
-
 const ConfigPanel: React.FC = () => {
   const [data, setData] = useState<MkDeviceCell[]>(() => []);
   const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>(
@@ -38,6 +33,7 @@ const ConfigPanel: React.FC = () => {
   const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>(
     []
   );
+
   const readConfig = () => {
     getDeviceConfig().then((result) => {
       setData(result.cells);
@@ -46,7 +42,13 @@ const ConfigPanel: React.FC = () => {
     });
   };
 
-  const writeConfig = () => {};
+  const writeConfig = () => {
+    setDeviceConfig(data).then((success) => {
+      if (success) {
+        readConfig();
+      }
+    });
+  };
 
   const factoryReset = () => {
     ask(
@@ -71,7 +73,6 @@ const ConfigPanel: React.FC = () => {
     columnId: string,
     value: string
   ) => {
-    console.info(`Setting cell ${rowId} ${columnId} to ${value}`);
     setData((old) => {
       return old.map((row) => {
         if (row.address === rowId) {
