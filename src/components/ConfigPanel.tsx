@@ -1,12 +1,12 @@
 import {
   RowData,
-  createColumnHelper,
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ask } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
@@ -21,7 +21,7 @@ import {
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+    updateData: (rowIndex: number, columnId: string, value: string) => void;
   }
 }
 
@@ -29,8 +29,6 @@ async function getDeviceConfig() {
   let result: MkDeviceConfig = await invoke("get_device_config");
   return result;
 }
-
-const columnHelper = createColumnHelper<MkDeviceCell>();
 
 const ConfigPanel: React.FC = () => {
   const [data, setData] = useState<MkDeviceCell[]>(() => []);
@@ -69,14 +67,14 @@ const ConfigPanel: React.FC = () => {
   };
 
   const handleCellValueChange = (
-    rowId: string,
+    rowId: number,
     columnId: string,
     value: string
   ) => {
     console.info(`Setting cell ${rowId} ${columnId} to ${value}`);
     setData((old) => {
       return old.map((row) => {
-        if (row.address === parseInt(rowId)) {
+        if (row.address === rowId) {
           row.current_value = parseInt(value);
         }
         return row;
@@ -84,47 +82,86 @@ const ConfigPanel: React.FC = () => {
     });
   };
 
-  const columns = [
-    columnHelper.accessor((row) => row.address, {
-      id: "Address",
-      cell: (info) => <i>{info.getValue()}</i>,
-      header: () => <div>Address</div>,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor((row) => row.name, {
-      id: "Name",
-      cell: (info) => (
-        <Tooltip
-          content={toolTipData(data[parseInt(info.row.id)].description)}
-          placement="right"
-          style="light"
-        >
-          {info.getValue()}
-        </Tooltip>
-      ),
-      header: () => <div>Name</div>,
+  const columns = useMemo<ColumnDef<MkDeviceCell>[]>(
+    () => [
+      {
+        header: "Address",
+        footer: (props) => props.column.id,
+        accessorFn: (row) => row.address,
+        id: "address",
+      },
+      {
+        header: "Name",
+        footer: (props) => props.column.id,
+        accessorFn: (row) => row.name,
+        id: "name",
+      },
+      {
+        header: "Current Value",
+        footer: (props) => props.column.id,
+        accessorFn: (row) => row.current_value,
+        id: "current_value",
+      },
+    ],
+    []
+  );
 
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor((row) => row.current_value, {
-      id: "Current Value",
-      cell: (info) => (
-        <input
-          value={info.getValue()}
-          onBlur={(e) =>
-            handleCellValueChange(info.row.id, info.column.id, e.target.value)
-          }
-        />
-      ),
-      header: () => <span>Current Value</span>,
-      footer: (info) => info.column.id,
-    }),
-  ];
+  // Give our default column cell renderer editing superpowers!
+  const defaultColumn: Partial<ColumnDef<MkDeviceCell>> = {
+    cell: ({ getValue, row: { index }, column: { id }, table }) => {
+      const initialValue = getValue();
+      // We need to keep and update the state of the cell normally
+      const [value, setValue] = useState(initialValue);
+
+      // When the input is blurred, we'll call our table meta's updateData function
+      const onBlur = () => {
+        table.options.meta?.updateData(index, id, value);
+      };
+
+      // If the initialValue is changed external, sync it up with our state
+      useEffect(() => {
+        setValue(initialValue);
+      }, [initialValue]);
+
+      if (id === "current_value") {
+        return (
+          <>
+            <input
+              value={value as string}
+              onChange={(e) => setValue(e.target.value)}
+              onBlur={onBlur}
+            />
+          </>
+        );
+      } else if (id === "name") {
+        return (
+          <>
+            <Tooltip
+              content={toolTipData(data[index].description)}
+              placement="right"
+              style="light"
+            >
+              {`${value}`}
+            </Tooltip>
+          </>
+        );
+      } else {
+        return <>{value}</>;
+      }
+    },
+  };
 
   const table = useReactTable({
     data,
     columns,
+    defaultColumn,
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      updateData(rowIndex, columnId, value) {
+        handleCellValueChange(rowIndex, columnId, value);
+      },
+    },
+    debugTable: true,
   });
 
   function toolTipData(discription: string) {
