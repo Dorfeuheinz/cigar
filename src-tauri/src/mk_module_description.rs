@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 #[derive(Clone, Debug, serde::Serialize)]
 pub struct MkDeviceTestMode {
-    pub testmode_id: u32,
+    pub testmode_id: usize,
     pub name: String,
     pub description: String,
     pub sequence_on: String,
@@ -12,7 +12,7 @@ pub struct MkDeviceTestMode {
 
 #[derive(Clone, Debug, serde::Serialize)]
 pub struct MkDeviceQuickMode {
-    pub testmode_id: u32,
+    pub testmode_id: usize,
     pub name: String,
     pub description: String,
     pub sequence_on: String,
@@ -34,44 +34,50 @@ pub struct MkDeviceCell {
 #[derive(Default, Debug)]
 pub struct MkModuleDescription {
     pub device_model: String,
-    pub number_of_testmodes: u32,
+    pub number_of_testmodes: usize,
     pub testmodes: Vec<MkDeviceTestMode>,
-    pub number_of_quickmodes: u32,
+    pub number_of_quickmodes: usize,
     pub quickmodes: Vec<MkDeviceQuickMode>,
     pub cells: Vec<MkDeviceCell>,
     pub calibration_cells: Vec<MkDeviceCell>,
 
-    pub editable_cells: Vec<u32>,
-    pub locked_cells: Vec<u32>,
+    pub editable_cells: Vec<usize>,
+    pub locked_cells: Vec<usize>,
 
     pub unknown_data: HashMap<String, String>,
 }
 
 fn get_number_of_testmodes_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
-) -> u32 {
+) -> usize {
     if let Some(number_of_testmodes) = module_description.unknown_data.remove("TESTMODE NUMBER") {
-        return number_of_testmodes.parse::<u32>().unwrap();
+        return number_of_testmodes.parse::<usize>().unwrap();
     }
     return 0;
 }
 
 fn get_number_of_quickmodes_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
-) -> u32 {
+) -> usize {
     if let Some(number_of_quickmodes) = module_description.unknown_data.remove("QUICKMODE NUMBER") {
-        return number_of_quickmodes.parse::<u32>().unwrap();
+        return number_of_quickmodes.parse::<usize>().unwrap();
     }
     return 0;
 }
 
 fn get_editable_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
-) -> Vec<u32> {
+) -> Vec<usize> {
     if let Some(editable_cells) = module_description.unknown_data.remove("EDITABLE_CELLS") {
         return editable_cells
             .split_whitespace()
-            .filter_map(|s| s.parse::<u32>().ok())
+            .filter_map(|s| {
+                if s.starts_with("0x") {
+                    usize::from_str_radix(&s.trim_start_matches("0x"), 16).ok()
+                } else {
+                    s.parse::<usize>().ok()
+                }
+            })
             .collect();
     }
     return vec![];
@@ -79,11 +85,17 @@ fn get_editable_cells_and_remove_from_unknown(
 
 fn get_locked_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
-) -> Vec<u32> {
+) -> Vec<usize> {
     if let Some(locked_cells) = module_description.unknown_data.remove("LOCKED_CELLS") {
         return locked_cells
             .split_whitespace()
-            .filter_map(|s| s.parse::<u32>().ok())
+            .filter_map(|s| {
+                if s.starts_with("0x") {
+                    usize::from_str_radix(&s.trim_start_matches("0x"), 16).ok()
+                } else {
+                    s.parse::<usize>().ok()
+                }
+            })
             .collect();
     }
     return vec![];
