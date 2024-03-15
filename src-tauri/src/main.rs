@@ -24,12 +24,16 @@ fn main() {
             port: Default::default(),
             rssi_task: Default::default(),
             is_rssi_task_running: Arc::new(Mutex::new(false)),
+            communication_task: Default::default(),
+            is_communication_task_running: Arc::new(Mutex::new(false)),
             device_config: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             get_devices,
             connect_to_device,
             disconnect_from_device,
+            start_communication_task,
+            stop_communication_task,
             send_bytes,
             read_bytes,
             clear_buffer,

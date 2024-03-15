@@ -7,11 +7,17 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::{AppHandle, Manager, State};
 
-// create a DeviceEntity struct to hold SerialPort connection that can be shared across threads
 pub struct DeviceEntity {
+    // The device serial port connection that can be shared across threads
     pub port: Arc<Mutex<Option<Box<dyn SerialPort>>>>,
+
+    // Tokio tasks for streaming RSSI in spectrum analyzer mode and background communication
     pub rssi_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub is_rssi_task_running: Arc<Mutex<bool>>,
+    pub communication_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
+    pub is_communication_task_running: Arc<Mutex<bool>>,
+
+    // Device config
     pub device_config: Arc<Mutex<Option<MkDeviceConfig>>>,
 }
 
@@ -87,6 +93,62 @@ pub fn send_bytes(
             let send_result = send_bytes_to_device(device, &bytes_to_send, &app_handle);
             return send_result;
         }
+    }
+    return false;
+}
+
+#[tauri::command]
+pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
+    if let Ok(mut device) = device_entity.port.lock() {
+        if let Some(device) = device.as_mut() {
+            if let Ok(mut cloned_device) = device.try_clone() {
+                let is_communication_task_running =
+                    device_entity.is_communication_task_running.clone();
+                let stream = tauri::async_runtime::spawn(async move {
+                    println!("Starting communication task");
+                    if let Ok(mut is_communication_task_running) =
+                        is_communication_task_running.lock()
+                    {
+                        *is_communication_task_running = true;
+                    }
+                    loop {
+                        std::thread::sleep(Duration::from_millis(100));
+                        if let Ok(is_communication_task_running) =
+                            is_communication_task_running.lock()
+                        {
+                            if !*is_communication_task_running {
+                                println!("Stopping communication task");
+                                return;
+                            }
+                        }
+                        read_bytes_from_device_to_buffer(
+                            &mut cloned_device,
+                            &mut Vec::new(),
+                            &app_handle,
+                        );
+                    }
+                });
+                if let Ok(mut communication_task) = device_entity.communication_task.lock() {
+                    *communication_task = Some(stream);
+                }
+            }
+        }
+    }
+    return false;
+}
+
+#[tauri::command]
+pub fn stop_communication_task(device_entity: State<DeviceEntity>) -> bool {
+    if let Ok(mut communication_task) = device_entity.communication_task.lock() {
+        if let Some(communication_task) = communication_task.as_mut() {
+            if let Ok(mut is_communication_task_running) =
+                device_entity.is_communication_task_running.lock()
+            {
+                *is_communication_task_running = false;
+            }
+            communication_task.abort();
+        }
+        *communication_task = None;
     }
     return false;
 }
@@ -515,10 +577,7 @@ fn read_bytes_from_device_to_buffer(
     buffer: &mut Vec<u8>,
     app_handle: &AppHandle,
 ) -> usize {
-    let result = device.read_to_end(buffer).unwrap_or_else(|e| {
-        println!("Error reading: {}", e);
-        0
-    });
+    let result = device.read_to_end(buffer).unwrap_or(0);
     if buffer.len() > 0 {
         let bytes_to_read_str = buffer
             .iter()

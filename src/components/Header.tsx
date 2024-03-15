@@ -8,6 +8,7 @@ import {
 
 import ConnectDisconnectButton from "./ConnectDisconnectButton";
 import ConfigModeToggle from "./ConfigModeToggle";
+import { invoke } from "@tauri-apps/api";
 
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
@@ -39,9 +40,12 @@ function Header() {
         <div className="inline-block">
           <ConnectDisconnectButton
             connectFunction={async () => {
-              return await connectToDevice(deviceName, baudRate);
+              let result = await connectToDevice(deviceName, baudRate);
+              await invoke("start_communication_task", {});
+              return result;
             }}
             disconnectFunction={async () => {
+              await invoke("stop_communication_task", {});
               return await disconnectFromDevice();
             }}
             className="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
