@@ -28,7 +28,7 @@ pub fn parse_device_config(
         MkModuleDescription::new_from_device_model(&model)?
     };
 
-    let cells = read_cells(data, &module_description);
+    let cells = read_unlocked_cells(data, &module_description);
     let test_modes = module_description.testmodes;
     let quick_modes = module_description.quickmodes;
     let result = MkDeviceConfig {
@@ -42,14 +42,17 @@ pub fn parse_device_config(
     Ok(result)
 }
 
-fn read_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
+fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
     data.iter()
         .enumerate()
-        .map(|(i, val)| -> MkDeviceCell {
+        .filter_map(|(i, val)| {
+            if module_description.locked_cells.contains(&i) {
+                return None;
+            }
             let mut cell = module_description.cells[i].clone();
             cell.address = i;
             cell.current_value = *val;
-            cell
+            Some(cell)
         })
         .collect()
 }
