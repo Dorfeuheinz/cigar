@@ -12,7 +12,7 @@ type RSSIEvent = {
 const RSSIChart: React.FC = () => {
   const [rssiStreamRunning, setRSSIStreamRunning] = useState(false);
 
-  const [chartOptions, setChartOptions] = useState<any>({
+  const [chartOptions, _setChartOptions] = useState<any>({
     title: "RSSI Spectrum Analyzer",
     subtitle: "RSSI trends for different channels",
     isStacked: true,
@@ -58,22 +58,6 @@ const RSSIChart: React.FC = () => {
       unlisten.then((f) => f());
     };
   }, []);
-
-  const handleSubmit = async () => {
-    setChartData([
-      ["Channel", "RSSI"],
-      [1, 2],
-      [2, 3],
-      [3, 4],
-      [4, 5],
-      [5, 6],
-      [6, 7],
-      [7, 8],
-      [8, 9],
-      [9, 1],
-      [10, 2],
-    ]);
-  };
 
   const handleRepeatToggle = () => {
     if (rssiStreamRunning) {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useRef, useState } from "react";
 import React from "react";

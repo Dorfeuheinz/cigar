@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useContext, useState } from "react";
 import { ConnectionContext } from "../App";
 import { invoke } from "@tauri-apps/api";

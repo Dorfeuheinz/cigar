@@ -21,7 +21,7 @@ import {
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: string) => void;
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
   }
 }
 
@@ -70,7 +70,7 @@ const ConfigPanel: React.FC = () => {
 
   const handleCellValueChange = (
     rowId: number,
-    columnId: string,
+    _columnId: string,
     value: string
   ) => {
     setData((old) => {
@@ -156,8 +156,8 @@ const ConfigPanel: React.FC = () => {
     defaultColumn,
     getCoreRowModel: getCoreRowModel(),
     meta: {
-      updateData(rowIndex, columnId, value) {
-        handleCellValueChange(rowIndex, columnId, value);
+      updateData: (rowIndex, columnId, value) => {
+        handleCellValueChange(rowIndex, columnId, value as string);
       },
     },
     debugTable: true,
