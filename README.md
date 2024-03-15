@@ -66,7 +66,6 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┃ ┣ 📜App.tsx **(This is the main react component that lays out all the other components of our front-end)**
 ┃ ┣ 📜DataTypes.tsx
 ┃ ┣ 📜index.css
-┃ ┣ 📜main.js.old
 ┃ ┗ 📜main.tsx
 ┣ 📂src-tauri **(Contains the backend code)**
 ┃ ┣ 📂icons
@@ -75,13 +74,13 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┃ ┃ ┃ ┣ 📜config_response.txt
 ┃ ┃ ┃ ┗ 📜RF TM4070.rmd
 ┃ ┣ 📂src
-┃ ┃ ┣ 📜device_config_parser.rs
-┃ ┃ ┣ 📜input_processing.rs
+┃ ┃ ┣ 📜device_config_parser.rs **(Contains code for parsing the device configuration that is received using the Read Config button)**
+┃ ┃ ┣ 📜input_processing.rs **(Contains code for parsing the input string sent by Communication Panel into a vector of bytes)**
 ┃ ┃ ┣ 📜lib.rs
 ┃ ┃ ┣ 📜main.rs **(The entry point of our back-end)**
-┃ ┃ ┣ 📜mk_module_description.rs
-┃ ┃ ┣ 📜module_description_parser.rs
-┃ ┃ ┗ 📜tinymesh_comm.rs
+┃ ┃ ┣ 📜mk_module_description.rs **(High-level RMD file parser, that calls the low-level parser and parses RMD file into a struct)**
+┃ ┃ ┣ 📜module_description_parser.rs **(Low-level RMD file parser that parses RMD file into a HashMap)**
+┃ ┃ ┗ 📜tinymesh_comm.rs **(Contains all the Tauri commands that will be invoked from the front-end Javascript/Typescript code using the `invoke` function)**
 ┃ ┣ 📂tests
 ┃ ┃ ┣ 📜device_config_parser_test.rs
 ┃ ┃ ┣ 📜input_processing_test.rs
