@@ -19,6 +19,7 @@ import {
   MkDeviceTestMode,
   MkDeviceQuickMode,
 } from "../DataTypes";
+import { list } from "postcss";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -183,56 +184,73 @@ const ConfigPanel: React.FC = () => {
     );
   }
 
+  function showTable(data: Array<object>) {
+    if (data.length > 0) {
+      return (
+        <table className="w-full text-center table border border-collapse ">
+          <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="text-center ">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border border-separate ">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    } else {
+      return (
+        <div
+          style={{ minHeight: "44.5vh", maxHeight: "44.5vh" }}
+          className="bg-gray-100"
+        ></div>
+      );
+    }
+  }
+
   return (
-    <div className="h-full overflow-y-scroll border rounded-lg">
-      <table className="w-full text-center table border border-collapse ">
-        <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="text-center ">
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border border-separate ">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-around sm:flex-wrap">
-        <button
-          onClick={() => readConfig()}
-          className=" bg-blue-700 text-white border rounded-lg text-sm p-2"
-        >
-          Read Config
-        </button>
-        <button
-          onClick={() => writeConfig()}
-          className=" bg-blue-700 text-white border rounded-lg  text-sm p-2"
-        >
-          Save Config
-        </button>
-        <button
-          onClick={() => factoryReset()}
-          className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
-        >
-          Factory Reset
-        </button>
+    <div className="h-full flex flex-col overflow-y-scroll border rounded-lg">
+      <div>{showTable(data)}</div>
+      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-around sm:justify-normal sm:flex-wrap">
+        <div>
+          <button
+            onClick={() => readConfig()}
+            className=" bg-blue-700 text-white border rounded-lg text-sm p-2"
+          >
+            Read Config
+          </button>
+          <button
+            onClick={() => writeConfig()}
+            className=" bg-blue-700 text-white border rounded-lg  text-sm p-2"
+          >
+            Save Config
+          </button>
+          <button
+            onClick={() => factoryReset()}
+            className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
+          >
+            Factory Reset
+          </button>
+        </div>
         <TestModeSelect
           testModeOptions={testModeOptions}
           quickOptions={quickModeOptions}

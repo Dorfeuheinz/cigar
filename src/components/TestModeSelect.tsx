@@ -80,12 +80,12 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
   };
   return (
     <>
-      <div className="h-full flex">
+      <div className="h-full flex ">
         <div>
           <select
             value={selectedOption}
             onChange={handleSelectChange}
-            className="w-fit h-full bg-gray-50 text-sm rounded-lg "
+            className="w-fit bg-gray-50 text-sm rounded-lg "
           >
             <option value="" selected>
               Select Mode
