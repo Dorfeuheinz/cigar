@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiny CC Tool</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles.css" />
+  <script type="module" src="/src/main.js" defer></script>
+</head>
+
+<body>
+  <div class="flex h-screen flex-col">
+    <div style="height: 5% ;">
+      <header class="flex h-full items-center justify-between bg-blue-500 p-4 text-lg text-white">
+        <div>Tiny CC Tool</div>
+        <div class="space-x-4">
+          <div id="baudRateInputBox" class="inline-block">
+            <label for="baudRate" class="mr-2">Baud Rate</label>
+            <input list="baudRateList" name="baudRate" id="baudRate" class="rounded-md border-gray-300 text-black">
+            <datalist id="baudRateList">
+              <option value="9600">
+              <option value="14400">
+              <option value="19200">
+            </datalist>
+          </div>
+          <div class="inline-block">
+            <label for="deviceName" class="mr-2">Device Name</label>
+            <select id="deviceName" class="rounded-md border-gray-300 text-black">
+              <!-- Add more device names as needed -->
+            </select>
+          </div>
+          <div class="inline-block">
+            <button id="connectDisconnectBtn" type="button"
+              class="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              <div id="connectDisconnectBtnText">Connect</div>&nbsp;
+              <svg class="ms-2 h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M1 5h12m0 0L9 1m4 4L9 9" />
+              </svg>
+            </button>
+          </div>
+
+          <div id="deviceModeSwitchBox" class="inline-block hidden">
+            <span>
+              <label class="switch">
+                <input id="deviceMode" type="checkbox">
+                <span class="slider round"></span>
+              </label>
+            </span>
+            <span id="deviceModeText">Communication mode</span>
+          </div>
+        </div>
+      </header>
+    </div>
+    <main class="mb-auto" style="height: 86%; margin: 2%">
+      <div class="flex h-full flex-col p-1">
+        <div class="mb-0 flex h-3/5 flex-row justify-between">
+          <div class="flex h-full w-6/12 flex-col justify-between border">
+            <div class="h-5/6">
+              <!-- split 1 data table -->
+              <div class="h-full overflow-auto">
+                <table class="w-full border-collapse text-left">
+                  <thead class="sticky top-0 bg-white">
+                    <tr>
+                      <th
+                        class="bg-grey-lightest text-grey-dark border-grey-light border-b px-6 py-4 text-sm font-bold uppercase">
+                        Address</th>
+                      <th
+                        class="bg-grey-lightest text-grey-dark border-grey-light border-b px-6 py-4 text-sm font-bold uppercase">
+                        Field Name</th>
+                      <th
+                        class="bg-grey-lightest text-grey-dark border-grey-light border-b px-6 py-4 text-sm font-bold uppercase">
+                        Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Add more rows as needed -->
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x00</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Channel</td>
+                      <td class="border-grey-light border-b px-6 py-4">1</td>
+                    </tr>
+                    <tr class="hover:bg-grey-lighter">
+                      <td class="border-grey-light border-b px-6 py-4">0x01</td>
+                      <td class="border-grey-light border-b px-6 py-4">RF Power</td>
+                      <td class="border-grey-light border-b px-6 py-4">5</td>
+                    </tr>
+
+                    <!-- ... -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="flex h-auto justify-center border-t p-4">
+              <span>
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                  <button id="getConfigBtn" type="button"
+                    class="rounded-s-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:focus:text-white dark:focus:ring-blue-500">Get
+                    Config</button>
+                  <button id="setConfigBtn" type="button"
+                    class="border-b border-t border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:focus:text-white dark:focus:ring-blue-500">Set
+                    Config</button>
+                  <button id="exportBtn" type="button"
+                    class="border-b border-l border-t border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:focus:text-white dark:focus:ring-blue-500">Export</button>
+                  <button id="importBtn" type="button"
+                    class="rounded-e-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:focus:text-white dark:focus:ring-blue-500">Import</button>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="float-right flex w-5/12 flex-col justify-between border">
+            <div class="h-5/6">
+              split 2 message window
+              <div class="h-full p-5">
+                <form class="h-full w-full">
+                  <textarea id="msgTextArea" class="h-full w-full border"></textarea>
+                </form>
+              </div>
+            </div>
+            <div class="flex h-auto justify-center border-t p-4">
+              <span>
+                <button id="sendOnceBtn" class="border p-2">send once</button>
+                <button id="sendRepeatedlyBtn" class="ml-5 border p-2">send repeatedly</button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div id="logWindow" class="mb-2 mt-2 h-2/5 border overflow-y-auto text-wrap">
+          <!-- TX/RX logging here -->
+        </div>
+      </div>
+    </main>
+    <footer class="bg-gray-500 p-1 text-center text-lg text-white" style="height: 5% ;">
+      <div id="connectionStatus">
+        <span id="connectionStatusIcon"></span>
+        Connection Status: <span id="connectionStatusText"></span>
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>
