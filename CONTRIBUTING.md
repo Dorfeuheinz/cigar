@@ -1,3 +1,18 @@
+# CONTRIBUTING TO THIS PROJECT
+
+This document is meant for those who are going to work on this project and those who wish to dive a bit deeper into its internals.
+
+Developer(s) are requested to keep the following documentation up to date.
+
+## Table of Contents
+
+- [Development Setup](#development-setup)
+- [Project Structure](#project-structure)
+- [RMD file format](#rmd-file-format)
+  - [Background](#background)
+  - [Low-level View](#low-level-view)
+  - [High-level View](#high-level-view)
+
 ## Development Setup
 
 Install the following tools on your system:
@@ -74,14 +89,76 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┃ ┃ ┗ 📜module_description_parser_test.rs
 ┃ ┣ 📜.gitignore
 ┃ ┣ 📜build.rs
-┃ ┣ 📜Cargo.toml
+┃ ┣ 📜Cargo.toml (This is the backend project configuration file)
 ┃ ┗ 📜tauri.conf.json (Tauri Window config JSON). Refer [this configuration page](https://tauri.app/v1/api/config/).
 ┣ 📜.gitignore
 ┣ 📜index.html (The entry point of our front-end)
-┣ 📜package.json
+┣ 📜package.json (npm configuration file - mainly for frontend)
 ┣ 📜postcss.config.js
 ┣ 📜README.md
 ┣ 📜tailwind.config.js
 ┣ 📜tsconfig.json
 ┗ 📜vite.config.ts
+```
+
+## RMD File Format
+
+### Background
+
+If you look at this CC tool or the one made by Radiocrafts, you'll see that they'll have a `Modules` directory which contains a bunch of files with the extension `.RMD/.rmd` etc. Each file in the modules directory represents a (Tinymesh) module which is supported by the CC tool. I don't know the full name of the RMD abbreviation, so I've affectionately given it the full form of **Radiocrafts Module Description**, in honor of the original CC tool. It could also very well be the original name.
+
+Whenever a user tries to read the device configuration of the connected device via the CC tool, here's what happens:
+
+- It will read the entire configuration memory, and will decode the device name, firmware info and hardware revision from address 0x3c onwards.
+- The tool then tries to search for a RMD file of the same name as the device name in the modules folder.
+- If the file is found, it will decode the configuration and we'll show the user the unlocked cells of the device configuration memory in a nice table. If not, there's not much we can do and we'll fail.
+
+So, understanding RMD file format is necessary to properly configure the device, show / run testmodes, display device information etc.
+
+### Low-level View
+
+At its core, RMD file format can be thought of as a hashmap, so our low-level parser parses it into one. Here are some guidelines:
+
+1. Anything after `//` or ` //` is a comment, and as such is ignored by the parser.
+2. Anything enclosed in `[` and `]` is the **key**. Empty keys are not added to the hashmap.
+3. Once we've identified a key, any lines that follow (except for the comments) are combined to a multi-line string that makes up the **value**. We'll keep on adding to the current value, till we encounter a line that matches step 2.
+
+### High-level View
+
+The RMD file will contain keys for stuff like the following:
+
+- No. of testmodes: `TESTMODE NUMBER`.
+- Description of each testmode via entries like: `TESTMODE 1 NAME`, `TESTMODE 1 HINT`, `TESTMODE 1 SEQUENCE_ON`, `TESTMODE 1 SEQUENCE_OFF`.
+- Each cell of configuration memory is represented using entries like the following:
+  - `M 0x00 NAME`: Name of the cell at address `0x00`.
+  - `M 0x00 HINT`: A description of the cell at address `0x00`.
+  - `M 0x00 MIN_MAX`: Minimum and maximum values allowed for the cell at address `0x00`.
+  - `M 0x00 ALLOW`: Allowed values (space-separated) for the cell at address `0x00`.
+  - `M 0x00 DEF`: Default value for the cell at address `0x00`.
+
+Also, since we aim to achieve parity with the existing tool and do more with our own, we've added some changes of our own to the RMD file format. Here's an overview and the rationale behind the changes:
+
+- Testmodes dropdown is now split into 2 sections: Quick options and Testmodes. Accordingly, we've introduced some new keys of our own, namely `QUICKMODE NUMBER` and corresponding `QUICKMODE 1 NAME`, `QUICKMODE 1 HINT`, `QUICKMODE 1 SEQUENCE_ON`, `QUICKMODE 1 SEQUENCE_OFF`.
+- We also aim to work with the calibration memory of the device, so we've added fields for representing cells of calibration memory as well to the RMD file. The cell descriptions of calibration memory and config memory are pretty similar. In order to separate them from the config memory cells, we've prefixed them with `C`. For example:
+
+```
+[C 0x00 NAME]
+Temp Offset
+
+[C 0x00 MIN_MAX]
+0 255
+
+[C 0x00 DEF]
+128
+
+[C 0x00 HINT]
+Offset added to TEMP.
+
+Temperature offset in 0.25
+degree (C) increments.
+Increase for positive
+adjustment, decrease for
+negative adjustment of TEMP
+value
+[]
 ```
