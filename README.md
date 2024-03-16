@@ -42,10 +42,11 @@ Once you've setup all the required tools for building this project, its time to 
 
 Below is a tree listing _some_ important folders / files of this project. It is recommended to keep this tree updated, so that the developer(s) have a fair idea of each file/folder's importance.
 
-📦tinymesh-cc-tool **(The project directory)**
-┣ 📂src **(Contains the frontend code)**
+```
+📦tinymesh-cc-tool (The project directory)
+┣ 📂src (Contains the frontend code)
 ┃ ┣ 📂assets
-┃ ┣ 📂components **(React Components for our project)**
+┃ ┣ 📂components (React Components for our project)
 ┃ ┃ ┣ 📜AppTabs.tsx
 ┃ ┃ ┣ 📜ButtonComp.tsx
 ┃ ┃ ┣ 📜CommunicationPanel.tsx
@@ -60,27 +61,27 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┃ ┃ ┣ 📜RSSIChart.tsx
 ┃ ┃ ┣ 📜TerminalPanel.tsx
 ┃ ┃ ┗ 📜TestModeSelect.tsx
-┃ ┣ 📂utils **(Some commonly used frontend utility functions)**
+┃ ┣ 📂utils (Some commonly used frontend utility functions)
 ┃ ┃ ┣ 📜connection_util.ts
 ┃ ┃ ┗ 📜device_info_util.ts
-┃ ┣ 📜App.tsx **(This is the main react component that lays out all the other components of our front-end)**
+┃ ┣ 📜App.tsx (This is the main react component that lays out all the other components of our front-end)
 ┃ ┣ 📜DataTypes.tsx
 ┃ ┣ 📜index.css
 ┃ ┗ 📜main.tsx
-┣ 📂src-tauri **(Contains the backend code)**
+┣ 📂src-tauri (Contains the backend code)
 ┃ ┣ 📂icons
 ┃ ┣ 📂resources
 ┃ ┃ ┗ 📂tests
 ┃ ┃ ┃ ┣ 📜config_response.txt
 ┃ ┃ ┃ ┗ 📜RF TM4070.rmd
 ┃ ┣ 📂src
-┃ ┃ ┣ 📜device_config_parser.rs **(Contains code for parsing the device configuration that is received using the Read Config button)**
-┃ ┃ ┣ 📜input_processing.rs **(Contains code for parsing the input string sent by Communication Panel into a vector of bytes)**
+┃ ┃ ┣ 📜device_config_parser.rs (Contains code for parsing the device configuration that is received using the Read Config button)
+┃ ┃ ┣ 📜input_processing.rs (Contains code for parsing the input string sent by Communication Panel into a vector of bytes)
 ┃ ┃ ┣ 📜lib.rs
-┃ ┃ ┣ 📜main.rs **(The entry point of our back-end)**
-┃ ┃ ┣ 📜mk_module_description.rs **(High-level RMD file parser, that calls the low-level parser and parses RMD file into a struct)**
-┃ ┃ ┣ 📜module_description_parser.rs **(Low-level RMD file parser that parses RMD file into a HashMap)**
-┃ ┃ ┗ 📜tinymesh_comm.rs **(Contains all the Tauri commands that will be invoked from the front-end Javascript/Typescript code using the `invoke` function)**
+┃ ┃ ┣ 📜main.rs (The entry point of our back-end)
+┃ ┃ ┣ 📜mk_module_description.rs (High-level RMD file parser, that calls the low-level parser and parses RMD file into a struct)
+┃ ┃ ┣ 📜module_description_parser.rs (Low-level RMD file parser that parses RMD file into a HashMap)
+┃ ┃ ┗ 📜tinymesh_comm.rs (Contains all the Tauri commands that will be invoked from the front-end Javascript/Typescript code using the `invoke` function)
 ┃ ┣ 📂tests
 ┃ ┃ ┣ 📜device_config_parser_test.rs
 ┃ ┃ ┣ 📜input_processing_test.rs
@@ -88,12 +89,13 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┃ ┣ 📜.gitignore
 ┃ ┣ 📜build.rs
 ┃ ┣ 📜Cargo.toml
-┃ ┗ 📜tauri.conf.json **(Tauri Window config JSON)**. Refer [this configuration page](https://tauri.app/v1/api/config/).
+┃ ┗ 📜tauri.conf.json (Tauri Window config JSON). Refer [this configuration page](https://tauri.app/v1/api/config/).
 ┣ 📜.gitignore
-┣ 📜index.html **(The entry point of our front-end)**
+┣ 📜index.html (The entry point of our front-end)
 ┣ 📜package.json
 ┣ 📜postcss.config.js
 ┣ 📜README.md
 ┣ 📜tailwind.config.js
 ┣ 📜tsconfig.json
 ┗ 📜vite.config.ts
+```
