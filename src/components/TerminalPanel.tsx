@@ -45,7 +45,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
     return () => {
       unlisten.then((f) => f());
     };
-  }, [logs]);
+  }, []);
 
   return (
     <>
