@@ -17,16 +17,19 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 
 ## Feature plan
 
-- use react-resizable-panels
-- Create a config file = give path of modules directory there, log file path
-- calibration mode: aes key configuration
+- Package modules folder with the app installer
+- Add logging support
 - UI: failures should be reported on device unable to connect
 - UI: connect / disconnect button should properly bring device into communication mode
 - UI: config mode state should be reflected properly on refresh
+- Fix issue of duplicate events on config change.
+- Emit events from current window instead of app based events
 - Config panel input validation
-- UI theme uniformity
+- calibration mode: aes key configuration
+- UI theme uniformity for flowbite components
 - Display device model, hw and fw version
+- use react-resizable-panels
 
 ## Other Links
 
-- [Contributing to this project](./CONTRIBUTING.md)
+- [Documentation for Developers](./CONTRIBUTING.md)
