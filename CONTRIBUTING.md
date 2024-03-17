@@ -41,6 +41,17 @@ Once you've setup all the required tools for building this project, its time to 
 
 ## Project Structure
 
+This project uses React for front-end and Rust for back-end. This is made possible by the Tauri framework.
+
+The rationale behind this decision is the following:
+
+- Goal was to create a cross-platform application. To create cross-platform desktop apps using Web technologies, we can use Electron (powered by Node.js) or Tauri (Node.js, Rust etc.).
+- To leverage the existing skillset of the team. Since many of us maintain web UI's, we went with a web-technologies based front-end.
+- Using React means we can use 3rd party components with very little to no changes for building our UI. NPM also provides a vast array of 3rd party JS libraries, such as `react-google-charts`, `tanstack`, `flowbite`, `tailwindcss` and `react` itself.
+- Regarding backend, the focus was on ease of use, ease of setting up things and achieving rapid development speeds. Here, the pros of Rust and the cons of C/C++ come into play.
+  - C/C++ don't ship with dedicated cross platform build and dependency management tooling. There are 3rd party tools available, but its overall a fragmented ecosystem.
+  - Rust gives us a nice `serialport-rs` crate for doing serial I/O in a cross-platform way. Also, it has a large standard library, and has a strict compiler and borrow checker and thus makes it harder to make mistakes, compared to C/C++. However, please be advised that this is by no means a silver bullet - its still quite easy to write a Rust program that crashes (or in Rust lingo, panics!).
+
 Below is a tree listing _some_ important folders / files of this project. It is recommended to keep this tree updated, so that the developer(s) have a fair idea of each file/folder's importance.
 
 ```
