@@ -2,7 +2,6 @@ use crate::device_config_parser::{parse_device_config, MkDeviceConfig};
 use crate::input_processing;
 use crate::mk_module_description::MkDeviceCell;
 use log::{error, info};
-use serialport;
 use serialport::SerialPort;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -186,7 +185,7 @@ pub fn get_device_config(
         .as_mut()
         .ok_or("Could not lock the selected device".to_string())?;
     if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
-        read_bytes_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
+        read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
         let device_config = parse_device_config(&config_bytes_buffer, None, Some(&app_handle))?;
         let mut device_config_from_state = device_entity
             .device_config
@@ -220,19 +219,38 @@ pub fn set_device_config(
                 let send_result = send_bytes_to_device(device, &[b'M'], &app_handle);
                 if send_result {
                     let mut buffer = vec![];
-                    read_bytes_from_device_to_buffer(device, &mut buffer, &app_handle);
+                    read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
                     clear_output_buffer_of_device(device);
-                    if buffer.len() > 0 && buffer[0] == b'>' {
+                    if buffer.len() == 0 {
                         let send_changes_result =
                             send_bytes_to_device(device, &bytes_to_send, &app_handle);
                         if send_changes_result {
                             let mut buffer2 = vec![];
-                            while (device.bytes_to_read().unwrap_or(0)) == 0 {}
-                            read_bytes_from_device_to_buffer(device, &mut buffer2, &app_handle);
-                            return buffer2.len() > 0 && buffer2[0] == b'>';
+                            read_bytes_till_3e_from_device_to_buffer(
+                                device,
+                                &mut buffer2,
+                                &app_handle,
+                            );
+                            return buffer2.len() == 0;
                         }
                     }
                 }
+            }
+        }
+    }
+    return false;
+}
+
+#[tauri::command]
+pub fn factory_reset(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
+    if let Ok(mut device) = device_entity.port.lock() {
+        if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
+            let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
+            if send_result {
+                let mut buffer = vec![];
+                read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
+                return buffer.len() == 0;
             }
         }
     }
@@ -431,12 +449,12 @@ fn switch_to_channel(
 ) -> bool {
     let mut read_bytes_result = vec![];
     let send_bytes_result = send_bytes_to_device(device, &[b'C'], app_handle);
-    read_bytes_from_device_to_buffer(device, &mut read_bytes_result, app_handle);
-    if send_bytes_result && read_bytes_result.len() > 0 && read_bytes_result[0] == 0x3e {
+    read_bytes_till_3e_from_device_to_buffer(device, &mut read_bytes_result, app_handle);
+    if send_bytes_result && read_bytes_result.len() == 0 {
         let mut read_bytes_result2 = vec![];
         let send_bytes_result2 = send_bytes_to_device(device, &[channel], app_handle);
-        read_bytes_from_device_to_buffer(device, &mut read_bytes_result2, app_handle);
-        return send_bytes_result2 && read_bytes_result2.len() > 0 && read_bytes_result2[0] == 0x3e;
+        read_bytes_till_3e_from_device_to_buffer(device, &mut read_bytes_result2, app_handle);
+        return send_bytes_result2 && read_bytes_result2.len() == 0;
     }
     return false;
 }
@@ -462,9 +480,9 @@ fn get_rssi_from_device(
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'S'], app_handle);
     if send_result {
-        read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [rssi_dec, 0x3e] = &buffer[..] {
-            return Ok(*rssi_dec);
+        read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, app_handle);
+        if buffer.len() == 1 {
+            return Ok(buffer[0]);
         }
     }
     return Err("RSSI: Bad".to_string());
@@ -477,9 +495,9 @@ fn get_analog_from_device(
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'A'], app_handle);
     if send_result {
-        read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if buffer.len() > 1 && buffer.ends_with(&[0x3e]) {
-            return Ok(buffer[..buffer.len() - 1].to_vec());
+        read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, app_handle);
+        if buffer.len() > 1 {
+            return Ok(buffer);
         }
     }
     return Err("Analog: [UNABLE TO READ]".to_string());
@@ -492,9 +510,9 @@ fn get_digital_from_device(
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'D'], app_handle);
     if send_result {
-        read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [digital_dec, 0x3e] = &buffer[..] {
-            return Ok(*digital_dec);
+        read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, app_handle);
+        if buffer.len() == 1 {
+            return Ok(buffer[0]);
         }
     }
     return Err("Digital: [UNABLE TO READ]".to_string());
@@ -507,9 +525,9 @@ fn get_temperature_from_device(
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'U'], app_handle);
     if send_result {
-        read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [temp_dec, 0x3e] = &buffer[..] {
-            return Ok(*temp_dec);
+        read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, app_handle);
+        if buffer.len() == 1 {
+            return Ok(buffer[0]);
         }
     }
     return Err("Temperature: [UNABLE TO READ]".to_string());
@@ -522,9 +540,9 @@ fn get_voltage_from_device(
     let mut buffer = vec![];
     let send_result = send_bytes_to_device(device, &[b'V'], app_handle);
     if send_result {
-        read_bytes_from_device_to_buffer(device, &mut buffer, app_handle);
-        if let [voltage_dec, 0x3e] = &buffer[..] {
-            return Ok(*voltage_dec);
+        read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, app_handle);
+        if buffer.len() == 1 {
+            return Ok(buffer[0]);
         }
     }
     return Err("Voltage: [UNABLE TO READ]".to_string());
@@ -565,6 +583,45 @@ fn send_bytes_to_device(
         }
         Err(_) => false,
     };
+}
+
+fn read_bytes_till_3e_from_device_to_buffer(
+    device: &mut Box<dyn SerialPort>,
+    buffer: &mut Vec<u8>,
+    app_handle: &AppHandle,
+) -> usize {
+    // read into buf until we see 0x3e
+    let mut count = 0;
+    let mut temp_buf = [0u8; 1];
+    while buffer.len() == 0 || buffer[buffer.len() - 1] != 0x3e {
+        match device.read_exact(&mut temp_buf) {
+            Ok(_) => {
+                if temp_buf[0] == b'>' {
+                    break;
+                } else {
+                    buffer.push(temp_buf[0]);
+                }
+                count += 1;
+            }
+            Err(_) => continue,
+        }
+    }
+    let bytes_to_read_str = buffer
+        .iter()
+        .map(|b| format!("{:02X}", b))
+        .chain(std::iter::once("3E".to_string()))
+        .collect::<Vec<String>>()
+        .join(" ");
+    app_handle
+        .emit_all(
+            "exchange_bytes_event",
+            Payload {
+                data_type: "RX".to_string(),
+                data: bytes_to_read_str,
+            },
+        )
+        .unwrap_or_else(|e| error!("Error emitting: {}", e));
+    count
 }
 
 fn read_bytes_from_device_to_buffer(

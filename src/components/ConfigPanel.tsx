@@ -55,22 +55,19 @@ const ConfigPanel: React.FC = () => {
     });
   };
 
-  const factoryReset = () => {
-    ask(
+  const factoryReset = async () => {
+    let result = await ask(
       "This action will factory reset the device and cannot be reverted. Are you sure?",
       {
         title: "Tiny CC Tool",
         type: "warning",
       }
-    ).then((result) => {
-      if (result) {
-        invoke("send_bytes", { input: "@TM" }).then(() => {
-          invoke("read_bytes", {}).then(() => {
-            readConfig();
-          });
-        });
+    );
+    if (result) {
+      if (await invoke("factory_reset", {})) {
+        await readConfig();
       }
-    });
+    }
   };
 
   const handleCellValueChange = (
@@ -228,7 +225,7 @@ const ConfigPanel: React.FC = () => {
           Save Config
         </button>
         <button
-          onClick={() => factoryReset()}
+          onClick={async () => factoryReset()}
           className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
         >
           Factory Reset

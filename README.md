@@ -17,7 +17,6 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 
 ## Feature plan
 
-- UI: connect / disconnect button should properly bring device into communication mode
 - UI: config mode state should be reflected properly on refresh
 - Fix issue of duplicate events on config change.
 - Emit events from current window instead of app based events
