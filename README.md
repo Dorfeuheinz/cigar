@@ -17,7 +17,6 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 
 ## Feature plan
 
-- Package modules folder with the app installer
 - UI: failures should be reported on device unable to connect
 - UI: connect / disconnect button should properly bring device into communication mode
 - UI: config mode state should be reflected properly on refresh
