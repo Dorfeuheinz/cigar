@@ -19,7 +19,8 @@
       },
       "dialog": {
         "confirm": true,
-        "ask": true
+        "ask": true,
+        "message": true
       },
       "fs": {
         "scope": ["$RESOURCE/*"]

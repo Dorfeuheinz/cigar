@@ -9,6 +9,7 @@ import {
 import ConnectDisconnectButton from "./ConnectDisconnectButton";
 import ConfigModeToggle from "./ConfigModeToggle";
 import { invoke } from "@tauri-apps/api";
+import { message } from "@tauri-apps/api/dialog";
 
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
@@ -40,9 +41,20 @@ function Header() {
         <div className="inline-block">
           <ConnectDisconnectButton
             connectFunction={async () => {
-              let result = await connectToDevice(deviceName, baudRate);
-              await invoke("start_communication_task", {});
-              return result;
+              try {
+                await connectToDevice(deviceName, baudRate);
+                await invoke("start_communication_task", {});
+                return true;
+              } catch (error) {
+                await message(
+                  `Encountered an error while trying to connect: ${error}`,
+                  {
+                    title: "Tinymesh CC Tool",
+                    type: "error",
+                  }
+                );
+                return false;
+              }
             }}
             disconnectFunction={async () => {
               await invoke("stop_communication_task", {});

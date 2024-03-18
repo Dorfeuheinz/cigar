@@ -55,17 +55,16 @@ pub fn connect_to_device(
     device_name: &str,
     baud_rate: u32,
     device_entity: State<DeviceEntity>,
-) -> bool {
+) -> Result<(), String> {
     info!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
         .timeout(Duration::from_millis(30))
         .open();
-    if let (Ok(mut device), Ok(open_port)) = (device_entity.port.lock(), port) {
-        *device = Some(open_port);
-        return true;
-    }
-    return false;
+    let mut device = device_entity.port.lock().map_err(|err| err.to_string())?;
+    let open_port = port.map_err(|err| err.to_string())?;
+    *device = Some(open_port);
+    return Ok(());
 }
 
 #[tauri::command]
