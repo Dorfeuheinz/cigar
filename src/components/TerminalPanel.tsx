@@ -47,8 +47,22 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
     };
   }, []);
 
+  const handleSelectChange = (e) => {
+    console.log(e.target.value);
+  };
+
   return (
     <>
+      <div className="h-[4vh] border p-[0.5vh]">
+        <select
+          className="h-[3vh] text-xs p-0 pl-2 ml-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 md:text-xs lg:text-lg"
+          onChange={handleSelectChange}
+        >
+          <option value="hex">Hex</option>
+          <option value="decimal">Decimal</option>
+          <option value="asci">Asci</option>
+        </select>
+      </div>
       {logs.map((log, index) => (
         <>
           <p key={index}>

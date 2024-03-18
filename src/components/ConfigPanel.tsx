@@ -180,6 +180,44 @@ const ConfigPanel: React.FC = () => {
     );
   }
 
+  function showTable(data: Array<object>) {
+    if (data.length > 0) {
+      return (
+        <table className="w-full text-center table border border-collapse ">
+          <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="text-center ">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border border-separate ">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    } else {
+      return <div className="bg-gray-100 h-full"></div>;
+    }
+  }
+
   return (
     <div className="h-full overflow-y-scroll border rounded-lg">
       <table className="w-full text-center table border border-collapse ">

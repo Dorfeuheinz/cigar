@@ -33,7 +33,7 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col h-screen overflow-hidden md:max-h-screen md:min-h-screen">
+      <div className="flex flex-col overflow-hidden md:max-h-screen md:min-h-screen">
         <ConnectionContext.Provider
           value={{
             isConnected: isConnected,
@@ -42,13 +42,10 @@ function App() {
             setCurrentMode: setCurrentMode,
           }}
         >
-          <div style={{ minHeight: "10vh", maxHeight: "10vh" }}>
+          <div className="h-[7vh] max-h-[7vh]">
             <Header />
           </div>
-          <div
-            className="flex-1 "
-            style={{ minHeight: "60vh", maxHeight: "60vh" }}
-          >
+          <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
             <AppTabs aria-label="Tabs with underline" style="underline">
               <Tabs.Item
                 title="Configuration and Communication"
@@ -70,17 +67,18 @@ function App() {
               </Tabs.Item>
             </AppTabs>
           </div>
-          <div
-            className="flex-1 w-full border-t overflow-y-scroll"
-            style={{ minHeight: "25vh", maxHeight: "25vh" }}
-          >
+          <div className="flex-1 w-full border-t overflow-y-scroll h-[25vh] max-h-[25vh]">
             <TerminalPanel size={300} />
           </div>
-          <footer
-            className="w-full p-1 bg-gray-500"
-            style={{ minHeight: "5vh", maxHeight: "5vh" }}
-          >
+          <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh]">
             <div id="connectionStatus" className="text-center text-white">
+              <span className=" sm:text-l text-2xl float-start">
+                <img
+                  src="src-tauri/icons/tinymesh-white.png"
+                  width="100"
+                  height="28"
+                ></img>
+              </span>
               <span id="connectionStatusIcon">{isConnected ? "🟢" : "🔴"}</span>
               <b>Connection Status:</b> &nbsp;
               <span id="connectionStatusText">
