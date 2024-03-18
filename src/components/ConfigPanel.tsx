@@ -219,59 +219,35 @@ const ConfigPanel: React.FC = () => {
   }
 
   return (
-    <div className="h-full overflow-y-scroll border rounded-lg">
-      <table className="w-full text-center table border border-collapse ">
-        <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="text-center ">
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border border-separate ">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-around sm:flex-wrap">
-        <button
-          onClick={() => readConfig()}
-          className=" bg-blue-700 text-white border rounded-lg text-sm p-2"
-        >
-          Read Config
-        </button>
-        <button
-          onClick={() => writeConfig()}
-          className=" bg-blue-700 text-white border rounded-lg  text-sm p-2"
-        >
-          Save Config
-        </button>
-        <button
-          onClick={async () => factoryReset()}
-          className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
-        >
-          Factory Reset
-        </button>
-        <TestModeSelect
-          testModeOptions={testModeOptions}
-          quickOptions={quickModeOptions}
-        />
+    <div className="h-full flex flex-col border rounded-lg">
+      <div className="overflow-y-scroll h-full">{showTable(data)}</div>
+      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap">
+        <div>
+          <button
+            onClick={() => readConfig()}
+            className=" bg-blue-700 text-white text-xs p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900 md:text-xs lg:text-lg"
+          >
+            Read Config
+          </button>
+          <button
+            onClick={() => writeConfig()}
+            className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
+          >
+            Save Config
+          </button>
+          <button
+            onClick={() => factoryReset()}
+            className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
+          >
+            Factory Reset
+          </button>
+        </div>
+        <div className="float right md:mt-2">
+          <TestModeSelect
+            testModeOptions={testModeOptions}
+            quickOptions={quickModeOptions}
+          />
+        </div>
       </div>
     </div>
   );
