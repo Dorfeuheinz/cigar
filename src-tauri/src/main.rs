@@ -51,7 +51,8 @@ fn main() {
             get_device_voltage,
             execute_mode_sequence,
             start_rssi_stream,
-            stop_rssi_stream
+            stop_rssi_stream,
+            factory_reset
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
