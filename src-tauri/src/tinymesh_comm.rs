@@ -360,9 +360,16 @@ pub fn execute_mode_sequence(
             clear_output_buffer_of_device(device);
             if let Some((send_seq, recv_seq)) = extract_send_recv_seq(&sequence_str) {
                 let send_result = send_bytes_to_device(device, &send_seq, &app_handle);
-                read_bytes_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
-                if send_result && recv_buffer == recv_seq {
-                    return true;
+                if recv_seq.ends_with(&[b'>']) {
+                    read_bytes_till_3e_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
+                    if send_result && recv_buffer == recv_seq[..recv_seq.len() - 1] {
+                        return true;
+                    }
+                } else {
+                    read_bytes_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
+                    if send_result && recv_buffer == recv_seq {
+                        return true;
+                    }
                 }
             }
         }
