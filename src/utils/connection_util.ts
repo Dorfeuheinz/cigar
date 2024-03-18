@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { info } from "tauri-plugin-log-api";
 
 export async function connectToDevice(
   selectedDevice: string,
@@ -18,6 +19,6 @@ export async function disconnectFromDevice() {
 
 export async function getConnectedDevice() {
   let result: string | null = await invoke("get_connected_device", {});
-  console.info(`Connected device: ${result}`);
+  info(`Connected device: ${result}`);
   return result;
 }

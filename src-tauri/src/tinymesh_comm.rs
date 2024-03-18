@@ -1,6 +1,7 @@
 use crate::device_config_parser::{parse_device_config, MkDeviceConfig};
 use crate::input_processing;
 use crate::mk_module_description::MkDeviceCell;
+use log::{error, info};
 use serialport;
 use serialport::SerialPort;
 use std::sync::{Arc, Mutex};
@@ -29,7 +30,7 @@ struct Payload {
 
 #[tauri::command]
 pub fn get_devices() -> Vec<String> {
-    println!("Getting available devices");
+    info!("Getting available devices");
     let ports = serialport::available_ports();
     if let Ok(ports) = ports {
         return ports.iter().map(|port| port.port_name.clone()).collect();
@@ -39,10 +40,10 @@ pub fn get_devices() -> Vec<String> {
 
 #[tauri::command]
 pub fn get_connected_device(device_entity: State<DeviceEntity>) -> Option<String> {
-    println!("Getting connected device");
+    info!("Getting connected device");
     if let Ok(device) = device_entity.port.lock() {
         if let Some(device) = device.as_ref() {
-            println!("Connected device: {}", device.name().unwrap_or_default());
+            info!("Connected device: {}", device.name().unwrap_or_default());
             return device.name();
         }
     }
@@ -55,7 +56,7 @@ pub fn connect_to_device(
     baud_rate: u32,
     device_entity: State<DeviceEntity>,
 ) -> bool {
-    println!("Connecting to {} with baud rate {}", device_name, baud_rate);
+    info!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
         .timeout(Duration::from_millis(30))
@@ -70,7 +71,7 @@ pub fn connect_to_device(
 #[tauri::command]
 pub fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
     if let Ok(mut device) = device_entity.port.lock() {
-        println!("Disconnecting from device");
+        info!("Disconnecting from device");
         *device = None;
         return true;
     }
@@ -84,10 +85,10 @@ pub fn send_bytes(
     app_handle: AppHandle,
 ) -> bool {
     let bytes_to_send: Vec<u8> = input_processing::process_input(&input).unwrap_or_else(|e| {
-        println!("Error processing input: {:#?}", e);
+        error!("Error processing input: {:#?}", e);
         vec![]
     });
-    println!("Sending bytes: {:?}", bytes_to_send);
+    info!("Sending bytes: {:?}", bytes_to_send);
     if let Ok(mut device) = device_entity.port.lock() {
         if let Some(device) = device.as_mut() {
             let send_result = send_bytes_to_device(device, &bytes_to_send, &app_handle);
@@ -105,7 +106,7 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
                 let is_communication_task_running =
                     device_entity.is_communication_task_running.clone();
                 let stream = tauri::async_runtime::spawn(async move {
-                    println!("Starting communication task");
+                    info!("Starting communication task");
                     if let Ok(mut is_communication_task_running) =
                         is_communication_task_running.lock()
                     {
@@ -117,7 +118,7 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
                             is_communication_task_running.lock()
                         {
                             if !*is_communication_task_running {
-                                println!("Stopping communication task");
+                                info!("Stopping communication task");
                                 return;
                             }
                         }
@@ -219,12 +220,10 @@ pub fn set_device_config(
                 if bytes_to_send.is_empty() {
                     return false;
                 }
-                println!("Sending bytes: {:?}", bytes_to_send);
                 let send_result = send_bytes_to_device(device, &[b'M'], &app_handle);
                 if send_result {
                     let mut buffer = vec![];
                     read_bytes_from_device_to_buffer(device, &mut buffer, &app_handle);
-                    println!("Received bytes 1: {:?}", buffer);
                     clear_output_buffer_of_device(device);
                     if buffer.len() > 0 && buffer[0] == b'>' {
                         let send_changes_result =
@@ -233,7 +232,6 @@ pub fn set_device_config(
                             let mut buffer2 = vec![];
                             while (device.bytes_to_read().unwrap_or(0)) == 0 {}
                             read_bytes_from_device_to_buffer(device, &mut buffer2, &app_handle);
-                            println!("Received bytes 2: {:?}", buffer2);
                             return buffer2.len() > 0 && buffer2[0] == b'>';
                         }
                     }
@@ -365,7 +363,7 @@ pub struct RSSIEvent {
 
 #[tauri::command]
 pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
-    println!("Starting RSSI stream");
+    info!("Starting RSSI stream");
     let device_port = device_entity.port.clone();
     if let Ok(mut is_rssi_task_running) = device_entity.is_rssi_task_running.lock() {
         *is_rssi_task_running = true;
@@ -377,14 +375,14 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
                 loop {
                     if let Ok(is_rssi_task_running) = is_rssi_task_running.lock() {
                         if !*is_rssi_task_running {
-                            println!("Stopping RSSI stream 1");
+                            info!("Stopping RSSI stream");
                             return;
                         }
                     }
                     for i in 1..=10 {
                         if let Ok(is_rssi_task_running) = is_rssi_task_running.lock() {
                             if !*is_rssi_task_running {
-                                println!("Stopping RSSI stream 2");
+                                info!("Stopping RSSI stream");
                                 return;
                             }
                         }
@@ -416,7 +414,7 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
 
 #[tauri::command]
 pub fn stop_rssi_stream(device_entity: State<DeviceEntity>) {
-    println!("Stopping RSSI stream");
+    info!("Sending signal to stop RSSI stream");
     if let (Ok(mut rssi_task), Ok(mut is_rssi_task_running)) = (
         device_entity.rssi_task.lock(),
         device_entity.is_rssi_task_running.lock(),
@@ -551,7 +549,7 @@ fn send_bytes_to_device(
         Ok(()) => {
             device
                 .flush()
-                .unwrap_or_else(|e| println!("Error flushing: {}", e));
+                .unwrap_or_else(|e| error!("Error flushing: {}", e));
             let bytes_to_send_str = bytes_to_send
                 .iter()
                 .map(|b| format!("{:02X}", b))
@@ -565,7 +563,7 @@ fn send_bytes_to_device(
                         data: bytes_to_send_str,
                     },
                 )
-                .unwrap_or_else(|e| println!("Error emitting: {}", e));
+                .unwrap_or_else(|e| error!("Error emitting: {}", e));
             true
         }
         Err(_) => false,
@@ -592,7 +590,7 @@ fn read_bytes_from_device_to_buffer(
                     data: bytes_to_read_str,
                 },
             )
-            .unwrap_or_else(|e| println!("Error emitting: {}", e));
+            .unwrap_or_else(|e| error!("Error emitting: {}", e));
     }
     result
 }

@@ -8,10 +8,9 @@ function CommunicationPanel() {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   const handleSubmit = async () => {
-    let sendBytesResult = await invoke("send_bytes", {
+    await invoke("send_bytes", {
       input: communicationInput,
     });
-    console.info(`Sending bytes. Result: ${sendBytesResult}`);
   };
 
   const handleDecrementInterval = () => {

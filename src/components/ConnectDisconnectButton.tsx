@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { ConnectionContext } from "../App";
 import { getConnectedDevice } from "../utils/connection_util";
+import { error } from "tauri-plugin-log-api";
 
 type ConnectDisconnectButtonProps = {
   connectFunction: () => Promise<boolean>;
@@ -43,8 +44,8 @@ const ConnectDisconnectButton: React.FC<ConnectDisconnectButtonProps> = ({
           setButtonText("Connect");
         }
       }
-    } catch (error) {
-      console.error("Error occurred:", error);
+    } catch (err) {
+      error(`Error occurred: ${err}`);
     }
   };
 

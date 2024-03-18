@@ -3,21 +3,25 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
+use tauri_plugin_log::LogTarget;
 
+use tauri_plugin_log::RotationStrategy;
+use tauri_plugin_log::TimezoneStrategy;
 use tinymesh_cc_tool::tinymesh_comm::*;
+
+#[cfg(debug_assertions)]
+const LOG_TARGETS: [LogTarget; 2] = [LogTarget::Stdout, LogTarget::LogDir];
+
+#[cfg(not(debug_assertions))]
+const LOG_TARGETS: [LogTarget; 1] = [LogTarget::LogDir];
 
 fn main() {
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
-                .targets([tauri_plugin_log::LogTarget::Folder(
-                    std::env::current_exe()
-                        .unwrap()
-                        .parent()
-                        .unwrap()
-                        .join("logs"),
-                )])
-                .log_name("custom-name")
+                .targets(LOG_TARGETS)
+                .rotation_strategy(RotationStrategy::KeepOne)
+                .timezone_strategy(TimezoneStrategy::UseLocal)
                 .build(),
         )
         .manage(DeviceEntity {
