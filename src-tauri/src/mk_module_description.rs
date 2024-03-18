@@ -1,3 +1,6 @@
+use log::info;
+use tauri::AppHandle;
+
 use crate::module_description_parser::parse_module_description;
 use std::collections::HashMap;
 
@@ -282,11 +285,15 @@ impl MkModuleDescription {
         result
     }
 
-    pub fn new_from_device_model(model: &str) -> Result<MkModuleDescription, String> {
-        let current_exe_path = std::env::current_exe().map_err(|err| err.to_string())?;
-        let current_exe_dir = current_exe_path.parent().unwrap();
-        let modules_dir = current_exe_dir.join("modules");
-        let file_path = modules_dir.join(format!("{}.rmd", model));
+    pub fn new_from_device_model(
+        model: &str,
+        app_handle: &AppHandle,
+    ) -> Result<MkModuleDescription, String> {
+        let file_path = app_handle
+            .path_resolver()
+            .resolve_resource(format!("resources/modules/{}.rmd", model))
+            .ok_or("File not found".to_string())?;
+        info!("File path: {:?}", file_path);
         let file_contents = std::fs::read_to_string(file_path).map_err(|err| err.to_string())?;
         Ok(MkModuleDescription::new(&file_contents))
     }

@@ -12,6 +12,7 @@ import { ask } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
 import { Tooltip } from "flowbite-react";
 import { getDeviceConfig, setDeviceConfig } from "../utils/device_info_util";
+import { error } from "tauri-plugin-log-api";
 
 import {
   MkDeviceCell,
@@ -35,11 +36,15 @@ const ConfigPanel: React.FC = () => {
   );
 
   const readConfig = () => {
-    getDeviceConfig().then((result) => {
-      setData(result.cells);
-      setTestModeOptions(result.test_modes);
-      setQuickModeOptions(result.quick_modes);
-    });
+    getDeviceConfig()
+      .then((result) => {
+        setData(result.cells);
+        setTestModeOptions(result.test_modes);
+        setQuickModeOptions(result.quick_modes);
+      })
+      .catch((err) => {
+        error(`Error occurred while trying to read device config: ${err}`);
+      });
   };
 
   const writeConfig = () => {

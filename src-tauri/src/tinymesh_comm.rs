@@ -182,24 +182,22 @@ pub fn get_device_config(
     app_handle: AppHandle,
 ) -> Result<MkDeviceConfig, String> {
     let mut config_bytes_buffer = vec![];
-
-    if let Ok(mut device) = device_entity.port.lock() {
-        if let Some(device) = device.as_mut() {
-            if clear_output_buffer_of_device(device)
-                && send_bytes_to_device(device, &[0x30], &app_handle)
-            {
-                read_bytes_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
-                if let Ok(device_config) = parse_device_config(&config_bytes_buffer, None) {
-                    if let Ok(mut device_config_from_state) = device_entity.device_config.lock() {
-                        let cloned_config = device_config.clone();
-                        *device_config_from_state = Some(cloned_config);
-                    }
-                    return Ok(device_config);
-                }
-            }
-        }
+    let mut device = device_entity.port.lock().map_err(|err| err.to_string())?;
+    let device = device
+        .as_mut()
+        .ok_or("Could not lock the selected device".to_string())?;
+    if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
+        read_bytes_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
+        let device_config = parse_device_config(&config_bytes_buffer, None, Some(&app_handle))?;
+        let mut device_config_from_state = device_entity
+            .device_config
+            .lock()
+            .map_err(|err| err.to_string())?;
+        let cloned_config = device_config.clone();
+        *device_config_from_state = Some(cloned_config);
+        return Ok(device_config);
     }
-    return Err("Unable to get config".to_string());
+    return Err("Unable to get config. Looks like sending bytes failed.".to_string());
 }
 
 #[tauri::command]

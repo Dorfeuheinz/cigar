@@ -1,5 +1,7 @@
 use std::path::Path;
 
+use tauri::AppHandle;
+
 use crate::mk_module_description::{
     MkDeviceCell, MkDeviceQuickMode, MkDeviceTestMode, MkModuleDescription,
 };
@@ -17,6 +19,7 @@ pub struct MkDeviceConfig {
 pub fn parse_device_config(
     data: &[u8],
     rmd_file_path: Option<&Path>,
+    app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceConfig, String> {
     let (model, hw_version, firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
@@ -25,7 +28,10 @@ pub fn parse_device_config(
             std::fs::read_to_string(rmd_file_path).map_err(|err| err.to_string())?;
         MkModuleDescription::new(&file_contents)
     } else {
-        MkModuleDescription::new_from_device_model(&model)?
+        if app_handle.is_none() {
+            return Err("App handle is None".to_string());
+        }
+        MkModuleDescription::new_from_device_model(&model, app_handle.unwrap())?
     };
 
     let cells = read_unlocked_cells(data, &module_description);

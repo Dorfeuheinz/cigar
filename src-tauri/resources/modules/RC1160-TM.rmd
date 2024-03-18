@@ -1,0 +1,1718 @@
+// ---------------------------------------------------------
+// RADIOCRAFTS (c) 2008
+// DO NOT EDIT!
+// EDITING THIS FILE MAY CAUSE APPLICATIONS CRASHING OR EVEN
+// MODULE'S DAMAGE!
+// ---------------------------------------------------------
+// For TM FW version 1.1x
+
+[DEVICE_MODEL]
+RC1160-TM 
+
+[FILE_VERSION]
+1.00
+
+[FILES_SPECIFICATION_VERSION]
+1.00
+
+[RSSI_OFFSET]
+0
+
+[RSSI_SATURATION]
+16
+
+[RSSI_SCALE_FACTOR]
+-0.5
+
+[FREQUENCY_CHANNEL_FIRST_CENTER]
+868.75
+
+[FREQUENCY_CHANNEL_WIDTH]
+100.00
+
+[EDITABLE_CELLS]
+0x00 0x01 0x02 0x03 0x04 0x05 0x06      0x08 0x09 0x0A 0x0B 0x0C 0x0D 0x0E 0x07 0x60
+0x10 0x11 0x12 0x13 0x14 0x15 0x16 0x17 0x18 0x19 0x1A 0x1B 0x1C 0x1D 0x1E 0x1F 
+0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27 0x28 0x29 0x2a 0x2b 0x2C 0x2d 0x2e 0x2f  
+0x30 0x31 0x32 0x33 0x34 0x35
+
+
+// uncoment the following line to edit advanced settings
+//0x0A 0x0B 0x0C 0x0D 0x36 0x13 
+
+//[ADVANCED_CELL_ADDRESS]
+//0x0E 0x0F 0x10 0x11 0x12 0x13 0x14 0x15 0x16 0x17
+
+// comment the following section to write to memory from address 0x3c up
+// 0x3c is a start of name of the model
+[LOCKED_CELLS]
+0x0F
+0x3C 0x3D 0x3E 0x3F
+0x40 0x41 0x42 0x43 0x44 0x45 0x46 0x47 0x48 0x49 0x4A 0x4B 0x4C 0x4D 0x4E 0x4F
+0x50 0x51 0x52 0x53 0x54 0x55 0x56 0x57 0x58 0x59 0x5A 0x5B 0x5C 0x5D 0x5E 0x5F
+     0x61 0x62 0x63 0x64 0x65 0x66 0x67 0x68 0x69 0x6A 0x6B 0x6C 0x6D 0x6E 0x6F
+0x70 0x71 0x72 0x73 0x74 0x75 0x76 0x77 0x78 0x79 0x7A 0x7B 0x7C 0x7D 0x7E 0x7F
+0x80 0x81 0x82 0x83 0x84 0x85 0x86 0x87 0x88 0x89 0x8A 0x8B 0x8C 0x8D 0x8E 0x8F
+0x90 0x91 0x92 0x93 0x94 0x95 0x96 0x97 0x98 0x99 0x9A 0x9B 0x9C 0x9D 0x9E 0x9F
+0xA0 0xA1 0xA2 0xA3 0xA4 0xA5 0xA6 0xA7 0xA8 0xA9 0xAA 0xAB 0xAC 0xAD 0xAE 0xAF
+0xB0 0xB1 0xB2 0xB3 0xB4 0xB5 0xB6 0xB7 0xB8 0xB9 0xBA 0xBB 0xBC 0xBD 0xBE 0xBF
+0xC0 0xC1 0xC2 0xC3 0xC4 0xC5 0xC6 0xC7 0xC8 0xC9 0xCA 0xCB 0xCC 0xCD 0xCE 0xCF
+0xD0 0xD1 0xD2 0xD3 0xD4 0xD5 0xD6 0xD7 0xD8 0xD9 0xDA 0xDB 0xDC 0xDD 0xDE 0xDF
+0xE0 0xE1 0xE2 0xE3 0xE4 0xE5 0xE6 0xE7 0xE8 0xE9 0xEA 0xEB 0xEC 0xED 0xEE 0xEF
+0xF0 0xF1 0xF2 0xF3 0xF4 0xF5 0xF6 0xF7 0xF8 0xF9 0xFA 0xFB 0xFC 0xFD 0xFE 0xFF
+ 
+// comment until here
+
+// ---------- ---------- TEST MODES ---------- ---------- 
+// ---------- ---------- TEST MODES ---------- ---------- 
+// ---------- ---------- TEST MODES ---------- ---------- 
+
+// total number of testmodes
+// Each testmode must be numbered in sequence
+[TESTMODE NUMBER]
+5
+
+
+// ---------- 1 1 1
+// ---------- 1 1 1
+// ---------- 1 1 1
+
+// displayed name for this testmode
+[TESTMODE 1 NAME]
+Set Gateway Mode
+
+// a sequence for turning on the sequenc
+[TESTMODE 1 SEQUENCE_ON]
+aG #>
+
+// a sequence, that is sent before X or before going into different
+// test mode if module is in this test mode
+[TESTMODE 1 SEQUENCE_OFF]
+
+
+// hint for this test mode
+[TESTMODE 1 HINT]
+Set deafult parameters for Gateway mode
+
+[]
+
+
+
+// ---------- 2 2 2 
+// ---------- 2 2 2 
+// ---------- 2 2 2 
+
+// displayed name for this testmode
+[TESTMODE 2 NAME]
+Set Router Mode
+
+[TESTMODE 2 SEQUENCE_ON]
+aR #> 
+[TESTMODE 2 SEQUENCE_OFF]
+
+
+[TESTMODE 2 HINT]
+Set default parameters for Router mode.
+
+[]
+
+
+
+// ---------- 3 3 3
+// ---------- 3 3 3
+// ---------- 3 3 3
+
+// displayed name for this testmode
+[TESTMODE 3 NAME]
+Test Mode 1 (TX On)
+
+// a sequence for turning ont the sequence
+[TESTMODE 3 SEQUENCE_ON]
+a1 #>
+
+// a sequence, that is sent before X or before going into different
+// test mode if module is in this test mode
+[TESTMODE 3 SEQUENCE_OFF]
+a3 #>
+
+// hint for this test mode
+[TESTMODE 3 HINT]
+TX carrier (lower FSK frequency)
+
+[]
+
+// ---------- 4 4 4
+// ---------- 4 4 4
+// ---------- 4 4 4
+
+[TESTMODE 4 NAME]
+Test Mode 3 (RX)
+
+[TESTMODE 4 SEQUENCE_ON]
+a3 #>
+[TESTMODE 4 SEQUENCE_OFF]
+
+
+[TESTMODE 4 HINT]
+TX off, RX mode.
+[]
+
+// ---------- 5 5 5 
+// ---------- 5 5 5 
+// ---------- 5 5 5 
+
+[TESTMODE 5 NAME]
+Test Mode 5 (Sniffer)
+
+[TESTMODE 5 SEQUENCE_ON]
+a5 
+[TESTMODE 5 SEQUENCE_OFF]
+a3 #>
+
+
+[TESTMODE 5 HINT]
+Display RSSI for any received, valid TinyMesh package
+
+[]
+
+
+
+// ---------- ---------- DESCRIPTON OF CELLS ---------- ---------- 
+// ---------- ---------- DESCRIPTON OF CELLS ---------- ---------- 
+// ---------- ---------- DESCRIPTON OF CELLS ---------- ---------- 
+
+// ---------- 0X00 RF CHANNEL
+// ---------- 0X00 RF CHANNEL
+// ---------- 0X00 RF CHANNEL
+
+[M 0x00 MIN_MAX]
+1 5
+
+[M 0x00 NAME]
+RF Channel
+
+[M 0x00 HINT]
+RF CHANNEL
+
+Ch 1: 868.750 MHz
+Ch 2: 868.850 MHz
+Ch 3: 868.950 MHz
+Ch 4: 869.050 MHz
+Ch 5: 869.150 MHz
+
+
+[]
+
+// ---------- 0x01 RF POWER
+// ---------- 0x01 RF POWER
+// ---------- 0x01 RF POWER
+
+[M 0x01 MIN_MAX]
+1 5
+
+[M 0x01 NAME]
+RF Power
+
+[M 0x01 HINT]
+RF_POWER
+
+1: -20 dBm 
+2: -10 dBm 
+3:   0 dBm 
+4:   5 dBm 
+5:  10 dBm
+
+[]
+
+// ---------- 0x02 RF DATA RATE
+// ---------- 0x02 RF DATA RATE
+// ---------- 0x02 RF DATA RATE
+
+[M 0x02 MIN_MAX]
+1 6
+
+[M 0x02 NAME]
+RF Data rate
+
+[M 0x02 HINT]
+RF Data rate
+
+1: 1.2 kbit/s
+2: 4.8 kbit/s
+3: 19.2 kbit/s
+4: 32.768 kbit/s
+5: 76.8 kbit/s
+6: 100 kbit/s
+
+[]
+
+// ---------- 0x03 Mode setting
+// ---------- 0x03 Mode setting
+// ---------- 0x03 Mode setting
+
+[M 0x03 MIN_MAX]
+0 1
+
+[M 0x03 NAME]
+Protocol mode
+
+[M 0x03 HINT]
+Select protocol transparency
+
+0: Packet mode
+1: Transparent mode
+
+[]
+
+// ---------- 0x04 RSSI Acceptance level
+// ---------- 0x04 RSSI Acceptance level
+// ---------- 0x04 RSSI Acceptance level
+
+[M 0x04 MIN_MAX]
+160 210
+
+[M 0x04 NAME]
+RSSI acceptance level
+
+[M 0x04 HINT]
+Minimum RSSI level to accept network connection
+
+Confer data sheet for RSSI sensitivity information 
+
+[]
+
+// ---------- 0x05 RSSI Clear Channel Assessment level
+// ---------- 0x05 RSSI Clear Channel Assessment level
+// ---------- 0x05 RSSI Clear Channel Assessment level
+[M 0x05 MIN_MAX]
+160 210
+
+[M 0x05 NAME]
+RSSI Clear Channel Assessment level
+
+[M 0x05 HINT]
+Maximum RSSI for determination of Clear Channel
+during Listen Before Talk before data transmit
+
+Confer data sheet for RSSI sensitivity information 
+
+[]
+
+// ---------- 0x06 HIAM time
+// ---------- 0x06 HIAM time
+// ---------- 0x06 HIAM time
+[M 0x06 MIN_MAX]
+1 10
+
+[M 0x06 NAME]
+HIAM time
+
+[M 0x06 HINT]
+Time in seconds between network invites
+Must be less than Connect Check time settings (CC Time)
+
+
+[]
+
+// ---------- 0x07 IMA time
+// ---------- 0x07 IMA time
+// ---------- 0x07 IMA time
+[M 0x07 MIN_MAX]
+1 255
+
+[M 0x07 NAME]
+IMA time
+
+[M 0x07 HINT]
+Time in minutes between I'm Alive status messages
+255 = never
+
+
+// ---------- 0x60 IMA on connect
+// ---------- 0x60 IMA on connect
+// ---------- 0x60 IMA on connect
+[M 0x60 ALLOW]
+0 1
+
+[M 0x60 NAME]
+IMA On Connect
+
+[M 0x60 HINT]
+Send IMA status message on network connect
+
+0: No message
+1: Send message
+
+
+[]
+// ---------- 0x08 CC Time
+// ---------- 0x08 CC Time
+// ---------- 0x08 CC Time
+[M 0x08 MIN_MAX]
+4 20
+
+[M 0x08 NAME]
+Connect Check time
+
+[M 0x08 HINT]
+Time in seconds between network evaluation
+Must be larger than HIAM time for Router nodes
+
+[]
+
+// ---------- 0x09 Max Jumplevel
+// ---------- 0x09 Max Jumplevel
+// ---------- 0x09 Max Jumplevel
+
+[M 0x09 MIN_MAX]
+5 30
+
+[M 0x09 NAME]
+Maximum Jumplevel
+
+
+[M 0x09 HINT]
+Highest allowable network jumplevel
+
+[]
+
+
+// ---------- 0x0A Max Jumps
+// ---------- 0x0A Max Jumps
+// ---------- 0x0A Max Jumps
+
+[M 0x0A MIN_MAX]
+5 30
+
+[M 0x0A NAME]
+Maximum JumpCount
+
+
+[M 0x0A HINT]
+Maximum transportation jumps before a packet
+is considered undeliverable, and eliminated.
+
+[]
+
+// ---------- 0x0B Max delay
+// ---------- 0x0B Max delay
+// ---------- 0x0B Max delay
+
+[M 0x0B MIN_MAX]
+1 255
+
+[M 0x0B NAME]
+Maximum packet latency
+
+
+[M 0x0B HINT]
+Maximum transport time before a packet
+is judged as undeliverable, and eliminated.
+
+Calculated as periods of 60 seconds.
+
+Example : 
+1   = 60 seconds 
+255 = 15300 seconds (4 h 15 min)
+	
+[]
+
+
+// ---------- 0x0C TX_Retry
+// ---------- 0x0C TX_Retry
+// ---------- 0x0C TX_Retry
+
+[M 0x0C MIN_MAX]
+1 100
+
+[M 0x0C NAME]
+RF Transmit retry limit
+
+
+[M 0x0C HINT]
+Number of unsuccessful RF retries before a Router or End node 
+disconnects and attempts reconnecting to the network. 
+	
+[]
+
+// ---------- 0x0D Serial Port Timeout
+// ---------- 0x0D Serial Port Timeout
+// ---------- 0x0D Serial Port Timeout
+
+[M 0x0D MIN_MAX]
+1 255
+
+[M 0x0D NAME]
+Serial port Time Out
+
+[M 0x0D HINT]
+Time out between character inputs on serial port before a 
+packet is transmitted in Transparent mode.
+
+Time is calculated as periods of 10ms
+
+Examples:
+1   =   10 ms
+10  =  100 ms
+255 = 2550 ms (Max value)
+	
+[]
+
+// ---------- 0x0E Device Type
+// ---------- 0x0E Device Type
+// ---------- 0x0E Device Type
+
+[M 0x0E MIN_MAX]
+1 3
+
+[M 0x0E NAME]
+Device Type
+
+[M 0x0E HINT]
+Device type may be 
+
+1   = Gateway
+2   = Router
+3   = End Device
+
+Confer data sheet for description of device types
+	
+[]
+
+// ---------- 0x0F End node wakeup interval
+// ---------- 0x0F End node wakeup interval
+// ---------- 0x0F End node wakeup interval
+
+//[M 0x0F MIN_MAX]
+//0 255
+
+//[M 0x0F NAME]
+//Wakeup interval
+
+//[M 0x0F HINT]
+//Time in five-minute intervals between wake up from sleep mode for End Nodes.
+//Router nodes may use same timer for automatic transmit of status messages.
+
+
+//Examples:
+//0   = Never
+//1   = 5 minutes
+//255 = 21 hours, 15 minutes
+//////////////////////////////////////////////////////////////////////
+
+[]
+// ---------- 0x10 Set GPIO 0 function
+// ---------- 0x10 Set GPIO 0 function
+// ---------- 0x10 Set GPIO 0 function
+
+[M 0x10 MIN_MAX]
+0 2
+
+[M 0x10 NAME]
+Set GPIO 0 function
+
+[M 0x10 HINT]
+Set function  for 
+GPIO 0, module Pin 15
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+2   = Pin used for Analog input
+
+[]
+// ---------- 0x11 Set GPIO 1 function
+// ---------- 0x11 Set GPIO 1 function
+// ---------- 0x11 Set GPIO 1 function
+
+[M 0x11 MIN_MAX]
+0 2
+
+[M 0x11 NAME]
+Set GPIO 1 function
+
+[M 0x11 HINT]
+Set function  for 
+GPIO 1, module Pin 16
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+2   = Pin used for Analog input
+
+[]
+// ---------- 0x12 Set GPIO 2 function
+// ---------- 0x12 Set GPIO 2 function
+// ---------- 0x12 Set GPIO 2 function
+
+[M 0x12 MIN_MAX]
+0 1
+
+[M 0x12 NAME]
+Set GPIO 2 function
+
+[M 0x12 HINT]
+Set function  for 
+GPIO 2, module Pin 20
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+
+
+[]
+// ---------- 0x13 Set GPIO 3 function
+// ---------- 0x13 Set GPIO 3 function
+// ---------- 0x13 Set GPIO 3 function
+
+[M 0x13 MIN_MAX]
+0 1
+
+[M 0x13 NAME]
+Set GPIO 3 function
+
+[M 0x13 HINT]
+Set function  for 
+GPIO 3, module Pin 22
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+
+[]
+// ---------- 0x14 Set GPIO 4 function
+// ---------- 0x14 Set GPIO 4 function
+// ---------- 0x14 Set GPIO 4 function
+
+[M 0x14 MIN_MAX]
+0 1
+
+[M 0x14 NAME]
+Set GPIO 4 function
+
+[M 0x14 HINT]
+Set function  for 
+GPIO 4, module Pin 26
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+
+
+[]
+// ---------- 0x15 Set GPIO 5 function
+// ---------- 0x15 Set GPIO 5 function
+// ---------- 0x15 Set GPIO 5 function
+
+[M 0x15 MIN_MAX]
+0 1
+
+[M 0x15 NAME]
+Set GPIO 5 function
+
+[M 0x15 HINT]
+Set function  for 
+GPIO 5, module Pin 25
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+
+[]
+// ---------- 0x16 Set GPIO 6 function
+// ---------- 0x16 Set GPIO 6 function
+// ---------- 0x16 Set GPIO 6 function
+
+[M 0x16 MIN_MAX]
+0 1
+
+[M 0x16 NAME]
+Set GPIO 6 function
+
+[M 0x16 HINT]
+Set function  for 
+GPIO 6, module Pin 24
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input (Default)
+
+[]
+
+// ---------- 0x17 Set GPIO 7 function
+// ---------- 0x17 Set GPIO 7 function
+// ---------- 0x17 Set GPIO 7 function
+
+[M 0x17 ALLOW]
+0 1 3
+
+[M 0x17 NAME]
+Set GPIO 6 function
+
+[M 0x17 HINT]
+Set function  for 
+GPIO 7, module Pin 23
+
+Options:
+0   = Pin used for Digital output
+1   = Pin used for Digital input
+3   = Pulse Width Modulated (Dimmer) output
+
+[]
+// ---------- 0x18 Input trig 0
+// ---------- 0x18 Input trig 0
+// ---------- 0x18 Input trig 0
+
+[M 0x18 MIN_MAX]
+0 3
+
+[M 0x18 NAME]
+Enable GPIO 0 trigger
+
+[M 0x18 HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as analog or digital input
+
+Options
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x19 Input trig 1
+// ---------- 0x19 Input trig 1
+// ---------- 0x19 Input trig 1
+
+[M 0x19 MIN_MAX]
+0 3
+
+[M 0x19 NAME]
+Enable GPIO 1 trigger
+
+[M 0x19 HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as analog or digital input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x1A Input trig 2
+// ---------- 0x1A Input trig 2
+// ---------- 0x1A Input trig 2
+
+[M 0x1A MIN_MAX]
+0 3
+
+[M 0x1A NAME]
+Enable GPIO 2 trigger
+
+[M 0x1A HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x1B Input trig 3
+// ---------- 0x1B Input trig 3
+// ---------- 0x1B Input trig 3
+
+[M 0x1B MIN_MAX]
+0 3
+
+[M 0x1B NAME]
+Enable GPIO 3 trigger
+
+[M 0x1B HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x1C Input trig 4
+// ---------- 0x1C Input trig 4
+// ---------- 0x1C Input trig 4
+
+[M 0x1C MIN_MAX]
+0 3
+
+[M 0x1C NAME]
+Enable GPIO 4 trigger
+
+[M 0x1C HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+
+[]
+
+// ---------- 0x1D Input trig 5
+// ---------- 0x1D Input trig 5
+// ---------- 0x1D Input trig 5
+
+[M 0x1D MIN_MAX]
+0 3
+
+[M 0x1D NAME]
+Enable GPIO 5 trigger
+
+[M 0x1D HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x1E Input trig 6
+// ---------- 0x1E Input trig 6
+// ---------- 0x1E Input trig 6
+
+[M 0x1E MIN_MAX]
+0 3
+
+[M 0x1E NAME]
+Enable GPIO 6 trigger
+
+[M 0x1E HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x1F Input trig 7
+// ---------- 0x1F Input trig 7
+// ---------- 0x1F Input trig 7
+
+[M 0x1F MIN_MAX]
+0 3
+
+[M 0x1F NAME]
+Enable GPIO 7 trigger
+
+[M 0x1F HINT]
+Trigger an event on sinal level input change.
+GPIO must first be set as input
+
+Examples:
+0   = No trigger
+1   = Rising edge trigger
+2   = Falling edge trigger
+3   = Rising and falling edge trigger
+
+[]
+
+// ---------- 0x20 Input debounce
+// ---------- 0x20 Input debounce
+// ---------- 0x20 Input debounce
+
+[M 0x20 MIN_MAX]
+0 255
+
+[M 0x20 NAME]
+Input debounce
+
+[M 0x20 HINT]
+Debounce time in ms for all Digital inputs.
+Minimum stable input status time in ms before an event is triggered.
+
+Example:
+0   = No debounce
+5   = 5 ms
+
+
+[]
+
+// ---------- 0x21 GPIO 0 Analog High Trig level High Byte
+// ---------- 0x21 GPIO 0 Analog High Trig level High Byte
+// ---------- 0x21 GPIO 0 Analog High Trig level High Byte
+
+[M 0x21 MIN_MAX]
+0 7
+
+
+[M 0x21 NAME]
+GPIO 0 Analog High Trig, High byte
+
+[M 0x21 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+ 
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+
+[]
+
+// ---------- 0x22 GPIO 0 Analog High Trig level Low Byte
+// ---------- 0x22 GPIO 0 Analog High Trig level Low Byte
+// ---------- 0x22 GPIO 0 Analog High Trig level Low Byte
+
+[M 0x22 MIN_MAX]
+0 255
+
+[M 0x22 NAME]
+GPIO 0 Analog High Trig, Low byte
+
+
+[M 0x22 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+[]
+
+// ---------- 0x23 GPIO 0 Analog Low Trig level High Byte
+// ---------- 0x23 GPIO 0 Analog Low Trig level High Byte
+// ---------- 0x23 GPIO 0 Analog Low Trig level High Byte
+
+[M 0x23 MIN_MAX]
+0 7
+
+[M 0x23 NAME]
+GPIO 0 Analog Low Trig, High byte
+
+
+[M 0x23 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+[]
+
+// ---------- 0x24 GPIO 0 Analog Low Trig level Low Byte
+// ---------- 0x24 GPIO 0 Analog Low Trig level	Low Byte
+// ---------- 0x24 GPIO 0 Analog Low Trig level Low Byte
+
+[M 0x24 MIN_MAX]
+0 255
+
+[M 0x24 NAME]
+GPIO 0 Analog Low Trig, Low byte
+
+[M 0x24 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+[]
+
+// ---------- 0x25 GPIO 0 Analog Sampling interval
+// ---------- 0x25 GPIO 0 Analog Sampling interval
+// ---------- 0x25 GPIO 0 Analog Sampling interval
+
+[M 0x25 MIN_MAX]
+1 255
+
+[M 0x25 NAME]
+GPIO 0 Analog Sampling Interval
+
+[M 0x25 HINT]
+Sampling interval in steps of 100ms
+The GPIO analog value is calculated as 
+a sliding average of the last 8 samplings.
+
+
+
+
+[]
+
+// ---------- 0x26 GPIO 1 Analog High Trig level High Byte
+// ---------- 0x26 GPIO 1 Analog High Trig level High Byte
+// ---------- 0x26 GPIO 1 Analog High Trig level High Byte
+
+[M 0x26 MIN_MAX]
+0 7
+
+
+[M 0x26 NAME]
+GPIO 1 Analog High Trig, High byte
+
+[M 0x26 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+
+[]
+
+// ---------- 0x27 GPIO 1 Analog High Trig level Low Byte
+// ---------- 0x27 GPIO 1 Analog High Trig level Low Byte
+// ---------- 0x27 GPIO 1 Analog High Trig level Low Byte
+
+[M 0x27 MIN_MAX]
+0 255
+
+[M 0x27 NAME]
+GPIO 1 Analog High Trig, Low byte
+
+
+[M 0x27 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+[]
+
+// ---------- 0x28 GPIO 1 Analog Low Trig level High Byte
+// ---------- 0x28 GPIO 1 Analog Low Trig level High Byte
+// ---------- 0x28 GPIO 1 Analog Low Trig level High Byte
+
+[M 0x28 MIN_MAX]
+0 7
+
+[M 0x28 NAME]
+GPIO 1 Analog Low Trig, High byte
+
+
+[M 0x28 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+[]
+
+// ---------- 0x29 GPIO 1 Analog Low Trig level Low Byte
+// ---------- 0x29 GPIO 1 Analog Low Trig level	Low Byte
+// ---------- 0x29 GPIO 1 Analog Low Trig level Low Byte
+
+[M 0x29 MIN_MAX]
+0 255
+
+[M 0x29 NAME]
+GPIO 1 Analog Low Trig, Low byte
+
+[M 0x29 HINT]
+The trig level voltage is calculated as:
+(High byte * 256 + low byte)/2047 * 1,25 V
+
+High trig level must be set higher than low trig level.
+GPIO must be set as Analog input
+GPIO trigger must be set 
+
+
+[]
+
+// ---------- 0x2A GPIO 1 Analog Sampling interval
+// ---------- 0x2A GPIO 1 Analog Sampling interval
+// ---------- 0x2A GPIO 1 Analog Sampling interval
+
+[M 0x2A MIN_MAX]
+1 255
+
+[M 0x2A NAME]
+GPIO 1 Analog Sampling Interval
+
+[M 0x2A HINT]
+Sampling interval in steps of 100ms
+The GPIO analog value is calculated as 
+a sliding average of the last 8 samplings.
+
+
+
+
+[]
+
+// ---------- 0x2B CTS hold
+// ---------- 0x2B CTS hold
+// ---------- 0x2B CTS hold
+
+[M 0x2B MIN_MAX]
+1 255
+
+[M 0x2B NAME]
+CTS Hold Time
+
+[M 0x2B HINT]
+CTS Hold Time in 10ms periods.
+
+A timer holds CTS in FALSE status after Serial In buffer is ready to receive data.
+The timer prevents Gateway data from entering the network at a too high rate.
+Too much data traffic from the Gateway may overload the network, causing temporary disconnects.
+
+
+[]
+// ---------- 0x2C Locator status
+// ---------- 0x2C Locator status
+// ---------- 0x2C Locator status
+
+[M 0x2C ALLOW]
+0 1
+
+[M 0x2C NAME]
+Locator Status
+
+[M 0x2C HINT]
+Set to 1 if this node should report Locator Satus.
+Locator nodes should have known location
+Nodes will report closest Locator node (best RSSI) in event messages
+
+
+
+[]
+// ---------- 0x2D UNIQUE ID0
+// ---------- 0x2D UNIQUE ID0
+// ---------- 0x2D UNIQUE ID0
+
+
+
+[M 0x2D MIN_MAX]
+0 255
+
+[M 0x2D NAME]
+Unique ID0
+
+[M 0x2D HINT]
+UNIQUE_ID0
+Unique ID (UID)
+First byte of four byte unique ID
+
+<0-255> , 1 by default.
+[]
+
+// ---------- 0x2E UNIQUE ID1
+// ---------- 0x2E UNIQUE ID1
+// ---------- 0x2E UNIQUE ID1
+
+[M 0x2E MIN_MAX]
+0 255
+
+[M 0x2E NAME]
+Unique ID1
+
+[M 0x2E HINT]
+UNIQUE_ID
+Unique ID (UID)
+2.nd byte of four byte unique ID
+
+<0-255> , 0 by default.
+[]
+
+
+// ---------- 0x2F UNIQUE ID2
+// ---------- 0x2F UNIQUE ID2
+// ---------- 0x2F UNIQUE ID2
+
+[M 0x2F MIN_MAX]
+0 255
+
+[M 0x2F NAME]
+Unique ID2
+
+[M 0x2F HINT]
+UNIQUE_ID2
+Unique ID (UID)
+3.rd byte of four byte unique ID
+
+<0-255> , 0 by default.
+[]
+
+// ---------- 0x30 UNIQUE ID3
+// ---------- 0x30 UNIQUE ID3
+// ---------- 0x30 UNIQUE ID3
+
+[M 0x30 MIN_MAX]
+0 255
+
+[M 0x30 NAME]
+Unique ID3
+
+[M 0x30 HINT]
+UNIQUE_ID3
+Unique ID (UID)
+4.th byte of four byte unique ID
+
+<0-255> , 0 by default.
+[]
+
+
+// ---------- 0x31 SYSTEM ID0
+// ---------- 0x31 SYSTEM ID0
+// ---------- 0x31 SYSTEM ID0
+
+[M 0x31 MIN_MAX]
+0 255
+
+[M 0x31 NAME]
+System ID0
+
+[M 0x31 HINT]
+SYSTEM_ID0
+System (net or family) ID (SID)
+First byte in four byte System ID
+
+<0-255> , 1 by default.
+[]
+
+// ---------- 0x32 SYSTEM ID1
+// ---------- 0x32 SYSTEM ID1
+// ---------- 0x32 SYSTEM ID1
+
+[M 0x32 MIN_MAX]
+0 255
+
+[M 0x32 NAME]
+System ID1
+
+[M 0x32 HINT]
+SYSTEM_ID1
+System (net or family) ID (SID)
+2nd. byte in four byte System ID
+
+<0-255> , 0 by default.
+[]
+
+// ---------- 0x33 SYSTEM ID2
+// ---------- 0x33 SYSTEM ID2
+// ---------- 0x33 SYSTEM ID2
+
+[M 0x33 MIN_MAX]
+0 255
+
+[M 0x33 NAME]
+System ID2
+
+[M 0x33 HINT]
+SYSTEM_ID2
+System (net or family) ID (SID)
+3rd. byte in four byte System ID
+
+<0-255> , 0 by default.
+[]
+
+// ---------- 0x34 SYSTEM ID3
+// ---------- 0x34 SYSTEM ID3
+// ---------- 0x34 SYSTEM ID3
+
+[M 0x34 MIN_MAX]
+0 255
+
+[M 0x34 NAME]
+System ID3
+
+[M 0x34 HINT]
+
+SYSTEM_ID3
+System (net or family) ID (SID)
+First byte in four byte System ID
+
+<0-255> , 0 by default.
+
+[]
+
+// ---------- 0x35 UART BAUD RATE
+// ---------- 0x35 UART BAUD RATE
+// ---------- 0x35 UART BAUD RATE
+
+[M 0x35 MIN_MAX]
+1 11
+
+[M 0x35 NAME]
+UART baud rate
+
+[M 0x35 HINT]
+UART_BAUD_RATE
+Baud rate.
+
+0x00: Not used
+0x01: 2400
+0x02: 4800
+0x03: 9600
+0x04. 14400
+0x05: 19200 (default)
+0x06: 28800
+0x07: 38400
+0x08: 56700
+0x09: 76800
+0x0A: 115200
+0x0B: 230400
+
+BE CAREFUL
+IF CHANGING AS HOST MAY LOOSE CONTACT WITH MODULE!
+Does not take effect until module is re-booted / reset.
+
+If COM port baudrate to connect is not listed in the 
+Toolbar it can be typed in manually.
+[]
+
+// ---------- 0x3A UART FLOW CONTROL
+// ---------- 0x3A UART FLOW CONTROL
+// ---------- 0x3A UART FLOW CONTROL
+
+//[M 0x3A ALLOW]
+//0 1 2 3 4
+//
+//[M 0x3A NAME]
+//UART flow control
+
+//[M 0x3A HINT]
+//UART_FLOW_CTRL
+//UART flow control.
+
+//0: None (default)
+//1:CTS only
+//2:RTS only
+//3:CTS / RTS
+//4:RXTX (RS485)
+
+//[]
+
+
+// ---------- ---------- REST OF THE CELLS ---------- ---------- 
+// ---------- ---------- REST OF THE CELLS ---------- ---------- 
+// ---------- ---------- REST OF THE CELLS ---------- ---------- 
+
+// Remember to ENSURE that DEF value is defined only once - you should
+// delete or comment doubled values.
+
+[M 0x00 DEF]
+4 // hex 0x04 
+
+[M 0x01 DEF]
+5 // hex 0x05 
+
+[M 0x02 DEF]
+5 // hex 0x05 
+
+[M 0x03 DEF]
+1 // hex 0x01 
+
+[M 0x04 DEF]
+190 // hex 0xD0
+
+[M 0x05 DEF]
+197 // hex 0xD7
+
+[M 0x06 DEF]
+3 // hex 0x03
+
+[M 0x07 DEF]
+255 // hex 0xFF
+
+[M 0x08 DEF]
+6 // hex 0x06
+
+[M 0x09 DEF]
+20 // hex 0x14
+
+[M 0x0A DEF]
+30 // hex 0x1E 
+
+[M 0x0B DEF]
+5 // hex 0x05 
+
+[M 0x0C DEF]
+30 // hex 0x1E 
+
+[M 0x0D DEF]
+10 // hex 0x0A
+
+[M 0x0E DEF]
+2 // hex 0x02 
+
+[M 0x0F DEF]
+0 // hex 0x00 
+
+[M 0x10 DEF]
+1 // hex 0x01
+
+[M 0x11 DEF]
+1 // hex 0x01 
+
+[M 0x12 DEF]
+1 // hex 0x01 
+
+[M 0x13 DEF]
+1 // hex 0x01 
+
+[M 0x14 DEF]
+1 // hex 0x01
+
+[M 0x15 DEF]
+1 // hex 0x01 
+
+[M 0x16 DEF]
+1// hex 0x01 
+
+[M 0x17 DEF]
+1 // hex 0x01 
+
+[M 0x18 DEF]
+0 // hex 0x00 
+
+[M 0x19 DEF]
+0 // hex 0x00 
+
+[M 0x1A DEF]
+0 // hex 0x00
+
+[M 0x1B DEF]
+0 // hex 0x00
+
+[M 0x1C DEF]
+0 // hex 0x00
+
+[M 0x1D DEF]
+0 // hex 0x00 
+
+[M 0x1E DEF]
+0 // hex 0x00 
+
+[M 0x1F DEF]
+00 // hex 0x00 
+
+[M 0x20 DEF]
+10 // hex 0x0A
+
+[M 0x21 DEF]
+7 // hex 0x07 
+
+[M 0x22 DEF]
+0 // hex 0x00
+
+[M 0x23 DEF]
+0// hex 0x00
+
+[M 0x24 DEF]
+00 // hex 0x00
+
+[M 0x25 DEF]
+10 // hex 0x0A 
+
+[M 0x26 DEF]
+7 // hex 0x07 
+
+[M 0x27 DEF]
+255 // hex 0x0FF 
+
+[M 0x28 DEF]
+0 // hex 0x00
+
+[M 0x29 DEF]
+00 // hex 0x00
+
+[M 0x2A DEF]
+10 // hex 0x0A 
+
+[M 0x2B DEF]
+10 // hex 0x0A 
+
+[M 0x2C DEF]
+0 // hex 0x00 
+
+[M 0x2D DEF]
+1 // hex 0x01 
+
+[M 0x2E DEF]
+0 // hex 0x00 
+
+[M 0x2F DEF]
+0 // hex 0x00 
+
+[M 0x30 DEF]
+0 // hex 0x00 
+
+[M 0x31 DEF]
+1 // hex 0x01 
+
+[M 0x32 DEF]
+0 // hex 0x00 
+
+[M 0x33 DEF]
+0 // hex 0x00 
+
+[M 0x34 DEF]
+0 // hex 0x00  
+
+[M 0x35 DEF]
+5 // hex 0x05 
+
+[M 0x36 DEF]
+8 // hex 0x08 
+
+[M 0x37 DEF]
+0 // hex 0x00 
+
+[M 0x38 DEF]
+1 // hex 0x01
+
+[M 0x39 DEF]
+0 // hex 0x00 
+
+[M 0x3A DEF]
+1 // hex 0x01 
+
+[M 0x3B DEF]
+0 // hex 0x00 
+
+[M 0x39 DEF]
+0 // hex 0x00 
+
+[M 0x3A DEF]
+0 // hex 0x00 
+
+[M 0x3B DEF]
+0 // hex 0x00 
+
+[M 0x3C DEF]
+82 // hex 0x52 'R'
+
+[M 0x3D DEF]
+67 // hex 0x43 'C'
+
+[M 0x3E DEF]
+49 // hex 0x31 '1'
+
+[M 0x3F DEF]
+49 // hex 0x31 '1'
+
+[M 0x40 DEF]
+54 // hex 0x36 '6'
+
+[M 0x41 DEF]
+48 // hex 0x30 '0'
+
+[M 0x42 DEF]
+41 // hex 0x2D '-'
+
+[M 0x43 DEF]
+84 // hex 0x54 'T'
+
+[M 0x44 DEF]
+77 // hex 0x4D 'M'
+
+[M 0x45 DEF]
+44 // hex 0x2C ','
+
+[M 0x46 DEF]
+50 // hex 0x32 '2'
+
+[M 0x47 DEF]
+46 // hex 0x2E '.'
+
+[M 0x48 DEF]
+51 // hex 0x33 '3'
+
+[M 0x49 DEF]
+48 // hex 0x30 '0'
+
+[M 0x4A DEF]
+44 // hex 0x2C ','
+
+[M 0x4B DEF]
+49 // hex 0x31 '1'
+
+[M 0x4C DEF]
+46 // hex 0x2E '.'
+
+[M 0x4D DEF]
+49 // hex 0x31 '1'
+
+[M 0x4E DEF]
+54 // hex 0x36 '6' 
+
+[M 0x4f DEF]
+85 // hex 0x55
+
+[M 0x50 DEF]
+255 // hex 0xFF 
+
+[M 0x51 DEF]
+255 // hex 0xFF
+
+[M 0x52 DEF]
+05 // hex 0x05
+
+[M 0x53 DEF]
+255 // hex 0xFF
+
+[M 0x54 DEF]
+255 // hex 0xFF 
+
+[M 0x55 DEF]
+255 // hex 0xFF 
+
+[M 0x56 DEF]
+255 // hex 0xFF 
+
+[M 0x57 DEF]
+128 // hex 0x80 
+
+[M 0x58 DEF]
+192 // hex 0xC0 
+
+[M 0x59 DEF]
+255 // hex 0xFF 
+
+[M 0x5A DEF]
+255 // hex 0xFF 
+
+[M 0x5B DEF]
+255 // hex 0xFF 
+
+[M 0x5C DEF]
+255 // hex 0xFF 
+
+[M 0x5D DEF]
+255 // hex 0xFF 
+
+[M 0x5E DEF]
+255 // hex 0xFF 
+
+[M 0x5F DEF]
+255 // hex 0xFF 
+
+[M 0x60 DEF]
+0 // hex 0x00
+
+[M 0x61 DEF]
+255 // hex 0xFF 
+
+[M 0x62 DEF]
+255 // hex 0xFF 
+
+[M 0x63 DEF]
+255 // hex 0xFF 
+
+[M 0x64 DEF]
+255 // hex 0xFF 
+
+[M 0x65 DEF]
+255 // hex 0xFF 
+
+[M 0x66 DEF]
+255 // hex 0xFF 
+
+[M 0x67 DEF]
+255 // hex 0xFF 
+
+[M 0x68 DEF]
+255 // hex 0xFF 
+
+[M 0x69 DEF]
+255 // hex 0xFF 
+
+[M 0x6A DEF]
+255 // hex 0xFF 
+
+[M 0x6B DEF]
+255 // hex 0xFF 
+
+[M 0x6C DEF]
+255 // hex 0xFF 
+
+[M 0x6D DEF]
+255 // hex 0xFF 
+
+[M 0x6E DEF]
+255 // hex 0xFF 
+
+[M 0x6F DEF]
+255 // hex 0xFF 
+
+[M 0x70 DEF]
+255 // hex 0xFF 
+
+[M 0x71 DEF]
+255 // hex 0xFF 
+
+[M 0x72 DEF]
+255 // hex 0xFF 
+
+[M 0x73 DEF]
+255 // hex 0xFF 
+
+[M 0x74 DEF]
+255 // hex 0xFF 
+
+[M 0x75 DEF]
+255 // hex 0xFF 
+
+[M 0x76 DEF]
+255 // hex 0xFF 
+
+[M 0x77 DEF]
+255 // hex 0xFF 
+
+[M 0x78 DEF]
+255 // hex 0xFF 
+
+[M 0x79 DEF]
+255 // hex 0xFF 
+
+[M 0x7A DEF]
+255 // hex 0xFF 
+
+[M 0x7B DEF]
+255 // hex 0xFF 
+
+[M 0x7C DEF]
+255 // hex 0xFF 
+
+[M 0x7D DEF]
+255 // hex 0xFF 
+
+[M 0x7E DEF]
+255 // hex 0xFF 
+
+[M 0x7F DEF]
+255 // hex 0xFF 
+
