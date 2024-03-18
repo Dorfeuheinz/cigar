@@ -29,8 +29,8 @@
     "windows": [
       {
         "title": "tinymesh-cc-tool",
-        "width": 800,
-        "height": 600
+        "minWidth": 950,
+        "minHeight": 800
       }
     ],
     "security": {

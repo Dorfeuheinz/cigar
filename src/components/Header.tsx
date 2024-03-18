@@ -15,7 +15,7 @@ import { message } from "@tauri-apps/api/dialog";
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
   const [deviceName, setDeviceName] = useState("");
-  const { currentMode, setCurrentMode } = useContext(ConnectionContext);
+  const { setCurrentMode } = useContext(ConnectionContext);
 
   return (
     <header className="w-screen bg-blue-500 py-[1vh] px-[2vw] text-white h-[7vh] ">

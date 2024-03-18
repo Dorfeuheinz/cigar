@@ -19,7 +19,6 @@ import {
   MkDeviceTestMode,
   MkDeviceQuickMode,
 } from "../DataTypes";
-import { list } from "postcss";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -218,43 +217,40 @@ const ConfigPanel: React.FC = () => {
         </table>
       );
     } else {
-      return (
-        <div
-          style={{ minHeight: "44.5vh", maxHeight: "44.5vh" }}
-          className="bg-gray-100"
-        ></div>
-      );
+      return <div className="bg-gray-100 h-full"></div>;
     }
   }
 
   return (
-    <div className="h-full flex flex-col overflow-y-scroll border rounded-lg">
-      <div>{showTable(data)}</div>
-      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-around sm:justify-normal sm:flex-wrap">
+    <div className="h-full flex flex-col border rounded-lg">
+      <div className="overflow-y-scroll h-full">{showTable(data)}</div>
+      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap">
         <div>
           <button
             onClick={() => readConfig()}
-            className=" bg-blue-700 text-white border rounded-lg text-sm p-2"
+            className=" bg-blue-700 text-white text-xs p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Read Config
           </button>
           <button
             onClick={() => writeConfig()}
-            className=" bg-blue-700 text-white border rounded-lg  text-sm p-2"
+            className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Save Config
           </button>
           <button
             onClick={() => factoryReset()}
-            className=" bg-blue-700 text-white text-sm border rounded-lg  p-2"
+            className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Factory Reset
           </button>
         </div>
-        <TestModeSelect
-          testModeOptions={testModeOptions}
-          quickOptions={quickModeOptions}
-        />
+        <div className="float right md:mt-2">
+          <TestModeSelect
+            testModeOptions={testModeOptions}
+            quickOptions={quickModeOptions}
+          />
+        </div>
       </div>
     </div>
   );

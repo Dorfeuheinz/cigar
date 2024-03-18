@@ -45,7 +45,7 @@ function App() {
           <div className="h-[7vh] max-h-[7vh]">
             <Header />
           </div>
-          <div className="flex-1 h-[63vh] max-h-[63vh]">
+          <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
             <AppTabs aria-label="Tabs with underline" style="underline">
               <Tabs.Item
                 title="Configuration and Communication"
@@ -73,7 +73,11 @@ function App() {
           <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh]">
             <div id="connectionStatus" className="text-center text-white">
               <span className=" sm:text-l text-2xl float-start">
-                <b>Tiny cc Tool</b>
+                <img
+                  src="src-tauri/icons/tinymesh-white.png"
+                  width="100"
+                  height="28"
+                ></img>
               </span>
               <span id="connectionStatusIcon">{isConnected ? "🟢" : "🔴"}</span>
               <b>Connection Status:</b> &nbsp;
