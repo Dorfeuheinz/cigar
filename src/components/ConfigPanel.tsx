@@ -8,7 +8,7 @@ import {
 
 import React, { useState, useEffect, useMemo } from "react";
 import { invoke } from "@tauri-apps/api";
-import { ask } from "@tauri-apps/api/dialog";
+import { ask, message } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
 import { Tooltip } from "flowbite-react";
 import { getDeviceConfig, setDeviceConfig } from "../utils/device_info_util";
@@ -35,6 +35,7 @@ const ConfigPanel: React.FC = () => {
     []
   );
   const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
+  const [errorList, setErrorList] = useState<number[]>([]);
 
   useEffect(() => {
     setShouldSkipPageReset(false);
@@ -52,12 +53,23 @@ const ConfigPanel: React.FC = () => {
       });
   };
 
-  const writeConfig = () => {
-    setDeviceConfig(data).then((success) => {
-      if (success) {
-        readConfig();
-      }
-    });
+  const writeConfig = async () => {
+    if (errorList.length > 0) {
+      await message(
+        `Incorrect parameters for the following config memory addresses:\n${errorList.join(
+          ","
+        )}`,
+        {
+          title: "Tauri",
+          type: "error",
+        }
+      );
+      return;
+    }
+    let success = await setDeviceConfig(data);
+    if (success) {
+      readConfig();
+    }
   };
 
   const factoryReset = async () => {
@@ -135,20 +147,29 @@ const ConfigPanel: React.FC = () => {
             getValue() as [number, number, number, number[], number];
 
           const [value, setValue] = useState(initialValue.toString());
+          const [invalidInput, setInvalidInput] = useState(false);
 
           // When the input is blurred, we'll call our table meta's updateData function
           const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
             const val = parseInt(value || "");
             if (allowedValues.includes(val)) {
               table.options.meta?.updateData(address, id, val);
+              setInvalidInput(false);
+              setErrorList((errorList) =>
+                errorList.filter((e) => e !== address)
+              );
             } else if (val >= minValue && val <= maxValue) {
               table.options.meta?.updateData(address, id, val);
-            } else {
-              // Handle out-of-range values
-              console.error(
-                `Value ${val} is outside the allowed range (${minValue} - ${maxValue})`
+              setInvalidInput(false);
+              setErrorList((errorList) =>
+                errorList.filter((e) => e !== address)
               );
-              // You can add additional error handling or feedback to the user here
+            } else {
+              setInvalidInput(true);
+              setErrorList((errorList) =>
+                errorList.filter((e) => e !== address)
+              );
+              setErrorList((errorList) => [...errorList, address]);
             }
           };
 
@@ -163,7 +184,14 @@ const ConfigPanel: React.FC = () => {
 
           return (
             <>
-              <input value={value} onChange={handleOnChange} onBlur={onBlur} />
+              <input
+                value={value}
+                onChange={handleOnChange}
+                onBlur={onBlur}
+                className={`${
+                  invalidInput && "border border-red-500 bg-red-100"
+                }`}
+              />
             </>
           );
         },
