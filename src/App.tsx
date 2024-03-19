@@ -16,7 +16,7 @@ async function convertImageToBase64() {
   const contents = await readBinaryFile("resources/icons/tinymesh-white.png", {
     dir: BaseDirectory.Resource,
   });
-  return new Buffer(contents).toString("base64");
+  return Buffer.from(contents).toString("base64");
 }
 
 export const ConnectionContext = createContext({
