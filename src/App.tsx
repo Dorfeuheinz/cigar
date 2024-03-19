@@ -15,11 +15,20 @@ export const ConnectionContext = createContext({
   setIsConnected: (_: boolean) => {},
   currentMode: "communication",
   setCurrentMode: (_: string) => {},
+  model: "",
+  setModel: (_: string) => {},
+  firmware: "",
+  setFirmware: (_: string) => {},
+  hardware: "",
+  setHardware: (_: string) => {}
 });
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [currentMode, setCurrentMode] = useState("communication");
+  const [model, setModel] = useState("");
+  const [firmware, setFirmware] = useState("");
+  const [hardware, setHardware] = useState("");
 
   useEffect(() => {
     getConnectedDevice().then((result) => {
@@ -40,6 +49,12 @@ function App() {
             setIsConnected: setIsConnected,
             currentMode: currentMode,
             setCurrentMode: setCurrentMode,
+            model: model,
+            setModel: setModel,
+            hardware: hardware,
+            setHardware: setHardware,
+            firmware: firmware,
+            setFirmware: setFirmware
           }}
         >
           <div className="h-[7vh] max-h-[7vh]">

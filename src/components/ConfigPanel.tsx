@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ask, message } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
@@ -19,6 +19,7 @@ import {
   MkDeviceTestMode,
   MkDeviceQuickMode,
 } from "../DataTypes";
+import { ConnectionContext } from "../App";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -40,13 +41,18 @@ const ConfigPanel: React.FC = () => {
   useEffect(() => {
     setShouldSkipPageReset(false);
   }, [data]);
+  const { setModel, setFirmware, setHardware } = useContext(ConnectionContext);
 
   const readConfig = () => {
     getDeviceConfig()
       .then((result) => {
+        console.log(result.model);
         setData(result.cells);
         setTestModeOptions(result.test_modes);
         setQuickModeOptions(result.quick_modes);
+        setModel(result.model);
+        setFirmware(result.firmware_version);
+        setHardware(result.hw_version);
       })
       .catch((err) => {
         error(`Error occurred while trying to read device config: ${err}`);
