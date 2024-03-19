@@ -15,28 +15,68 @@ import { message } from "@tauri-apps/api/dialog";
 function Header() {
   const [baudRate, setBaudRate] = useState<number>(19200);
   const [deviceName, setDeviceName] = useState("");
-  const { setCurrentMode } = useContext(ConnectionContext);
+  const {
+    isConnected,
+    setCurrentMode,
+    currentMode,
+    model,
+    firmware,
+    hardware,
+  } = useContext(ConnectionContext);
+
+  function buttonsAndDeviceInfo(isConnected: boolean) {
+    if (isConnected && currentMode === "configuration") {
+      return (
+        <div className=" text-sm flex space-x-4 p-[1vh] h-[5vh]">
+          <div>
+            <span>
+              <b>Model :</b>
+            </span>
+            <span className="border border-white p-[2px]">{model}</span>
+          </div>
+          <div>
+            <span>
+              <b>F.W. VERSION :</b>
+            </span>
+            <span className="border border-white p-[2px]">{firmware}</span>
+          </div>
+          <div>
+            <span>
+              <b>H.W. VERSION :</b>
+            </span>
+            <span className="border border-white p-[2px]">{hardware}</span>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex space-x-2">
+          <div className="">
+            <InputWithDatalist
+              optionsProvider={() => ["19200", "115200"]}
+              onValueChanged={(value) => {
+                let parsedValue = parseInt(value);
+                setBaudRate(parsedValue);
+              }}
+              className="rounded-md border-gray-300 text-black h-[5vh]"
+              placeholder="Baud Rate"
+            />
+          </div>
+          <div className="">
+            <DeviceSelect
+              className="rounded-md border-gray-300 h-[5vh] text-black"
+              onSelected={setDeviceName}
+            />
+          </div>
+        </div>
+      );
+    }
+  }
 
   return (
     <header className="w-screen bg-blue-500 py-[1vh] px-[2vw] text-white h-[7vh] ">
-      <div className="space-x-4 flex flex-row ">
-        <div className="">
-          <InputWithDatalist
-            optionsProvider={() => ["19200", "115200"]}
-            onValueChanged={(value) => {
-              let parsedValue = parseInt(value);
-              setBaudRate(parsedValue);
-            }}
-            className="rounded-md border-gray-300 text-black h-[5vh]"
-            placeholder="Baud Rate"
-          />
-        </div>
-        <div className="">
-          <DeviceSelect
-            className="rounded-md border-gray-300 h-[5vh] text-black"
-            onSelected={setDeviceName}
-          />
-        </div>
+      <div className="space-x-2 flex flex-row ">
+        {buttonsAndDeviceInfo(isConnected)}
         <div className="">
           <ConnectDisconnectButton
             connectFunction={async () => {
@@ -61,6 +101,8 @@ function Header() {
               await invoke("stop_communication_task", {});
               await invoke("send_bytes", { input: "X" });
               setCurrentMode("communication");
+              setBaudRate(0);
+              setDeviceName("");
               return await disconnectFromDevice();
             }}
             className="h-[5vh] inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
