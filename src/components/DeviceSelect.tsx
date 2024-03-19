@@ -37,7 +37,7 @@ const DeviceSelect: React.FC<SelectProps> = ({ onSelected, className }) => {
     <>
       <div className="flex items-start gap-2">
         <select
-          className={`${className} p-0`}
+          className={`${className} `}
           value={selectedOption}
           onChange={handleSelectChange}
         >

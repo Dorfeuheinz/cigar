@@ -27,24 +27,30 @@ function Header() {
   function buttonsAndDeviceInfo(isConnected: boolean) {
     if (isConnected && currentMode === "configuration") {
       return (
-        <div className=" text-sm flex space-x-4 p-[1vh] h-[5vh]">
+        <div className=" text-sm flex space-x-4 p-[1vh] h-[5vh] lg:text">
           <div>
             <span>
               <b>Model :</b>
             </span>
-            <span className="border border-white p-[2px]">{model}</span>
+            <span className="border border-white p-[2px] lg:p-[5px]">
+              {model}
+            </span>
           </div>
           <div>
             <span>
               <b>F.W. VERSION :</b>
             </span>
-            <span className="border border-white p-[2px]">{firmware}</span>
+            <span className="border border-white p-[2px] lg:p-[5px]">
+              {firmware}
+            </span>
           </div>
           <div>
             <span>
               <b>H.W. VERSION :</b>
             </span>
-            <span className="border border-white p-[2px]">{hardware}</span>
+            <span className="border border-white p-[2px] lg:p-[5px]">
+              {hardware}
+            </span>
           </div>
         </div>
       );
@@ -108,7 +114,7 @@ function Header() {
             className="h-[5vh] inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           />
         </div>
-        <div className="">
+        <div className={`${isConnected ? "" : "hidden"}`}>
           <ConfigModeToggle retries={10} interval={1} />
         </div>
       </div>

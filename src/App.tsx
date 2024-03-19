@@ -20,7 +20,7 @@ export const ConnectionContext = createContext({
   firmware: "",
   setFirmware: (_: string) => {},
   hardware: "",
-  setHardware: (_: string) => {}
+  setHardware: (_: string) => {},
 });
 
 function App() {
@@ -54,10 +54,10 @@ function App() {
             hardware: hardware,
             setHardware: setHardware,
             firmware: firmware,
-            setFirmware: setFirmware
+            setFirmware: setFirmware,
           }}
         >
-          <div className="h-[7vh] max-h-[7vh]">
+          <div className="h-[7vh] max-h-[7vh] overflow-hidden fix">
             <Header />
           </div>
           <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
