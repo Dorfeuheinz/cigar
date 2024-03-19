@@ -23,7 +23,8 @@
         "message": true
       },
       "fs": {
-        "scope": ["$RESOURCE/*"]
+        "scope": ["$RESOURCE/**"],
+        "all": true
       },
       "path": {
         "all": true

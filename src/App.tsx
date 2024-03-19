@@ -9,7 +9,15 @@ import TerminalPanel from "./components/TerminalPanel";
 import { useState, createContext, useEffect } from "react";
 import { getConnectedDevice } from "./utils/connection_util";
 import Device_info from "./components/DeviceInfo";
-import { resolveResource } from "@tauri-apps/api/path";
+import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+import { Buffer } from "buffer";
+
+async function convertImageToBase64() {
+  const contents = await readBinaryFile("resources/icons/tinymesh-white.png", {
+    dir: BaseDirectory.Resource,
+  });
+  return new Buffer(contents).toString("base64");
+}
 
 export const ConnectionContext = createContext({
   isConnected: false,
@@ -30,7 +38,7 @@ function App() {
   const [model, setModel] = useState("");
   const [firmware, setFirmware] = useState("");
   const [hardware, setHardware] = useState("");
-  const [logoPath, setLogoPath] = useState("");
+  const [logoContent, setLogoContent] = useState("");
 
   useEffect(() => {
     getConnectedDevice().then((result) => {
@@ -40,18 +48,10 @@ function App() {
         setIsConnected(false);
       }
     });
-    loadImage().then((result) => {
-      setLogoPath(result);
+    convertImageToBase64().then((result) => {
+      setLogoContent(result);
     });
   });
-
-  const loadImage = async () => {
-    const resolvedResource = await resolveResource(
-      "resources/icons/tinymesh-white.png"
-    );
-    console.log(`resolved resource: ${resolvedResource}`);
-    return resolvedResource;
-  };
 
   return (
     <>
@@ -101,7 +101,11 @@ function App() {
           <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh]">
             <div id="connectionStatus" className="text-center text-white">
               <span className=" sm:text-l text-2xl float-start">
-                <img src={logoPath} width="100" height="28"></img>
+                <img
+                  src={`data:image/png;base64,${logoContent}`}
+                  width="100"
+                  height="28"
+                ></img>
               </span>
               <span id="connectionStatusIcon">{isConnected ? "🟢" : "🔴"}</span>
               <b>Connection Status:</b> &nbsp;
