@@ -24,7 +24,7 @@ pub struct DeviceEntity {
 #[derive(Clone, serde::Serialize)]
 struct Payload {
     pub data_type: String,
-    pub data: String,
+    pub data: Vec<u8>,
 }
 
 #[tauri::command]
@@ -572,17 +572,12 @@ fn send_bytes_to_device(
             device
                 .flush()
                 .unwrap_or_else(|e| error!("Error flushing: {}", e));
-            let bytes_to_send_str = bytes_to_send
-                .iter()
-                .map(|b| format!("{:02X}", b))
-                .collect::<Vec<String>>()
-                .join(" ");
             app_handle
                 .emit_all(
                     "exchange_bytes_event",
                     Payload {
                         data_type: "TX".to_string(),
-                        data: bytes_to_send_str,
+                        data: bytes_to_send.to_vec(),
                     },
                 )
                 .unwrap_or_else(|e| error!("Error emitting: {}", e));
@@ -613,18 +608,12 @@ fn read_bytes_till_3e_from_device_to_buffer(
             Err(_) => continue,
         }
     }
-    let bytes_to_read_str = buffer
-        .iter()
-        .map(|b| format!("{:02X}", b))
-        .chain(std::iter::once("3E".to_string()))
-        .collect::<Vec<String>>()
-        .join(" ");
     app_handle
         .emit_all(
             "exchange_bytes_event",
             Payload {
                 data_type: "RX".to_string(),
-                data: bytes_to_read_str,
+                data: [buffer.to_vec(), vec![0x3e]].concat(),
             },
         )
         .unwrap_or_else(|e| error!("Error emitting: {}", e));
@@ -638,17 +627,12 @@ fn read_bytes_from_device_to_buffer(
 ) -> usize {
     let result = device.read_to_end(buffer).unwrap_or(0);
     if buffer.len() > 0 {
-        let bytes_to_read_str = buffer
-            .iter()
-            .map(|b| format!("{:02X}", b))
-            .collect::<Vec<String>>()
-            .join(" ");
         app_handle
             .emit_all(
                 "exchange_bytes_event",
                 Payload {
                     data_type: "RX".to_string(),
-                    data: bytes_to_read_str,
+                    data: buffer.to_vec(),
                 },
             )
             .unwrap_or_else(|e| error!("Error emitting: {}", e));

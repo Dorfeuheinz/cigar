@@ -5,7 +5,7 @@ import React from "react";
 
 interface EventPayload {
   data_type: string;
-  data: string;
+  data: Array<number>;
   time: string;
 }
 
@@ -26,6 +26,8 @@ function getCurrentTime() {
 
 const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
   let [logs, setLogs] = useState<EventPayload[]>([]);
+  const [displayMode, setDisplayMode] = useState("hex");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -48,7 +50,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
   }, [logs]);
 
   const handleSelectChange = (e) => {
-    console.log(e.target.value);
+    setDisplayMode(e.target.value);
   };
 
   return (
@@ -68,7 +70,17 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
           <p key={index}>
             <b>[{log.data_type}]</b>&nbsp;
             <b>[{log.time}]</b>&nbsp;
-            {log.data}
+            {log.data
+              .map((elem, index) => {
+                if (displayMode == "hex") {
+                  return elem.toString(16).padStart(2, "0").toUpperCase();
+                } else if (displayMode == "decimal") {
+                  return elem.toString(10).padStart(3, "0");
+                } else if (displayMode == "asci") {
+                  return String.fromCharCode(elem);
+                }
+              })
+              .join(" ")}
           </p>
           <hr />
         </>
