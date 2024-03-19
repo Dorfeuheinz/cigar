@@ -62,7 +62,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
         >
           <option value="hex">Hex</option>
           <option value="decimal">Decimal</option>
-          <option value="asci">Asci</option>
+          <option value="ascii">ASCII</option>
         </select>
       </div>
       {logs.map((log, index) => (
@@ -76,7 +76,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
                   return elem.toString(16).padStart(2, "0").toUpperCase();
                 } else if (displayMode == "decimal") {
                   return elem.toString(10).padStart(3, "0");
-                } else if (displayMode == "asci") {
+                } else if (displayMode == "ascii") {
                   return String.fromCharCode(elem);
                 }
               })

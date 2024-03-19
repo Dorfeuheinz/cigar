@@ -34,6 +34,11 @@ const ConfigPanel: React.FC = () => {
   const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>(
     []
   );
+  const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
+
+  useEffect(() => {
+    setShouldSkipPageReset(false);
+  }, [data]);
 
   const readConfig = () => {
     getDeviceConfig()
@@ -75,6 +80,7 @@ const ConfigPanel: React.FC = () => {
     _columnId: string,
     value: string
   ) => {
+    setShouldSkipPageReset(true);
     setData((old) => {
       return old.map((row) => {
         if (row.address === rowId) {
@@ -121,35 +127,33 @@ const ConfigPanel: React.FC = () => {
           row.min_value,
           row.max_value,
           row.allowed_values,
+          row.address,
         ],
         id: "current_value",
         cell: ({ getValue, row: { index }, column: { id }, table }) => {
-          const [initialValue, minValue, maxValue, allowedValues] =
-            getValue() as [number, number, number, number[]];
+          const [initialValue, minValue, maxValue, allowedValues, address] =
+            getValue() as [number, number, number, number[], number];
 
           const [value, setValue] = useState(initialValue.toString());
 
           // When the input is blurred, we'll call our table meta's updateData function
-          const onBlur = () => {
+          const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
             const val = parseInt(value || "");
-
-            if (!isNaN(val)) {
-              if (allowedValues.includes(val)) {
-                table.options.meta?.updateData(index, id, val);
-              } else if (val >= minValue && val <= maxValue) {
-                table.options.meta?.updateData(index, id, val);
-              } else {
-                // Handle out-of-range values
-                console.error(
-                  `Value ${val} is outside the allowed range (${minValue} - ${maxValue})`
-                );
-                // You can add additional error handling or feedback to the user here
-              }
+            if (allowedValues.includes(val)) {
+              table.options.meta?.updateData(address, id, val);
+            } else if (val >= minValue && val <= maxValue) {
+              table.options.meta?.updateData(address, id, val);
             } else {
-              // Handle invalid input values
-              console.error("Invalid input value");
+              // Handle out-of-range values
+              console.error(
+                `Value ${val} is outside the allowed range (${minValue} - ${maxValue})`
+              );
               // You can add additional error handling or feedback to the user here
             }
+          };
+
+          const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            setValue(e.target.value);
           };
 
           // If the initialValue is changed external, sync it up with our state
@@ -159,12 +163,7 @@ const ConfigPanel: React.FC = () => {
 
           return (
             <>
-              <input
-                key={`ROW_${index}`}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onBlur={onBlur}
-              />
+              <input value={value} onChange={handleOnChange} onBlur={onBlur} />
             </>
           );
         },
@@ -177,6 +176,7 @@ const ConfigPanel: React.FC = () => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    autoResetPageIndex: !shouldSkipPageReset,
     meta: {
       updateData: (rowIndex, columnId, value) => {
         handleCellValueChange(rowIndex, columnId, value as string);
