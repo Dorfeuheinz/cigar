@@ -96,66 +96,86 @@ const ConfigPanel: React.FC = () => {
       {
         header: "Name",
         footer: (props) => props.column.id,
-        accessorFn: (row) => (
-          <>
-            <Tooltip
-              content={toolTipData(row.description)}
-              placement="right"
-              style="light"
-            >
-              {`${row.name}`}
-            </Tooltip>
-          </>
-        ),
+        accessorFn: (row) => [row.name, row.description],
         id: "name",
+        cell: ({ getValue }) => {
+          const [name, description] = getValue() as [string, string];
+          return (
+            <>
+              <Tooltip
+                content={toolTipData(description)}
+                placement="right"
+                style="light"
+              >
+                {`${name}`}
+              </Tooltip>
+            </>
+          );
+        },
       },
       {
         header: "Current Value",
         footer: (props) => props.column.id,
-        accessorFn: (row) => row.current_value,
+        accessorFn: (row) => [
+          row.current_value,
+          row.min_value,
+          row.max_value,
+          row.allowed_values,
+        ],
         id: "current_value",
+        cell: ({ getValue, row: { index }, column: { id }, table }) => {
+          const [initialValue, minValue, maxValue, allowedValues] =
+            getValue() as [number, number, number, number[]];
+
+          const [value, setValue] = useState(initialValue.toString());
+
+          // When the input is blurred, we'll call our table meta's updateData function
+          const onBlur = () => {
+            const val = parseInt(value || "");
+
+            if (!isNaN(val)) {
+              if (allowedValues.includes(val)) {
+                table.options.meta?.updateData(index, id, val);
+              } else if (val >= minValue && val <= maxValue) {
+                table.options.meta?.updateData(index, id, val);
+              } else {
+                // Handle out-of-range values
+                console.error(
+                  `Value ${val} is outside the allowed range (${minValue} - ${maxValue})`
+                );
+                // You can add additional error handling or feedback to the user here
+              }
+            } else {
+              // Handle invalid input values
+              console.error("Invalid input value");
+              // You can add additional error handling or feedback to the user here
+            }
+          };
+
+          // If the initialValue is changed external, sync it up with our state
+          useEffect(() => {
+            setValue(initialValue.toString());
+          }, [initialValue]);
+
+          return (
+            <>
+              <input
+                key={`ROW_${index}`}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onBlur={onBlur}
+              />
+            </>
+          );
+        },
       },
     ],
     []
   );
 
-  // Give our default column cell renderer editing superpowers!
-  const defaultColumn: Partial<ColumnDef<MkDeviceCell>> = {
-    cell: ({ getValue, row: { index }, column: { id }, table }) => {
-      const initialValue = getValue();
-      // We need to keep and update the state of the cell normally
-      const [value, setValue] = useState(initialValue);
-
-      // When the input is blurred, we'll call our table meta's updateData function
-      const onBlur = () => {
-        table.options.meta?.updateData(index, id, value);
-      };
-
-      // If the initialValue is changed external, sync it up with our state
-      useEffect(() => {
-        setValue(initialValue);
-      }, [initialValue]);
-
-      if (id === "current_value") {
-        return (
-          <>
-            <input
-              value={value as string}
-              onChange={(e) => setValue(e.target.value)}
-              onBlur={onBlur}
-            />
-          </>
-        );
-      } else {
-        return <>{value}</>;
-      }
-    },
-  };
-
   const table = useReactTable({
     data,
     columns,
-    defaultColumn,
     getCoreRowModel: getCoreRowModel(),
     meta: {
       updateData: (rowIndex, columnId, value) => {
