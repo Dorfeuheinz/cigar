@@ -24,6 +24,9 @@
       },
       "fs": {
         "scope": ["$RESOURCE/*"]
+      },
+      "path": {
+        "all": true
       }
     },
     "windows": [
@@ -41,7 +44,8 @@
       "targets": "all",
       "identifier": "com.tinymesh.cctool",
       "resources": [
-        "resources/modules/*"
+        "resources/modules/*",
+        "resources/icons/*"
       ],
       "icon": [
         "icons/32x32.png",

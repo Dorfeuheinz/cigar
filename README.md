@@ -19,13 +19,8 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 
 - Disable config panel if device in communication mode
 - Emit events from current window instead of app based events
-- Config panel input validation
-- Add CI / CD pipeline
-- Add Tinymesh assets for app banner and app icons
-- calibration mode: aes key configuration
 - UI theme uniformity for flowbite components
 - Display device model, hw and fw version
-- use react-resizable-panels
 
 ## Other Links
 

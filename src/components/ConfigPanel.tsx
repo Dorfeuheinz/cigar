@@ -150,7 +150,7 @@ const ConfigPanel: React.FC = () => {
           row.address,
         ],
         id: "current_value",
-        cell: ({ getValue, row: { index }, column: { id }, table }) => {
+        cell: ({ getValue, column: { id }, table }) => {
           const [initialValue, minValue, maxValue, allowedValues, address] =
             getValue() as [number, number, number, number[], number];
 
@@ -158,7 +158,7 @@ const ConfigPanel: React.FC = () => {
           const [invalidInput, setInvalidInput] = useState(false);
 
           // When the input is blurred, we'll call our table meta's updateData function
-          const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+          const onBlur = () => {
             const val = parseInt(value || "");
             if (allowedValues.includes(val)) {
               table.options.meta?.updateData(address, id, val);
