@@ -108,7 +108,8 @@ const ConfigPanel: React.FC = () => {
       {
         header: "Address",
         footer: (props) => props.column.id,
-        accessorFn: (row) => row.address,
+        accessorFn: (row) =>
+          `0x${row.address.toString(16).padStart(2, "0").toUpperCase()}`,
         id: "address",
       },
       {
