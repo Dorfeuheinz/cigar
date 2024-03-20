@@ -6,7 +6,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import React, { useState, useEffect, useMemo, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useContext,
+  createContext,
+} from "react";
 import { invoke } from "@tauri-apps/api";
 import { ask, message } from "@tauri-apps/api/dialog";
 import TestModeSelect from "./TestModeSelect";
@@ -20,6 +26,11 @@ import {
   MkDeviceQuickMode,
 } from "../DataTypes";
 import { ConnectionContext } from "../App";
+
+const ConfigTableContext = createContext({
+  errorList: [] as number[],
+  setErrorList: (_: number[]) => {},
+});
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -54,6 +65,7 @@ const ConfigPanel: React.FC = () => {
         setModel(result.model);
         setFirmware(result.firmware_version);
         setHardware(result.hw_version);
+        setErrorList([]);
       })
       .catch((err) => {
         error(`Error occurred while trying to read device config: ${err}`);
@@ -155,29 +167,19 @@ const ConfigPanel: React.FC = () => {
             getValue() as [number, number, number, number[], number];
 
           const [value, setValue] = useState(initialValue.toString());
-          const [invalidInput, setInvalidInput] = useState(false);
+          const { errorList, setErrorList } = useContext(ConfigTableContext);
 
           // When the input is blurred, we'll call our table meta's updateData function
           const onBlur = () => {
             const val = parseInt(value || "");
+            table.options.meta?.updateData(address, id, val);
             if (allowedValues.includes(val)) {
-              table.options.meta?.updateData(address, id, val);
-              setInvalidInput(false);
-              setErrorList((errorList) =>
-                errorList.filter((e) => e !== address)
-              );
+              setErrorList(errorList.filter((e) => e !== address));
             } else if (val >= minValue && val <= maxValue) {
-              table.options.meta?.updateData(address, id, val);
-              setInvalidInput(false);
-              setErrorList((errorList) =>
-                errorList.filter((e) => e !== address)
-              );
+              setErrorList(errorList.filter((e) => e !== address));
             } else {
-              setInvalidInput(true);
-              setErrorList((errorList) =>
-                errorList.filter((e) => e !== address)
-              );
-              setErrorList((errorList) => [...errorList, address]);
+              setErrorList(errorList.filter((e) => e !== address));
+              setErrorList([...errorList, address]);
             }
           };
 
@@ -197,7 +199,8 @@ const ConfigPanel: React.FC = () => {
                 onChange={handleOnChange}
                 onBlur={onBlur}
                 className={`${
-                  invalidInput && "border border-red-500 bg-red-100"
+                  errorList.includes(address) &&
+                  "border border-red-500 bg-red-100"
                 }`}
               />
             </>
@@ -276,7 +279,14 @@ const ConfigPanel: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col border rounded-lg">
-      <div className="overflow-y-scroll h-full">{showTable(data)}</div>
+      <ConfigTableContext.Provider
+        value={{
+          errorList: errorList,
+          setErrorList: setErrorList,
+        }}
+      >
+        <div className="overflow-y-scroll h-full">{showTable(data)}</div>
+      </ConfigTableContext.Provider>
       <div
         className={` p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap ${
           currentMode == "configuration" ? "" : "hidden"

@@ -5,7 +5,6 @@ use log::{error, info};
 use serialport::SerialPort;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tauri::async_runtime::channel;
 use tauri::{AppHandle, Manager, State};
 
 pub struct DeviceEntity {
@@ -35,6 +34,33 @@ pub enum ReaderCommand {
     Stop,
     CollectBytes(),
     ClearBuffer,
+}
+
+#[tauri::command]
+pub fn reset_program_state(device_entity: State<DeviceEntity>) -> Result<(), String> {
+    info!("Resetting program state");
+    *device_entity.port.lock().map_err(|err| err.to_string())? = None;
+    *device_entity
+        .is_rssi_task_running
+        .lock()
+        .map_err(|err| err.to_string())? = false;
+    *device_entity
+        .is_communication_task_running
+        .lock()
+        .map_err(|err| err.to_string())? = false;
+    *device_entity
+        .device_config
+        .lock()
+        .map_err(|err| err.to_string())? = None;
+    *device_entity
+        .rssi_task
+        .lock()
+        .map_err(|err| err.to_string())? = None;
+    *device_entity
+        .communication_task
+        .lock()
+        .map_err(|err| err.to_string())? = None;
+    Ok(())
 }
 
 #[tauri::command]
@@ -68,7 +94,7 @@ pub fn connect_to_device(
     info!("Connecting to {} with baud rate {}", device_name, baud_rate);
     let port = serialport::new(device_name, baud_rate)
         .data_bits(serialport::DataBits::Eight)
-        .timeout(Duration::from_millis(30))
+        .timeout(Duration::from_millis(10))
         .open();
     let mut device = device_entity.port.lock().map_err(|err| err.to_string())?;
     let open_port = port.map_err(|err| err.to_string())?;
@@ -401,6 +427,20 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
         *is_rssi_task_running = true;
     }
     let is_rssi_task_running = device_entity.is_rssi_task_running.clone();
+    let (mut min_channel, mut max_channel) = (1, 10);
+    if let Ok(device_config) = device_entity.device_config.lock() {
+        if let Some(device_config) = device_config.as_ref() {
+            if let Some(channel) = device_config
+                .cells
+                .iter()
+                .find(|cell| cell.name == "RF Channel")
+            {
+                min_channel = channel.min_value as u8;
+                max_channel = channel.max_value as u8;
+            }
+        }
+    }
+
     let stream = tauri::async_runtime::spawn(async move {
         if let Ok(mut device) = device_port.lock() {
             if let Some(mut device) = device.as_mut() {
@@ -411,7 +451,8 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
                             return;
                         }
                     }
-                    for i in 1..=10 {
+
+                    for i in min_channel..=max_channel {
                         if let Ok(is_rssi_task_running) = is_rssi_task_running.lock() {
                             if !*is_rssi_task_running {
                                 info!("Stopping RSSI stream");
@@ -434,7 +475,6 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
                             }
                         }
                     }
-                    // std::thread::sleep(std::time::Duration::from_millis(10));
                 }
             }
         }

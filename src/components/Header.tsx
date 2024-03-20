@@ -87,6 +87,7 @@ function Header() {
           <ConnectDisconnectButton
             connectFunction={async () => {
               try {
+                await invoke("reset_program_state", {});
                 await connectToDevice(deviceName, baudRate);
                 await invoke("send_bytes", { input: "X" });
                 setCurrentMode("communication");

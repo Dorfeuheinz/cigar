@@ -33,6 +33,7 @@ fn main() {
             device_config: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
+            reset_program_state,
             get_devices,
             connect_to_device,
             disconnect_from_device,

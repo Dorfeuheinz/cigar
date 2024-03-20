@@ -30,28 +30,27 @@ const RSSIChart: React.FC = () => {
   const [chartData, setChartData] = useState([
     ["Channel", "RSSI", ""],
     [1, -100, -100 - -100],
-    [2, -100, -100 - -100],
-    [3, -100, -100 - -100],
-    [4, -100, -100 - -100],
-    [5, -100, -100 - -100],
-    [6, -100, -100 - -100],
-    [7, -100, -100 - -100],
-    [8, -80, -100 - -80],
-    [9, -100, -100 - -100],
-    [10, -100, -100 - -100],
   ]);
 
   useEffect(() => {
     const unlisten = listen<RSSIEvent>("rssi_event", (event) => {
       setChartData((prevData) => {
-        return prevData.map((row) => {
-          if (row[0] === event.payload.channel) {
-            let rssi = event.payload.rssi > -100 ? event.payload.rssi : -100;
-            return [row[0], rssi, -100 - rssi];
-          } else {
-            return row;
-          }
-        });
+        let index = prevData.findIndex(
+          (row) => row[0] === event.payload.channel
+        );
+        let rssi = event.payload.rssi > -100 ? event.payload.rssi : -100;
+
+        if (index === -1) {
+          return prevData.concat([[event.payload.channel, rssi, -100 - rssi]]);
+        } else {
+          return prevData.map((row) => {
+            if (row[0] === event.payload.channel) {
+              return [event.payload.channel, rssi, -100 - rssi];
+            } else {
+              return row;
+            }
+          });
+        }
       });
     });
     return () => {
