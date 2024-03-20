@@ -41,7 +41,8 @@ const ConfigPanel: React.FC = () => {
   useEffect(() => {
     setShouldSkipPageReset(false);
   }, [data]);
-  const { setModel, setFirmware, setHardware } = useContext(ConnectionContext);
+  const { setModel, setFirmware, setHardware, currentMode, isConnected } =
+    useContext(ConnectionContext);
 
   const readConfig = () => {
     getDeviceConfig()
@@ -236,7 +237,7 @@ const ConfigPanel: React.FC = () => {
   }
 
   function showTable(data: Array<object>) {
-    if (data.length > 0) {
+    if (data.length > 0 && isConnected) {
       return (
         <table className="w-full text-center table border border-collapse ">
           <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">
@@ -276,7 +277,11 @@ const ConfigPanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col border rounded-lg">
       <div className="overflow-y-scroll h-full">{showTable(data)}</div>
-      <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap">
+      <div
+        className={` p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap ${
+          currentMode == "configuration" ? "" : "hidden"
+        } `}
+      >
         <div>
           <button
             onClick={() => readConfig()}
@@ -297,7 +302,7 @@ const ConfigPanel: React.FC = () => {
             Factory Reset
           </button>
         </div>
-        <div className="float right md:mt-2">
+        <div className={`float right md:mt-2`}>
           <TestModeSelect
             testModeOptions={testModeOptions}
             quickOptions={quickModeOptions}

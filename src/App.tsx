@@ -70,7 +70,7 @@ function App() {
             setFirmware: setFirmware,
           }}
         >
-          <div className="h-[7vh] max-h-[7vh]">
+          <div className="h-[7vh] max-h-[7vh] overflow-hidden fix">
             <Header />
           </div>
           <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
@@ -81,16 +81,11 @@ function App() {
               >
                 <ConfigAndCommunicationTab />
               </Tabs.Item>
-              <Tabs.Item title="Calibration" icon={HiClipboardList}>
-                This is{" "}
-                <span className="font-medium text-gray-800 dark:text-white">
-                  Contacts tab's associated content
-                </span>
-                . Clicking another tab will toggle the visibility of this one
-                for the next. The tab JavaScript swaps classes to control the
-                content visibility and styling.
-              </Tabs.Item>
-              <Tabs.Item title="Device Information" icon={HiClipboardList}>
+              <Tabs.Item
+                title="Device Information"
+                icon={HiClipboardList}
+                disabled={currentMode !== "configuration"}
+              >
                 <Device_info></Device_info>
               </Tabs.Item>
             </AppTabs>
