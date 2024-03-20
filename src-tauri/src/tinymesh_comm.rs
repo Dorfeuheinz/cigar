@@ -215,20 +215,21 @@ pub fn get_device_config(
     device_entity: State<DeviceEntity>,
     app_handle: AppHandle,
 ) -> Result<MkDeviceConfig, String> {
-    let mut config_bytes_buffer = vec![];
     let mut device = device_entity.port.lock().map_err(|err| err.to_string())?;
     let device = device
         .as_mut()
         .ok_or("Could not lock the selected device".to_string())?;
+    get_device_config_from_device(device, &app_handle)
+}
+
+fn get_device_config_from_device(
+    device: &mut Box<dyn SerialPort>,
+    app_handle: &AppHandle,
+) -> Result<MkDeviceConfig, String> {
+    let mut config_bytes_buffer = vec![];
     if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
         read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
         let device_config = parse_device_config(&config_bytes_buffer, None, Some(&app_handle))?;
-        let mut device_config_from_state = device_entity
-            .device_config
-            .lock()
-            .map_err(|err| err.to_string())?;
-        let cloned_config = device_config.clone();
-        *device_config_from_state = Some(cloned_config);
         return Ok(device_config);
     }
     return Err("Unable to get config. Looks like sending bytes failed.".to_string());
@@ -423,12 +424,13 @@ pub struct RSSIEvent {
 pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
     info!("Starting RSSI stream");
     let device_port = device_entity.port.clone();
+    let device_port_2 = device_entity.port.clone();
     if let Ok(mut is_rssi_task_running) = device_entity.is_rssi_task_running.lock() {
         *is_rssi_task_running = true;
     }
     let is_rssi_task_running = device_entity.is_rssi_task_running.clone();
-    let (mut min_channel, mut max_channel) = (1, 10);
-    if let Ok(device_config) = device_entity.device_config.lock() {
+    let (mut min_channel, mut max_channel) = (0, 0);
+    if let Ok(mut device_config) = device_entity.device_config.lock() {
         if let Some(device_config) = device_config.as_ref() {
             if let Some(channel) = device_config
                 .cells
@@ -437,6 +439,24 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
             {
                 min_channel = channel.min_value as u8;
                 max_channel = channel.max_value as u8;
+            }
+        } else {
+            if let Ok(mut device) = device_port_2.lock() {
+                if let Some(device) = device.as_mut() {
+                    if let Ok(device_config_from_call) =
+                        get_device_config_from_device(device, &app_handle)
+                    {
+                        *device_config = Some(device_config_from_call.clone());
+                        if let Some(channel) = device_config_from_call
+                            .cells
+                            .iter()
+                            .find(|cell| cell.name == "RF Channel")
+                        {
+                            min_channel = channel.min_value as u8;
+                            max_channel = channel.max_value as u8;
+                        }
+                    }
+                }
             }
         }
     }
