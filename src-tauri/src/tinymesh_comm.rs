@@ -139,13 +139,16 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
             if let Ok(mut cloned_device) = device.try_clone() {
                 let is_communication_task_running =
                     device_entity.is_communication_task_running.clone();
+                if let Ok(mut is_communication_task_running) = is_communication_task_running.lock()
+                {
+                    if !*is_communication_task_running {
+                        *is_communication_task_running = true;
+                    } else {
+                        return true;
+                    }
+                }
                 let stream = tauri::async_runtime::spawn(async move {
                     info!("Starting communication task");
-                    if let Ok(mut is_communication_task_running) =
-                        is_communication_task_running.lock()
-                    {
-                        *is_communication_task_running = true;
-                    }
                     loop {
                         std::thread::sleep(Duration::from_millis(100));
                         if let Ok(is_communication_task_running) =
@@ -165,6 +168,7 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
                 });
                 if let Ok(mut communication_task) = device_entity.communication_task.lock() {
                     *communication_task = Some(stream);
+                    return true;
                 }
             }
         }
@@ -179,11 +183,14 @@ pub fn stop_communication_task(device_entity: State<DeviceEntity>) -> bool {
             if let Ok(mut is_communication_task_running) =
                 device_entity.is_communication_task_running.lock()
             {
-                *is_communication_task_running = false;
+                if *is_communication_task_running {
+                    *is_communication_task_running = false;
+                }
             }
             communication_task.abort();
         }
         *communication_task = None;
+        return true;
     }
     return false;
 }

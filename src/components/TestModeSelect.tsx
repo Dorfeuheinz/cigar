@@ -53,6 +53,7 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
   };
 
   const handleExecuteSelectedTestMode = async () => {
+    await invoke("stop_communication_task", {});
     await executeSequenceOffForLastOption();
     if (selectedOption.startsWith("TESTMODE_")) {
       const testModeId = parseInt(selectedOption.split("_")[1]);
@@ -77,6 +78,7 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
         setLastExecutedOption(selectedOption);
       }
     }
+    await invoke("start_communication_task", {});
   };
   return (
     <>

@@ -37,13 +37,13 @@ const ConfigModeToggle: React.FC<ConfigModeToggleParams> = ({
           setToggleStatusText(`Waiting for Device... ${retries - tryCount}`);
           let readResult: number[] = await invoke("read_bytes", {});
           let success = false;
-          if (readResult && readResult.length === 1 && readResult[0] === 62) {
+          if (readResult && readResult.length === 1 && readResult[0] === 0x3e) {
             success = true;
           }
           if (success) {
             clearInterval(countdownInterval);
             countdownInterval = null;
-            await invoke("stop_communication_task", {});
+            await invoke("start_communication_task", {});
             setCurrentMode("configuration");
             setToggleStatusText("Configuration Mode");
           } else {
