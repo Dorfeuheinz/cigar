@@ -34,6 +34,7 @@ pub struct MkDeviceCell {
     pub current_value: u8,
 }
 
+/// This struct holds all the data from the RMD module description.
 #[derive(Default, Debug)]
 pub struct MkModuleDescription {
     pub device_model: String,
@@ -270,6 +271,16 @@ fn get_quick_modes_and_remove_from_unknown(
 }
 
 impl MkModuleDescription {
+    /// Creates a new MkModuleDescription from RMD string.
+    /// This serves as a high-level RMD file parser that creates a ModuleDescription
+    /// struct by calling the low-level `module_description_parser` and
+    /// then extracting the corresponding entries from the key-value map.
+    ///
+    /// # Arguments
+    /// * `input` - The RMD string to parse.
+    ///
+    /// # Returns
+    /// A `MkModuleDescription` struct containing the parsed data.
     pub fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
         result.unknown_data = parse_module_description(input);
@@ -285,6 +296,16 @@ impl MkModuleDescription {
         result
     }
 
+    /// Creates a new MkModuleDescription from RMD file.
+    /// Reads the contents of the RMD file matching the model of the device and calls `new`.
+    ///
+    /// # Arguments
+    /// * `model` - The model of the device.
+    /// * `app_handle` - The app handle (reference passed manually to resolve RMD file path).
+    ///
+    /// # Returns
+    /// A Result Ok containing a `MkModuleDescription` struct containing the parsed data if the parsing was successful.
+    /// An error of type `String` if the parsing failed.
     pub fn new_from_device_model(
         model: &str,
         app_handle: &AppHandle,

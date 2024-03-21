@@ -6,6 +6,7 @@ use crate::mk_module_description::{
     MkDeviceCell, MkDeviceQuickMode, MkDeviceTestMode, MkModuleDescription,
 };
 
+/// This struct represents the decoded device config fetched from device
 #[derive(Clone, serde::Serialize, Default, Debug)]
 pub struct MkDeviceConfig {
     pub model: String,
@@ -16,6 +17,15 @@ pub struct MkDeviceConfig {
     pub quick_modes: Vec<MkDeviceQuickMode>,
 }
 
+/// This function parses the device config and returns a struct representing the decoded device config
+///
+/// # Arguments
+/// * `data` - A slice of bytes representing the device config data
+/// * `rmd_file_path` - An optional reference to a `Path` object representing the path to the RMD file
+/// * `app_handle` - An optional reference to an `AppHandle` object
+///
+/// # Returns
+/// A `Result` containing a `MkDeviceConfig` object if parsing is successful, or a `String` containing an error message if parsing fails
 pub fn parse_device_config(
     data: &[u8],
     rmd_file_path: Option<&Path>,
@@ -63,6 +73,13 @@ fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) ->
         .collect()
 }
 
+/// This function extracts the model, hardware version, and firmware version from the device config data
+///
+/// # Arguments
+/// * `data` - A slice of bytes representing the device config data
+///
+/// # Returns
+/// A `Result` containing a tuple of three `String` objects if parsing is successful, or a `String` containing an error message if parsing fails
 pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
     while offset < data.len() {
