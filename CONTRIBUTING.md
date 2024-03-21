@@ -116,11 +116,11 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 
 ## Tool Behavior
 
-This section gives an overview of how the program broadly behaves. The CC tool is primarily a serial communication tool that can read some bytes from a serial port and write some bytes to it. Here's how operations are broadly done:
+The CC tool is primarily a serial communication tool that can read some bytes from a serial port and write some bytes to it. Here's a simple philosophy of how operations are broadly done:
 
 - Writing bytes is generally done in response to user's request, so writing always happens on main thread.
-- The device can receive bytes at anytime in communication mode, so reading bytes and printing them to console should be a continuous background activity.
-- However, there are times, when the user needs to send some bytes and read bytes back to see the output of their actions, especially in configuration mode.
+- The device can receive bytes at anytime in communication mode, since it could be connected to another device, so reading bytes and printing them to console should be a continuous background activity, since we can't do much with the received bytes anyway, we just need to print them to the log window.
+- However, there are times, when the user needs to send some bytes and read bytes back and perform actions accordingly, especially in configuration mode.
   - For example: a user sends ASCII 0 to read the config from the device. In return, they'll read bytes containing config of the device.
   - In these cases, we should stop background reading, do our task of sending and reading some bytes, and then restart background reading task once done.
 
