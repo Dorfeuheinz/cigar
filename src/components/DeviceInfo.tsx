@@ -1,6 +1,7 @@
 import ButtonComp from "./ButtonComp";
 import RSSIChart from "./RSSIChart";
 import { invoke } from "@tauri-apps/api";
+import { useState, createContext } from "react";
 
 import {
   getRSSI,
@@ -45,43 +46,61 @@ const getVoltageBtnFunc = async () => {
   return result;
 };
 
+export const RssiStreamContext = createContext({
+  rssiStreamRunning: false,
+  setRssiStreamRunning: (_: boolean) => {},
+});
+
 const DeviceInfo = () => {
+  const [rssiStreamRunning, setRssiStreamRunning] = useState(false);
+
   return (
     <>
       <div
         className="p-2 w-full pt-0 sm:overflow-y-auto md:flex lg:flex-row md:flex-row"
         style={{ minHeight: "50vh", maxHeight: "50vh" }}
       >
-        <div className="border-4 md:w-2/3 max-h-full flex-grow">
-          <RSSIChart />
-        </div>
-        <div className="md:w-1/3 overflow-y-scroll max-h-full">
-          <ButtonComp
-            name="Get RSSI"
-            buttonFunction={getRSSIBtnFunc}
-            placeholder="RSSI"
-          />
-          <ButtonComp
-            name="Get Analog (A)"
-            buttonFunction={getAnalogBtnFunc}
-            placeholder="Analog Value"
-          />
-          <ButtonComp
-            name="Get Digital (D)"
-            buttonFunction={getDigitalBtnFunc}
-            placeholder="Digital Value"
-          />
-          <ButtonComp
-            name="Get Temperature (U)"
-            buttonFunction={getTemperatureBtnFunc}
-            placeholder="Device Temperature"
-          />
-          <ButtonComp
-            name="Get Voltage (V)"
-            buttonFunction={getVoltageBtnFunc}
-            placeholder="Power Supply Voltage"
-          />
-        </div>
+        <RssiStreamContext.Provider
+          value={{
+            rssiStreamRunning: rssiStreamRunning,
+            setRssiStreamRunning: setRssiStreamRunning,
+          }}
+        >
+          <div className="border-4 md:w-2/3 max-h-full flex-grow">
+            <RSSIChart />
+          </div>
+          <div
+            className={`md:w-1/3 overflow-y-scroll max-h-full ${
+              rssiStreamRunning ? "hidden" : ""
+            }`}
+          >
+            <ButtonComp
+              name="Get RSSI"
+              buttonFunction={getRSSIBtnFunc}
+              placeholder="RSSI"
+            />
+            <ButtonComp
+              name="Get Analog (A)"
+              buttonFunction={getAnalogBtnFunc}
+              placeholder="Analog Value"
+            />
+            <ButtonComp
+              name="Get Digital (D)"
+              buttonFunction={getDigitalBtnFunc}
+              placeholder="Digital Value"
+            />
+            <ButtonComp
+              name="Get Temperature (U)"
+              buttonFunction={getTemperatureBtnFunc}
+              placeholder="Device Temperature"
+            />
+            <ButtonComp
+              name="Get Voltage (V)"
+              buttonFunction={getVoltageBtnFunc}
+              placeholder="Power Supply Voltage"
+            />
+          </div>
+        </RssiStreamContext.Provider>
       </div>
     </>
   );

@@ -79,7 +79,7 @@ const ConfigModeToggle: React.FC<ConfigModeToggleParams> = ({
           onChange={handleCheckboxChange}
           className="sr-only"
         />
-        <span className="label flex items-center text-sm font-medium text-white">
+        <span className="label flex items-center text-xs font-medium text-white">
           &nbsp;
         </span>
         <span
@@ -99,7 +99,7 @@ const ConfigModeToggle: React.FC<ConfigModeToggleParams> = ({
             }`}
           ></span>
         </span>
-        <span className="label flex items-center text-sm font-medium text-white">
+        <span className="label flex items-center text-xs font-medium text-white">
           {toggleStatusText}
         </span>
       </label>

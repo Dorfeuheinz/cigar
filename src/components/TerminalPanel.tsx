@@ -60,7 +60,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
   return (
     <>
       <div
-        className="h-[4vh] p-[0.4vh] w-full sticky top-0 bg-gray-50 flex justify-between
+        className="h-[4vh] p-[0.4vh] w-full sticky top-0 border bg-gray-50 flex justify-between
       "
       >
         <div>
@@ -82,6 +82,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
           </button>
         </div>
       </div>
+      <div className="h-[21vh] ">
       {logs.map((log, index) => (
         <>
           <p key={index}>
@@ -102,6 +103,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
           <hr />
         </>
       ))}
+      </div>
       <div ref={messagesEndRef} />
     </>
   );
