@@ -15,13 +15,6 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 - On Windows and macOS, use the corresponding installers for your system.
 - Linux users also need the `libudev` dependency installed on their system. Check if your distro has a package containing the term `libudev` in it and install.
 
-## Feature plan
-
-- Disable config panel if device in communication mode
-- Emit events from current window instead of app based events
-- UI theme uniformity for flowbite components
-- Display device model, hw and fw version
-
 ## Other Links
 
 - [Documentation for Developers](./CONTRIBUTING.md)
