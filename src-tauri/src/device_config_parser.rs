@@ -2,20 +2,8 @@ use std::path::Path;
 
 use tauri::AppHandle;
 
-use crate::mk_module_description::{
-    MkDeviceCell, MkDeviceQuickMode, MkDeviceTestMode, MkModuleDescription,
-};
-
-/// This struct represents the decoded device config fetched from device
-#[derive(Clone, serde::Serialize, Default, Debug)]
-pub struct MkDeviceConfig {
-    pub model: String,
-    pub hw_version: String,
-    pub firmware_version: String,
-    pub cells: Vec<MkDeviceCell>,
-    pub test_modes: Vec<MkDeviceTestMode>,
-    pub quick_modes: Vec<MkDeviceQuickMode>,
-}
+use crate::data_types::{MkDeviceCell, MkDeviceConfig};
+use crate::mk_module_description::MkModuleDescription;
 
 /// This function parses the device config and returns a struct representing the decoded device config
 ///

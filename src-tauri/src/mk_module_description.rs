@@ -1,38 +1,11 @@
+//! This module servers as a high-level RMD file parser.
+//! It contains the `MkModuleDescription` struct that holds all the data from the RMD module description.
 use log::info;
 use tauri::AppHandle;
 
+use crate::data_types::{MkDeviceCell, MkDeviceQuickMode, MkDeviceTestMode};
 use crate::module_description_parser::parse_module_description;
 use std::collections::HashMap;
-
-#[derive(Clone, Debug, serde::Serialize)]
-pub struct MkDeviceTestMode {
-    pub testmode_id: usize,
-    pub name: String,
-    pub description: String,
-    pub sequence_on: String,
-    pub sequence_off: String,
-}
-
-#[derive(Clone, Debug, serde::Serialize)]
-pub struct MkDeviceQuickMode {
-    pub testmode_id: usize,
-    pub name: String,
-    pub description: String,
-    pub sequence_on: String,
-    pub sequence_off: String,
-}
-
-#[derive(Clone, Default, Debug, serde::Serialize, serde::Deserialize)]
-pub struct MkDeviceCell {
-    pub address: usize,
-    pub name: String,
-    pub description: String,
-    pub min_value: u8,
-    pub max_value: u8,
-    pub allowed_values: Vec<u8>,
-    pub default_value: u8,
-    pub current_value: u8,
-}
 
 /// This struct holds all the data from the RMD module description.
 #[derive(Default, Debug)]

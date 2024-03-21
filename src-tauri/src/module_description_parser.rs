@@ -1,3 +1,4 @@
+//! This is a low-level parser module contains code that parses the module description from the RMD string.
 use std::collections::HashMap;
 
 /// Parses the module description from the RMD string.
