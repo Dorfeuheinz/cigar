@@ -58,16 +58,14 @@ const RSSIChart: React.FC = () => {
     };
   }, []);
 
-  const handleRepeatToggle = () => {
+  const handleRepeatToggle = async () => {
     if (rssiStreamRunning) {
-      invoke("stop_rssi_stream", {}).then(() => {
-        // do nothing for now
-      });
+      await invoke("stop_rssi_stream", {});
+      await invoke("start_communication_task", {});
       setRSSIStreamRunning(false);
     } else {
-      invoke("start_rssi_stream", {}).then(() => {
-        // do nothing for now
-      });
+      await invoke("stop_communication_task", {});
+      await invoke("start_rssi_stream", {});
       setRSSIStreamRunning(true);
     }
   };

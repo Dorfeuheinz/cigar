@@ -1,5 +1,6 @@
 import ButtonComp from "./ButtonComp";
 import RSSIChart from "./RSSIChart";
+import { invoke } from "@tauri-apps/api";
 
 import {
   getRSSI,
@@ -9,7 +10,42 @@ import {
   getDigital,
 } from "../utils/device_info_util";
 
-const Device_info = () => {
+const getRSSIBtnFunc = async () => {
+  await invoke("stop_communication_task", {});
+  let result = await getRSSI();
+  await invoke("start_communication_task", {});
+  return result;
+};
+
+const getAnalogBtnFunc = async () => {
+  await invoke("stop_communication_task", {});
+  let result = await getAnalog();
+  await invoke("start_communication_task", {});
+  return result;
+};
+
+const getDigitalBtnFunc = async () => {
+  await invoke("stop_communication_task", {});
+  let result = await getDigital();
+  await invoke("start_communication_task", {});
+  return result;
+};
+
+const getTemperatureBtnFunc = async () => {
+  await invoke("stop_communication_task", {});
+  let result = await getTemperature();
+  await invoke("start_communication_task", {});
+  return result;
+};
+
+const getVoltageBtnFunc = async () => {
+  await invoke("stop_communication_task", {});
+  let result = await getVoltage();
+  await invoke("start_communication_task", {});
+  return result;
+};
+
+const DeviceInfo = () => {
   return (
     <>
       <div
@@ -22,27 +58,27 @@ const Device_info = () => {
         <div className="md:w-1/3 overflow-y-scroll max-h-full">
           <ButtonComp
             name="Get RSSI"
-            buttonFunction={getRSSI}
+            buttonFunction={getRSSIBtnFunc}
             placeholder="RSSI"
           />
           <ButtonComp
             name="Get Analog (A)"
-            buttonFunction={getAnalog}
+            buttonFunction={getAnalogBtnFunc}
             placeholder="Analog Value"
           />
           <ButtonComp
             name="Get Digital (D)"
-            buttonFunction={getDigital}
+            buttonFunction={getDigitalBtnFunc}
             placeholder="Digital Value"
           />
           <ButtonComp
             name="Get Temperature (U)"
-            buttonFunction={getTemperature}
+            buttonFunction={getTemperatureBtnFunc}
             placeholder="Device Temperature"
           />
           <ButtonComp
             name="Get Voltage (V)"
-            buttonFunction={getVoltage}
+            buttonFunction={getVoltageBtnFunc}
             placeholder="Power Supply Voltage"
           />
         </div>
@@ -50,4 +86,4 @@ const Device_info = () => {
     </>
   );
 };
-export default Device_info;
+export default DeviceInfo;

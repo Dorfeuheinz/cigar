@@ -8,7 +8,7 @@ import TerminalPanel from "./components/TerminalPanel";
 
 import { useState, createContext, useEffect } from "react";
 import { getConnectedDevice } from "./utils/connection_util";
-import Device_info from "./components/DeviceInfo";
+import DeviceInfo from "./components/DeviceInfo";
 import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
 import { Buffer } from "buffer";
 
@@ -86,7 +86,7 @@ function App() {
                 icon={HiClipboardList}
                 disabled={currentMode !== "configuration"}
               >
-                <Device_info></Device_info>
+                <DeviceInfo />
               </Tabs.Item>
             </AppTabs>
           </div>

@@ -55,10 +55,15 @@ const ConfigPanel: React.FC = () => {
   const { setModel, setFirmware, setHardware, currentMode, isConnected } =
     useContext(ConnectionContext);
 
+  const readConfigBtnFunc = async () => {
+    await invoke("stop_communication_task", {});
+    await readConfig();
+    await invoke("start_communication_task", {});
+  };
+
   const readConfig = () => {
-    getDeviceConfig()
+    return getDeviceConfig()
       .then((result) => {
-        console.log(result.model);
         setData(result.cells);
         setTestModeOptions(result.test_modes);
         setQuickModeOptions(result.quick_modes);
@@ -72,7 +77,7 @@ const ConfigPanel: React.FC = () => {
       });
   };
 
-  const writeConfig = async () => {
+  const writeConfigBtnFunc = async () => {
     if (errorList.length > 0) {
       await message(
         `Incorrect parameters for the following config memory addresses:\n${errorList.join(
@@ -85,13 +90,15 @@ const ConfigPanel: React.FC = () => {
       );
       return;
     }
+    await invoke("stop_communication_task", {});
     let success = await setDeviceConfig(data);
     if (success) {
-      readConfig();
+      await readConfig();
     }
+    await invoke("start_communication_task", {});
   };
 
-  const factoryReset = async () => {
+  const factoryResetBtnFunc = async () => {
     let result = await ask(
       "This action will factory reset the device and cannot be reverted. Are you sure?",
       {
@@ -100,9 +107,11 @@ const ConfigPanel: React.FC = () => {
       }
     );
     if (result) {
+      await invoke("stop_communication_task", {});
       if (await invoke("factory_reset", {})) {
         await readConfig();
       }
+      await invoke("start_communication_task", {});
     }
   };
 
@@ -294,19 +303,19 @@ const ConfigPanel: React.FC = () => {
       >
         <div>
           <button
-            onClick={() => readConfig()}
+            onClick={() => readConfigBtnFunc()}
             className=" bg-blue-700 text-white text-xs p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Read Config
           </button>
           <button
-            onClick={() => writeConfig()}
+            onClick={() => writeConfigBtnFunc()}
             className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Save Config
           </button>
           <button
-            onClick={() => factoryReset()}
+            onClick={() => factoryResetBtnFunc()}
             className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
           >
             Factory Reset
