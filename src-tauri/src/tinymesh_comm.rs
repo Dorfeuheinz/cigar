@@ -7,35 +7,35 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::{AppHandle, Manager, State};
 
+/// DeviceEntity contains the state of the program
 pub struct DeviceEntity {
-    // The device serial port connection that can be shared across threads
+    /// The device serial port connection that can be shared across threads
     pub port: Arc<Mutex<Option<Box<dyn SerialPort>>>>,
 
-    // Tokio tasks for streaming RSSI in spectrum analyzer mode and background communication
+    /// Tokio tasks for streaming RSSI in spectrum analyzer mode and background communication
     pub rssi_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub is_rssi_task_running: Arc<Mutex<bool>>,
     pub communication_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub is_communication_task_running: Arc<Mutex<bool>>,
 
-    // pub background_reader_task: Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
-    // pub reader_task_command: Arc<Mutex<ReaderCommand>>,
-
-    // Device config
+    /// Device config is stored inside the state of the program
     pub device_config: Arc<Mutex<Option<MkDeviceConfig>>>,
 }
 
+/// EventPayload contains the data that is sent to the frontend logging panel
 #[derive(Clone, serde::Serialize)]
-struct Payload {
+struct EventPayload {
     pub data_type: String,
     pub data: Vec<u8>,
 }
 
-pub enum ReaderCommand {
-    Stop,
-    CollectBytes(),
-    ClearBuffer,
-}
-
+/// This function resets the state of the program.
+/// It is called when a new connection is being made or when the device is disconnected.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// An `Ok(())` if the program state was reset successfully, or an error if the program state could not be reset.
 #[tauri::command]
 pub fn reset_program_state(device_entity: State<DeviceEntity>) -> Result<(), String> {
     info!("Resetting program state");
@@ -63,6 +63,10 @@ pub fn reset_program_state(device_entity: State<DeviceEntity>) -> Result<(), Str
     Ok(())
 }
 
+/// This function returns a list of available serial ports on the system.
+///
+/// # Returns
+/// A vector of strings containing the names of the available serial ports.
 #[tauri::command]
 pub fn get_devices() -> Vec<String> {
     info!("Getting available devices");
@@ -73,6 +77,13 @@ pub fn get_devices() -> Vec<String> {
     return vec![];
 }
 
+/// This function returns the serial port name of the connected device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// An optional string containing the serial port name of the connected device.
+/// If no device is connected, it returns None.
 #[tauri::command]
 pub fn get_connected_device(device_entity: State<DeviceEntity>) -> Option<String> {
     info!("Getting connected device");
@@ -85,6 +96,14 @@ pub fn get_connected_device(device_entity: State<DeviceEntity>) -> Option<String
     return None;
 }
 
+/// This function connects to the specified serial port with the specified baud rate.
+/// # Arguments
+/// * `device_name` - The name of the serial port to connect to.
+/// * `baud_rate` - The baud rate to use when connecting to the serial port.
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// An `Ok(())` if the connection was successful, or an error if the connection failed.
 #[tauri::command]
 pub fn connect_to_device(
     device_name: &str,
@@ -102,6 +121,12 @@ pub fn connect_to_device(
     return Ok(());
 }
 
+/// This function disconnects from the connected serial port.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the disconnect was successful or not.
 #[tauri::command]
 pub fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -112,6 +137,14 @@ pub fn disconnect_from_device(device_entity: State<DeviceEntity>) -> bool {
     return false;
 }
 
+/// This function sends bytes to the connected serial port and emits an event if the bytes were successfully sent.
+/// # Arguments
+/// * `input` - The bytes to send to the serial port
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the bytes were successfully sent.
 #[tauri::command]
 pub fn send_bytes(
     input: String,
@@ -132,6 +165,16 @@ pub fn send_bytes(
     return false;
 }
 
+/// This function starts the background communication task.
+/// It checks if the task is already running and starts it if it isn't.
+/// It also sets the `is_communication_task_running` flag to `true` to indicate that the task is running.
+/// It adds the running task to the `communication_task` field of the `DeviceEntity` state.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the communication task was started successfully.
 #[tauri::command]
 pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -176,6 +219,15 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
     return false;
 }
 
+/// This function stops the background communication task.
+/// It checks if the task is running and stops it if it is.
+/// It also sets the `is_communication_task_running` flag to `false` to indicate that the task is not running.
+/// It removes the running task from the `communication_task` field of the `DeviceEntity` state.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the communication task was stopped successfully.
 #[tauri::command]
 pub fn stop_communication_task(device_entity: State<DeviceEntity>) -> bool {
     if let Ok(mut communication_task) = device_entity.communication_task.lock() {
@@ -195,6 +247,12 @@ pub fn stop_communication_task(device_entity: State<DeviceEntity>) -> bool {
     return false;
 }
 
+/// This function clears the output buffer of the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the output buffer was cleared successfully.
 #[tauri::command]
 pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -205,6 +263,13 @@ pub fn clear_buffer(device_entity: State<DeviceEntity>) -> bool {
     return false;
 }
 
+/// This function reads bytes from the connected serial device and returns them as a vector of bytes.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A vector of bytes containing the read bytes from the serial device.
 #[tauri::command]
 pub fn read_bytes(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> Vec<u8> {
     let mut result = vec![];
@@ -217,6 +282,16 @@ pub fn read_bytes(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> 
     return result;
 }
 
+/// This function gets the device configuration from the connected serial device.
+/// It will read the configuration from the device, match it with corresponding module description RMD file
+/// and return it as a `MkDeviceConfig` struct.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A `MkDeviceConfig` struct containing the device configuration if the configuration was successfully retrieved and matched.
+/// Returns an error if the configuration could not be retrieved or matched.
 #[tauri::command]
 pub fn get_device_config(
     device_entity: State<DeviceEntity>,
@@ -226,7 +301,14 @@ pub fn get_device_config(
     let device = device
         .as_mut()
         .ok_or("Could not lock the selected device".to_string())?;
-    get_device_config_from_device(device, &app_handle)
+    let device_config = get_device_config_from_device(device, &app_handle)?;
+    let mut device_config_from_state = device_entity
+        .device_config
+        .lock()
+        .map_err(|err| err.to_string())?;
+    let cloned_config = device_config.clone();
+    *device_config_from_state = Some(cloned_config);
+    return Ok(device_config);
 }
 
 fn get_device_config_from_device(
@@ -242,6 +324,16 @@ fn get_device_config_from_device(
     return Err("Unable to get config. Looks like sending bytes failed.".to_string());
 }
 
+/// This function sets the device configuration in the connected serial device.
+/// **NOTE**: This doesn't update the device configuration in the state of the program.
+/// It only sends the new configuration to the device.
+/// # Arguments
+/// * `cells` - A vector of `MkDeviceCell` structs containing the new device configuration
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the device configuration was set successfully.
 #[tauri::command]
 pub fn set_device_config(
     cells: Vec<MkDeviceCell>,
@@ -285,6 +377,13 @@ pub fn set_device_config(
     return false;
 }
 
+/// This function sends a factory reset command to the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A boolean value indicating whether the factory reset command was successful.
 #[tauri::command]
 pub fn factory_reset(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -318,6 +417,13 @@ fn get_bytes_to_send_for_config_change(
     return bytes_to_send;
 }
 
+/// This function gets the RSSI value from the connected serial device for the current channel.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A string containing the RSSI value in dBm or an error message if the RSSI value could not be read.
 #[tauri::command]
 pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -335,6 +441,13 @@ pub fn get_device_rssi(device_entity: State<DeviceEntity>, app_handle: AppHandle
     return "RSSI: [UNABLE TO READ]".to_string();
 }
 
+/// This function gets the analog pins from the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A string containing the analog pin values or an error message if the analog values could not be read.
 #[tauri::command]
 pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -353,6 +466,13 @@ pub fn get_device_analog(device_entity: State<DeviceEntity>, app_handle: AppHand
     return "Analog: [UNABLE TO READ]".to_string();
 }
 
+/// This function gets the digital pins from the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A string containing the digital pin values or an error message if the digital values could not be read.
 #[tauri::command]
 pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -366,6 +486,13 @@ pub fn get_device_digital(device_entity: State<DeviceEntity>, app_handle: AppHan
     return "Digital: [UNABLE TO READ]".to_string();
 }
 
+/// This function gets the temperature from the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A string containing the temperature value or an error message if the temperature value could not be read.
 #[tauri::command]
 pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -379,6 +506,13 @@ pub fn get_device_temperature(device_entity: State<DeviceEntity>, app_handle: Ap
     return "Temperature: [UNABLE TO READ]".to_string();
 }
 
+/// This function gets the power supply voltage from the connected serial device.
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A string containing the voltage value or an error message if the voltage value could not be read.
 #[tauri::command]
 pub fn get_device_voltage(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> String {
     if let Ok(mut device) = device_entity.port.lock() {
@@ -392,6 +526,18 @@ pub fn get_device_voltage(device_entity: State<DeviceEntity>, app_handle: AppHan
     return "Voltage: [UNABLE TO READ]".to_string();
 }
 
+/// This function executes a mode sequence on the connected serial device.
+/// It will send the input bytes of the sequence to the device,
+/// and match the device's output to the expected sequence.
+/// For example: The sequence string: `aG #>` means that we should
+/// send bytes `G` to the device and expect to receive `>`.
+/// # Arguments
+/// * `sequence_str` - The mode sequence to execute.
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
+///
+/// # Returns
+/// A boolean indicating whether the mode sequence was executed successfully.
 #[tauri::command]
 pub fn execute_mode_sequence(
     sequence_str: String,
@@ -421,19 +567,32 @@ pub fn execute_mode_sequence(
     return false;
 }
 
+/// This struct contains the data that is emitted as a tauri event in Spectrum Analyzer mode
 #[derive(Clone, serde::Serialize)]
 pub struct RSSIEvent {
     pub rssi: f64,
     pub channel: u8,
 }
 
+/// This function starts the RSSI stream background process and adds the running task to the `rssi_task` state variable.
+/// It will also set the `is_rssi_task_running` flag.
+/// It starts an infinite loop that will circle through all the channels, and read their RSSI.
+/// It will emit an event for each RSSI value that is read.
+///
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
+/// * `app_handle` - The Tauri application handle (provided by Tauri)
 #[tauri::command]
 pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
     info!("Starting RSSI stream");
     let device_port = device_entity.port.clone();
     let device_port_2 = device_entity.port.clone();
     if let Ok(mut is_rssi_task_running) = device_entity.is_rssi_task_running.lock() {
-        *is_rssi_task_running = true;
+        if !*is_rssi_task_running {
+            *is_rssi_task_running = true;
+        } else {
+            return;
+        }
     }
     let is_rssi_task_running = device_entity.is_rssi_task_running.clone();
     let (mut min_channel, mut max_channel) = (0, 0);
@@ -511,6 +670,11 @@ pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHand
     }
 }
 
+/// This function stops the RSSI stream background process and removes the running task from the `rssi_task` state variable.
+/// It will also set the `is_rssi_task_running` flag to false.
+///
+/// # Arguments
+/// * `device_entity` - The state of the program (provided by Tauri)
 #[tauri::command]
 pub fn stop_rssi_stream(device_entity: State<DeviceEntity>) {
     info!("Sending signal to stop RSSI stream");
@@ -652,7 +816,7 @@ fn send_bytes_to_device(
             app_handle
                 .emit_all(
                     "exchange_bytes_event",
-                    Payload {
+                    EventPayload {
                         data_type: "TX".to_string(),
                         data: bytes_to_send.to_vec(),
                     },
@@ -688,7 +852,7 @@ fn read_bytes_till_3e_from_device_to_buffer(
     app_handle
         .emit_all(
             "exchange_bytes_event",
-            Payload {
+            EventPayload {
                 data_type: "RX".to_string(),
                 data: [buffer.to_vec(), vec![0x3e]].concat(),
             },
@@ -707,7 +871,7 @@ fn read_bytes_from_device_to_buffer(
         app_handle
             .emit_all(
                 "exchange_bytes_event",
-                Payload {
+                EventPayload {
                     data_type: "RX".to_string(),
                     data: buffer.to_vec(),
                 },
