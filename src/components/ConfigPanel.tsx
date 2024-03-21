@@ -302,9 +302,7 @@ const ConfigPanel: React.FC = () => {
         <div className="overflow-y-scroll h-full">{showTable(data)}</div>
       </ConfigTableContext.Provider>
       <div
-        className={` p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap ${
-          currentMode == "configuration" ? "" : "hidden"
-        } `}
+        className={`p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap ${currentMode == "configuration" ? "" : "lg:hidden md:hidden sm:hidden"}`}
       >
         <div>
           <button
