@@ -124,6 +124,14 @@ This section gives an overview of how the program broadly behaves. The CC tool i
   - For example: a user sends ASCII 0 to read the config from the device. In return, they'll read bytes containing config of the device.
   - In these cases, we should stop background reading, do our task of sending and reading some bytes, and then restart background reading task once done.
 
+## Documentation for Backend
+
+The backend of this project is written in Rust. So, we're using standard rust tooling to generate the documentation for our project. For backend, you can generate the documentation in the following steps:
+
+- Navigate to `src-tauri` folder of this project.
+- Launch a terminal from this folder and enter the command: `cargo doc`.
+- Once `cargo` has finished execution, it will generate documentation which can be accessed from `src-tauri/target/doc/tinymesh_cc_tool/index.html` page.
+
 ## RMD File Format
 
 ### Background
