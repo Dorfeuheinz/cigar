@@ -159,7 +159,9 @@ const ConfigPanel: React.FC = () => {
                 placement="right"
                 style="light"
               >
+                <div className="text-center text-xs w-full lg:ml-16">
                 {`${name}`}
+                </div>
               </Tooltip>
             </>
           );
@@ -215,7 +217,7 @@ const ConfigPanel: React.FC = () => {
                 className={`${
                   errorList.includes(address) &&
                   "border border-red-500 bg-red-100"
-                }`}
+                } text-center`}
               />
             </>
           );
@@ -273,9 +275,9 @@ const ConfigPanel: React.FC = () => {
               </tr>
             ))}
           </thead>
-          <tbody className="text-center ">
+          <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border border-separate ">
+              <tr key={row.id} className="border border-separate text-xs text-center">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -302,7 +304,7 @@ const ConfigPanel: React.FC = () => {
         <div className="overflow-y-scroll h-full">{showTable(data)}</div>
       </ConfigTableContext.Provider>
       <div
-        className={` p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 flex flex-row justify-between md:flex-wrap ${
+        className={`p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap ${
           currentMode == "configuration" ? "" : "hidden"
         } `}
       >

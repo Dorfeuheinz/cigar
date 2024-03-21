@@ -23,38 +23,37 @@ function Header() {
     model,
     firmware,
     hardware,
+    setModel,
+    setFirmware,
+    setHardware,
   } = useContext(ConnectionContext);
 
   function buttonsAndDeviceInfo(isConnected: boolean) {
     if (isConnected && currentMode === "configuration") {
       return (
-        <div className="text-sm flex space-x-4 p-[1vh] h-[5vh] lg:text">
+        <div className=" text-xs flex space-x-1 p-[1vh] h-[5vh] md:space-x-4">
           <div>
             <span>
               <b>Model :</b>
             </span>
-            <span className="border border-white p-[2px] lg:p-[5px]">
-              {model}
-            </span>
+            <span className="">{model}</span>
           </div>
           <div>
             <span>
               <b>F.W. VERSION :</b>
             </span>
-            <span className="border border-white p-[2px] lg:p-[5px]">
-              {firmware}
-            </span>
+            <span className="">{firmware}</span>
           </div>
           <div>
             <span>
               <b>H.W. VERSION :</b>
             </span>
-            <span className="border border-white p-[2px] lg:p-[5px]">
-              {hardware}
-            </span>
+            <span className="">{hardware}</span>
           </div>
         </div>
       );
+    } else if (isConnected) {
+      return <></>;
     } else {
       return (
         <div className="flex space-x-2">
@@ -65,15 +64,16 @@ function Header() {
                 let parsedValue = parseInt(value);
                 setBaudRate(parsedValue);
               }}
-              className="rounded-md border-gray-300 text-black h-[5vh]"
+              className="rounded-md border-gray-300 text-black h-[5vh] p-0 px-[5px]"
               placeholder="Baud Rate"
             />
           </div>
           <div className="">
             <DeviceSelect
               value={deviceName}
-              className="rounded-md border-gray-300 h-[5vh] text-black"
+              className="rounded-md p-0 px-[5px] border-gray-300 h-[5vh] text-black"
               onSelected={setDeviceName}
+
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ function Header() {
   }
 
   return (
-    <header className="w-screen bg-blue-500 py-[1vh] px-[2vw] text-white h-[7vh] ">
+    <header className="w-screen bg-blue-500 py-[1vh] px-[2px] text-white h-[7vh] ">
       <div className="space-x-2 flex flex-row ">
         {buttonsAndDeviceInfo(isConnected)}
         <div className="">
@@ -115,10 +115,13 @@ function Header() {
               await invoke("reset_program_state", {});
               if (result) {
                 setIsConnected(false);
+                setModel("");
+                setFirmware("");
+                setHardware("");
               }
               return result;
             }}
-            className="h-[5vh] inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="h-[5vh] inline-flex items-center rounded-lg bg-blue-700 px-[5px] py-2.5 text-center text-xs font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           />
         </div>
         <div className={`${isConnected ? "" : "hidden"}`}>
