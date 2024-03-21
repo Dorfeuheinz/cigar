@@ -14,7 +14,7 @@ const ConnectDisconnectButton: React.FC<ConnectDisconnectButtonProps> = ({
   disconnectFunction,
   className,
 }) => {
-  const { isConnected, setIsConnected } = useContext(ConnectionContext);
+  const { isConnected, setIsConnected} = useContext(ConnectionContext);
   const [buttonText, setButtonText] = useState(
     isConnected ? "Disconnect" : "Connect"
   );

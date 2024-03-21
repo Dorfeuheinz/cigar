@@ -1,8 +1,9 @@
 import { Button } from "flowbite-react";
 import Chart from "react-google-charts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
+import { RssiStreamContext } from "./DeviceInfo";
 
 type RSSIEvent = {
   rssi: number;
@@ -10,8 +11,6 @@ type RSSIEvent = {
 };
 
 const RSSIChart: React.FC = () => {
-  const [rssiStreamRunning, setRSSIStreamRunning] = useState(false);
-
   const [chartOptions, _setChartOptions] = useState<any>({
     title: "RSSI Spectrum Analyzer",
     subtitle: "RSSI trends for different channels",
@@ -26,6 +25,9 @@ const RSSIChart: React.FC = () => {
       title: "RSSI",
     },
   });
+
+  const { rssiStreamRunning, setRssiStreamRunning } =
+    useContext(RssiStreamContext);
 
   const [chartData, setChartData] = useState([
     ["Channel", "RSSI", ""],
@@ -62,11 +64,11 @@ const RSSIChart: React.FC = () => {
     if (rssiStreamRunning) {
       await invoke("stop_rssi_stream", {});
       await invoke("start_communication_task", {});
-      setRSSIStreamRunning(false);
+      setRssiStreamRunning(false);
     } else {
       await invoke("stop_communication_task", {});
       await invoke("start_rssi_stream", {});
-      setRSSIStreamRunning(true);
+      setRssiStreamRunning(true);
     }
   };
 

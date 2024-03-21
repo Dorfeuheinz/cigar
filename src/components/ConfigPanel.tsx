@@ -159,7 +159,9 @@ const ConfigPanel: React.FC = () => {
                 placement="right"
                 style="light"
               >
+                <div className="text-center text-xs w-full lg:ml-16">
                 {`${name}`}
+                </div>
               </Tooltip>
             </>
           );
@@ -215,7 +217,7 @@ const ConfigPanel: React.FC = () => {
                 className={`${
                   errorList.includes(address) &&
                   "border border-red-500 bg-red-100"
-                }`}
+                } text-center`}
               />
             </>
           );
@@ -273,9 +275,9 @@ const ConfigPanel: React.FC = () => {
               </tr>
             ))}
           </thead>
-          <tbody className="text-center ">
+          <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border border-separate ">
+              <tr key={row.id} className="border border-separate text-xs text-center">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

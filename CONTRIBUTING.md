@@ -8,6 +8,8 @@ Developer(s) are requested to keep the following documentation up to date.
 
 - [Development Setup](#development-setup)
 - [Project Structure](#project-structure)
+- [Tool Behavior](#tool-behavior)
+- [Documentation for backend](#documentation-for-backend)
 - [RMD file format](#rmd-file-format)
   - [Background](#background)
   - [Low-level View](#low-level-view)
@@ -111,6 +113,24 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┣ 📜tsconfig.json
 ┗ 📜vite.config.ts
 ```
+
+## Tool Behavior
+
+This section gives an overview of how the program broadly behaves. The CC tool is primarily a serial communication tool that can read some bytes from a serial port and write some bytes to it. Here's how operations are broadly done:
+
+- Writing bytes is generally done in response to user's request, so writing always happens on main thread.
+- The device can receive bytes at anytime in communication mode, so reading bytes and printing them to console should be a continuous background activity.
+- However, there are times, when the user needs to send some bytes and read bytes back to see the output of their actions, especially in configuration mode.
+  - For example: a user sends ASCII 0 to read the config from the device. In return, they'll read bytes containing config of the device.
+  - In these cases, we should stop background reading, do our task of sending and reading some bytes, and then restart background reading task once done.
+
+## Documentation for Backend
+
+The backend of this project is written in Rust. So, we're using standard rust tooling to generate the documentation for our project. For backend, you can generate the documentation in the following steps:
+
+- Navigate to `src-tauri` folder of this project.
+- Launch a terminal from this folder and enter the command: `cargo doc`.
+- Once `cargo` has finished execution, it will generate documentation which can be accessed from `src-tauri/target/doc/tinymesh_cc_tool/index.html` page.
 
 ## RMD File Format
 
