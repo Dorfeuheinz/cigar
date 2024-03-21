@@ -49,11 +49,16 @@ const ConfigPanel: React.FC = () => {
   const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
   const [errorList, setErrorList] = useState<number[]>([]);
 
+  const { setModel, setFirmware, setHardware, currentMode, isConnected } =
+    useContext(ConnectionContext);
+
   useEffect(() => {
     setShouldSkipPageReset(false);
   }, [data]);
-  const { setModel, setFirmware, setHardware, currentMode, isConnected } =
-    useContext(ConnectionContext);
+
+  useEffect(() => {
+    setData([]);
+  }, [isConnected]);
 
   const readConfigBtnFunc = async () => {
     await invoke("stop_communication_task", {});
