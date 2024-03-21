@@ -17,4 +17,4 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 
 ## Other Links
 
-- [Documentation for Developers](./CONTRIBUTING.md)
+- [Documentation for Developers](./DEVELOPER_GUIDE.md)

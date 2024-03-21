@@ -7,9 +7,10 @@ Developer(s) are requested to keep the following documentation up to date.
 ## Table of Contents
 
 - [Development Setup](#development-setup)
-- [Project Structure](#project-structure)
 - [Tool Behavior](#tool-behavior)
+- [Project Structure](#project-structure)
 - [Documentation for backend](#documentation-for-backend)
+- [Where to find logs](#where-to-find-logs)
 - [RMD file format](#rmd-file-format)
   - [Background](#background)
   - [Low-level View](#low-level-view)
@@ -40,6 +41,16 @@ Once you've setup all the required tools for building this project, its time to 
   - On Windows, it will produce a EXE and MSI installer.
   - On macOS, it will produce an app bundle.
   - On Linux (Ubuntu), it will generate a DEB file.
+
+## Tool Behavior
+
+The CC tool is primarily a serial communication tool that can read some bytes from a serial port and write some bytes to it. Here's a simple philosophy of how operations are broadly done:
+
+- Writing bytes is generally done in response to user's request, so writing always happens on main thread.
+- The device can receive bytes at anytime in communication mode, since it could be connected to another device, so reading bytes and printing them to console should be a continuous background activity, since we can't do much with the received bytes anyway, we just need to print them to the log window.
+- However, there are times, when the user needs to send some bytes and read bytes back and perform actions accordingly, especially in configuration mode.
+  - For example: a user sends ASCII 0 to read the config from the device. In return, they'll read bytes containing config of the device.
+  - In these cases, we should stop background reading, do our task of sending and reading some bytes, and then restart background reading task once done.
 
 ## Project Structure
 
@@ -114,16 +125,6 @@ Below is a tree listing _some_ important folders / files of this project. It is 
 ┗ 📜vite.config.ts
 ```
 
-## Tool Behavior
-
-The CC tool is primarily a serial communication tool that can read some bytes from a serial port and write some bytes to it. Here's a simple philosophy of how operations are broadly done:
-
-- Writing bytes is generally done in response to user's request, so writing always happens on main thread.
-- The device can receive bytes at anytime in communication mode, since it could be connected to another device, so reading bytes and printing them to console should be a continuous background activity, since we can't do much with the received bytes anyway, we just need to print them to the log window.
-- However, there are times, when the user needs to send some bytes and read bytes back and perform actions accordingly, especially in configuration mode.
-  - For example: a user sends ASCII 0 to read the config from the device. In return, they'll read bytes containing config of the device.
-  - In these cases, we should stop background reading, do our task of sending and reading some bytes, and then restart background reading task once done.
-
 ## Documentation for Backend
 
 The backend of this project is written in Rust. So, we're using standard rust tooling to generate the documentation for our project. For backend, you can generate the documentation in the following steps:
@@ -131,6 +132,16 @@ The backend of this project is written in Rust. So, we're using standard rust to
 - Navigate to `src-tauri` folder of this project.
 - Launch a terminal from this folder and enter the command: `cargo doc`.
 - Once `cargo` has finished execution, it will generate documentation which can be accessed from `src-tauri/target/doc/tinymesh_cc_tool/index.html` page.
+
+## Where to find logs
+
+The logs can be found in the following folders:
+
+| Platform | Log location                             |
+| -------- | ---------------------------------------- |
+| macOS    | `$HOME/Library/Logs/com.tinymesh.cctool` |
+| Windows  | `%APPDATA%\com.tinymesh.cctool\logs`     |
+| Linux    | `$HOME/.config/com.tinymesh.cctool/logs` |
 
 ## RMD File Format
 
