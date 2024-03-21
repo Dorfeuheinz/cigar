@@ -8,11 +8,16 @@ async function fetchOptions() {
 interface SelectProps {
   onSelected: (selectedOption: string) => void;
   className: string;
+  value: string;
 }
 
-const DeviceSelect: React.FC<SelectProps> = ({ onSelected, className }) => {
+const DeviceSelect: React.FC<SelectProps> = ({
+  onSelected,
+  className,
+  value,
+}) => {
   const [options, setOptions] = useState<string[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string>(value);
 
   useEffect(() => {
     fetchOptionsData();

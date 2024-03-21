@@ -17,6 +17,7 @@ function Header() {
   const [deviceName, setDeviceName] = useState("");
   const {
     isConnected,
+    setIsConnected,
     setCurrentMode,
     currentMode,
     model,
@@ -27,7 +28,7 @@ function Header() {
   function buttonsAndDeviceInfo(isConnected: boolean) {
     if (isConnected && currentMode === "configuration") {
       return (
-        <div className=" text-sm flex space-x-4 p-[1vh] h-[5vh] lg:text">
+        <div className="text-sm flex space-x-4 p-[1vh] h-[5vh] lg:text">
           <div>
             <span>
               <b>Model :</b>
@@ -70,6 +71,7 @@ function Header() {
           </div>
           <div className="">
             <DeviceSelect
+              value={deviceName}
               className="rounded-md border-gray-300 h-[5vh] text-black"
               onSelected={setDeviceName}
             />
@@ -92,6 +94,7 @@ function Header() {
                 await invoke("send_bytes", { input: "X" });
                 setCurrentMode("communication");
                 await invoke("start_communication_task", {});
+                setIsConnected(true);
                 return true;
               } catch (error) {
                 await message(
@@ -108,9 +111,12 @@ function Header() {
               await invoke("stop_communication_task", {});
               await invoke("send_bytes", { input: "X" });
               setCurrentMode("communication");
-              setBaudRate(0);
-              setDeviceName("");
-              return await disconnectFromDevice();
+              let result = await disconnectFromDevice();
+              await invoke("reset_program_state", {});
+              if (result) {
+                setIsConnected(false);
+              }
+              return result;
             }}
             className="h-[5vh] inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           />
