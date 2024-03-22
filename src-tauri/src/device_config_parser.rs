@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::path::Path;
 
 use tauri::AppHandle;
@@ -70,25 +71,26 @@ fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) ->
 /// A `Result` containing a tuple of three `String` objects if parsing is successful, or a `String` containing an error message if parsing fails
 pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
-    while offset < data.len() {
-        if offset == 0x3c {
-            if let Some(model_end) = data[offset..].iter().position(|&x| x == b',') {
-                let model = String::from_utf8_lossy(&data[offset..offset + model_end]).to_string();
-                offset += model_end + 1;
-                if let Some(hw_end) = data[offset..].iter().position(|&x| x == b',') {
-                    let hw_version =
-                        String::from_utf8_lossy(&data[offset..offset + hw_end]).to_string();
-                    offset += hw_end + 1;
-                    if let Some(firmware_end) = data[offset..].iter().position(|&x| !x.is_ascii()) {
-                        let firmware_version =
-                            String::from_utf8_lossy(&data[offset..offset + firmware_end])
-                                .to_string();
-                        return Ok((model, hw_version, firmware_version));
-                    }
-                }
-            }
-        }
-        offset += 1;
+    if offset >= data.len() {
+        return Err("Invalid data format".to_string());
     }
-    Err("Invalid data format".to_string())
+    let model_end = data[offset..]
+        .iter()
+        .position(|&x| x == b',')
+        .ok_or("Invalid data format. Could not find model end")?;
+    let model = String::from_utf8_lossy(&data[offset..offset + model_end]).to_string();
+    offset += model_end + 1;
+    let hw_end = data[offset..]
+        .iter()
+        .position(|&x| x == b',')
+        .ok_or("Invalid data format. Could not find hw end")?;
+    let hw_version = String::from_utf8_lossy(&data[offset..offset + hw_end]).to_string();
+    offset += hw_end + 1;
+    let firmware_end = data[offset..]
+        .iter()
+        .position(|&x| !x.is_ascii())
+        .ok_or("Invalid data format. Could not find fw end")?;
+    let firmware_version =
+        String::from_utf8_lossy(&data[offset..offset + min(firmware_end, 4)]).to_string();
+    Ok((model, hw_version, firmware_version))
 }
