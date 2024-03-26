@@ -160,7 +160,7 @@ const ConfigPanel: React.FC = () => {
                 style="light"
               >
                 <div className="text-center text-xs w-full lg:ml-16">
-                {`${name}`}
+                  {`${name}`}
                 </div>
               </Tooltip>
             </>
@@ -244,7 +244,7 @@ const ConfigPanel: React.FC = () => {
     const array = description.split("\n");
 
     return (
-      <div className="text-left">
+      <div className="text-left text-xs">
         {array.map((element, index) => (
           <div key={index}>
             {element}
@@ -277,7 +277,10 @@ const ConfigPanel: React.FC = () => {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border border-separate text-xs text-center">
+              <tr
+                key={row.id}
+                className="border border-separate text-xs text-center"
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -304,29 +307,31 @@ const ConfigPanel: React.FC = () => {
         <div className="overflow-y-scroll h-full">{showTable(data)}</div>
       </ConfigTableContext.Provider>
       <div
-        className={`p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap ${currentMode == "configuration" ? "" : "lg:hidden md:hidden sm:hidden"}`}
+        className={`p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 h-[12vh] lg:h-[5vh] md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap ${
+          currentMode == "configuration" ? "" : "lg:hidden md:hidden sm:hidden"
+        }`}
       >
         <div>
           <button
             onClick={() => readConfigBtnFunc()}
-            className=" bg-blue-700 text-white text-xs p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900 md:text-xs lg:text-lg"
+            className=" bg-blue-700 text-white text-xs p-1 lg:p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900  "
           >
             Read Config
           </button>
           <button
             onClick={() => writeConfigBtnFunc()}
-            className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
+            className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-1 lg:p-2 hover:bg-blue-900  "
           >
             Save Config
           </button>
           <button
             onClick={() => factoryResetBtnFunc()}
-            className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-2 hover:bg-blue-900 md:text-xs lg:text-lg"
+            className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-1 lg:p-2 hover:bg-blue-900  "
           >
             Factory Reset
           </button>
         </div>
-        <div className={`float right md:mt-2`}>
+        <div className={`float right`}>
           <TestModeSelect
             testModeOptions={testModeOptions}
             quickOptions={quickModeOptions}

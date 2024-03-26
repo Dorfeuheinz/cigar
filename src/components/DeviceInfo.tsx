@@ -57,7 +57,7 @@ const DeviceInfo = () => {
   return (
     <>
       <div
-        className="p-2 w-full pt-0 sm:overflow-y-auto md:flex lg:flex-row md:flex-row"
+        className="p-2 w-full pt-0 sm:overflow-y-auto lg:flex lg:flex-row "
         style={{ minHeight: "50vh", maxHeight: "50vh" }}
       >
         <RssiStreamContext.Provider
@@ -66,11 +66,11 @@ const DeviceInfo = () => {
             setRssiStreamRunning: setRssiStreamRunning,
           }}
         >
-          <div className="border-4 md:w-2/3 max-h-full flex-grow">
+          <div className="border-4 sm:w-full md:w-full lg:w-2/3 max-h-full flex-grow">
             <RSSIChart />
           </div>
           <div
-            className={`md:w-1/3 overflow-y-scroll max-h-full ${
+            className={`lg:w-1/3 sm:w-full md:w-full overflow-y-scroll max-h-full ${
               rssiStreamRunning ? "hidden" : ""
             }`}
           >

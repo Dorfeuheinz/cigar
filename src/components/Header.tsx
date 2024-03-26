@@ -55,25 +55,41 @@ function Header() {
     } else if (isConnected) {
       return <></>;
     } else {
+      const BaudRateList = [
+        "110",
+        "300",
+        "600",
+        "1200",
+        "2400",
+        "4800",
+        "9600",
+        "14400",
+        "19200",
+        "28800",
+        "38400",
+        "56000",
+        "57600",
+        "115200",
+        "230400",
+      ];
       return (
         <div className="flex space-x-2">
           <div className="">
             <InputWithDatalist
-              optionsProvider={() => ["19200", "115200"]}
+              optionsProvider={() => BaudRateList}
               onValueChanged={(value) => {
                 let parsedValue = parseInt(value);
                 setBaudRate(parsedValue);
               }}
-              className="rounded-md border-gray-300 text-black h-[5vh] p-0 px-[5px]"
+              className="rounded-md border-gray-300 text-xs text-black h-[5vh] p-0 px-[5px]"
               placeholder="Baud Rate"
             />
           </div>
           <div className="">
             <DeviceSelect
               value={deviceName}
-              className="rounded-md p-0 px-[5px] border-gray-300 h-[5vh] text-black"
+              className="rounded-md p-0 px-[5px] text-xs border-gray-300 h-[5vh] text-black"
               onSelected={setDeviceName}
-
             />
           </div>
         </div>
@@ -82,7 +98,7 @@ function Header() {
   }
 
   return (
-    <header className="w-screen bg-blue-500 py-[1vh] px-[2px] text-white h-[7vh] ">
+    <header className="w-screen bg-blue-500 py-[1vh] pl-[4px] text-white h-[7vh] ">
       <div className="space-x-2 flex flex-row ">
         {buttonsAndDeviceInfo(isConnected)}
         <div className="">

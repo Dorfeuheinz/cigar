@@ -77,6 +77,7 @@ const ConfigModeToggle: React.FC<ConfigModeToggleParams> = ({
           type="checkbox"
           checked={currentMode === "configuration"}
           onChange={handleCheckboxChange}
+          disabled={currentMode == "waitingForConfigMode"}
           className="sr-only"
         />
         <span className="label flex items-center text-xs font-medium text-white">

@@ -55,7 +55,7 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col overflow-hidden md:max-h-screen md:min-h-screen">
+      <div className="flex flex-col overflow-hidden md:max-h-screen md:min-h-screen fixed top-0">
         <ConnectionContext.Provider
           value={{
             isConnected: isConnected,
@@ -70,7 +70,7 @@ function App() {
             setFirmware: setFirmware,
           }}
         >
-          <div className="h-[7vh] max-h-[7vh] overflow-hidden fix">
+          <div className="h-[7vh] max-h-[7vh] overflow-hidden">
             <Header />
           </div>
           <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
@@ -90,12 +90,12 @@ function App() {
               </Tabs.Item>
             </AppTabs>
           </div>
-          <div className="flex-1 w-full border-t overflow-y-scroll h-[25vh] max-h-[25vh]">
+          <div className="flex-1 w-full border-t overflow-y-scroll h-[25vh] max-h-[25vh] ">
             <TerminalPanel size={300} />
           </div>
-          <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh]">
+          <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh] fixed bottom-0">
             <div id="connectionStatus" className="text-center text-white">
-              <span className=" sm:text-l text-2xl float-start">
+              <span className="float-start">
                 <img
                   src={`data:image/png;base64,${logoContent}`}
                   width="100"

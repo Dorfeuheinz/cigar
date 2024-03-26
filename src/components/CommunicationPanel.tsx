@@ -47,7 +47,7 @@ function CommunicationPanel() {
 
   return (
     <>
-      <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+      <div className="w-full mb-4 border text-xs border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
         <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
           <label htmlFor="comment" className="sr-only">
             Your message
@@ -58,6 +58,7 @@ function CommunicationPanel() {
             className="w-full px-0 text-xs text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400"
             placeholder="Write a message..."
             onChange={(e) => setCommunicationInput(e.target.value)}
+            disabled={intervalRunning}
             required
           />
         </div>
@@ -66,6 +67,7 @@ function CommunicationPanel() {
             <button
               onClick={handleSubmit}
               className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+              disabled={intervalRunning}
             >
               Send
             </button>
@@ -83,6 +85,7 @@ function CommunicationPanel() {
                 type="button"
                 onClick={handleDecrementInterval}
                 className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                disabled={intervalRunning}
               >
                 <svg
                   className="w-3 h-3 text-gray-900 dark:text-white"
@@ -113,6 +116,7 @@ function CommunicationPanel() {
                 type="button"
                 onClick={handleIncrementInterval}
                 className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
+                disabled={intervalRunning}
               >
                 <svg
                   className="w-3 h-3 text-gray-900 dark:text-white"

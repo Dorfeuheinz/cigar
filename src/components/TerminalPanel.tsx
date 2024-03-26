@@ -59,52 +59,54 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
 
   return (
     <>
-      <div
-        className="h-[4vh] p-[0.4vh] w-full sticky top-0 border bg-gray-50 flex justify-between
+      <div className="h-full">
+        <div
+          className="h-[5vh] w-full sticky top-0 border border-gray-300 bg-gray-50 flex justify-between pt-[0.5vh] md:pt-0 lg:pt-[0.5vh]
       "
-      >
-        <div>
-          <select
-            className="h-[3vh] text-xs p-0 pl-2 ml-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 md:text-xs lg:text-lg"
-            onChange={handleSelectChange}
-          >
-            <option value="hex">Hex</option>
-            <option value="decimal">Decimal</option>
-            <option value="ascii">ASCII</option>
-          </select>
+        >
+          <div className="h-[3vh] ml-2">
+            <select
+              className="text-xs p-[0.5vh] pl-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 lg:p-[1vh] "
+              onChange={handleSelectChange}
+            >
+              <option value="hex">Hex</option>
+              <option value="decimal">Decimal</option>
+              <option value="ascii">ASCII</option>
+            </select>
+          </div>
+          <div>
+            <button
+              className="text-xs p-[0.5vh] px-2 mr-5 bg-red-600 text-white border border-blue-950 rounded-lg hover:bg-red-900 lg:p-[1vh] "
+              onClick={clearLogs}
+            >
+              Clear
+            </button>
+          </div>
         </div>
-        <div>
-          <button
-            className="h-[3vh] text-xs px-2 mr-5 bg-red-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 md:text-xs lg:text-lg"
-            onClick={clearLogs}
-          >
-            Clear
-          </button>
+        <div className=" overflow-y-auto h-[20vh] w-full fixed ">
+          {logs.map((log, index) => (
+            <>
+              <p key={index} className="text-xs px-4">
+                <b>[{log.data_type}]</b>&nbsp;
+                <b>[{log.time}]</b>&nbsp;
+                {log.data
+                  .map((elem, index) => {
+                    if (displayMode == "hex") {
+                      return elem.toString(16).padStart(2, "0").toUpperCase();
+                    } else if (displayMode == "decimal") {
+                      return elem.toString(10).padStart(3, "0");
+                    } else if (displayMode == "ascii") {
+                      return String.fromCharCode(elem);
+                    }
+                  })
+                  .join(" ")}
+              </p>
+              <hr />
+            </>
+          ))}
+          <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="h-[21vh] ">
-      {logs.map((log, index) => (
-        <>
-          <p key={index}>
-            <b>[{log.data_type}]</b>&nbsp;
-            <b>[{log.time}]</b>&nbsp;
-            {log.data
-              .map((elem, index) => {
-                if (displayMode == "hex") {
-                  return elem.toString(16).padStart(2, "0").toUpperCase();
-                } else if (displayMode == "decimal") {
-                  return elem.toString(10).padStart(3, "0");
-                } else if (displayMode == "ascii") {
-                  return String.fromCharCode(elem);
-                }
-              })
-              .join(" ")}
-          </p>
-          <hr />
-        </>
-      ))}
-      </div>
-      <div ref={messagesEndRef} />
     </>
   );
 };

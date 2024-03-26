@@ -82,12 +82,12 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
   };
   return (
     <>
-      <div className="h-full flex flex-row md:flex flex-row ">
+      <div className="h-full flex flex-row mt-[2px]  md:flex md:flex-row">
         <div>
           <select
             value={selectedOption}
             onChange={handleSelectChange}
-            className="w-fit rounded-lg text-xs p-0 pl-2 pr-0 bg-blue-600 text-white md:p-3 "
+            className="w-full rounded-lg text-xs p-0 pl-2 pr-0 sm:py-1  bg-blue-600 text-white lg:p-2 "
           >
             <option value="" selected>
               Select Mode
@@ -111,7 +111,7 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
 
         <div className="ml-2">
           <button
-            className="sm:mt-2 pl-5 pr-5 bg-blue-700 text-white text-xs rounded-lg"
+            className="sm:mt-1 px-3 bg-blue-700 text-white text-xs rounded-lg lg:p-2 lg:mt-0.5 "
             onClick={handleExecuteSelectedTestMode}
           >
             Go

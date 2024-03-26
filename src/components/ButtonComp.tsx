@@ -20,15 +20,16 @@ const ButtonComp: React.FC<ButtonCompProps> = ({
   };
 
   return (
-    <div className="w-full text-center flex flex-row justify-around overflow-y-auto">
-      <div className="mt-2 mb-2 md:w-1/3">
+    <div className="w-full text-center text-xs flex flex-row overflow-y-auto lg:justify-around sm:justify-between">
+      <div className="mt-2 mb-2 md:w-[50%] md:w-max-[50%] sm:w-[50%]">
         <TextInput
           className=""
           placeholder={`${placeholder}`}
           value={inputValue}
+          disabled
         ></TextInput>
       </div>
-      <div className="md:w-1/2 mt-2">
+      <div className="md:w-[40%] sm:w-[40%] mt-2">
         <Button className="w-full" onClick={handlebutton}>
           {" "}
           {name}{" "}
