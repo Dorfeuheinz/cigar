@@ -61,12 +61,12 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
     <>
       <div className="h-full">
         <div
-          className="h-[5vh] w-full sticky top-0 border border-gray-300 bg-gray-50 flex justify-between pt-[0.5vh] md:pt-0 lg:pt-[0.5vh]
+          className="h-[5vh] w-full sticky top-0 border border-gray-300 bg-gray-50 flex justify-between pt-[0.5vh] md:pt-[0.5vh] lg:pt-[0.5vh]
       "
         >
-          <div className="h-[3vh] ml-2">
+          <div className="h-[3.5vh] ml-2">
             <select
-              className="text-xs p-[0.5vh] pl-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 lg:p-[1vh] "
+              className="h-[3.5vh] text-xs p-0 pl-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900  "
               onChange={handleSelectChange}
             >
               <option value="hex">Hex</option>
@@ -76,7 +76,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
           </div>
           <div>
             <button
-              className="text-xs p-[0.5vh] px-2 mr-5 bg-red-600 text-white border border-blue-950 rounded-lg hover:bg-red-900 lg:p-[1vh] "
+              className="text-xs h-[3.5vh] px-2 mr-5 bg-red-600 text-white border border-blue-950 rounded-lg hover:bg-red-900  "
               onClick={clearLogs}
             >
               Clear

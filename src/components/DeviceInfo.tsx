@@ -66,11 +66,11 @@ const DeviceInfo = () => {
             setRssiStreamRunning: setRssiStreamRunning,
           }}
         >
-          <div className="border-4 sm:w-full md:w-full lg:w-2/3 max-h-full flex-grow">
+          <div className="border-4 lg:w-2/3 max-h-full flex-grow">
             <RSSIChart />
           </div>
           <div
-            className={`lg:w-1/3 sm:w-full md:w-full overflow-y-scroll max-h-full ${
+            className={`lg:w-1/3 overflow-y-scroll max-h-full ${
               rssiStreamRunning ? "hidden" : ""
             }`}
           >
