@@ -306,38 +306,38 @@ const ConfigPanel: React.FC = () => {
       >
         <div className="overflow-y-scroll h-full">{showTable(data)}</div>
       </ConfigTableContext.Provider>
-      <div
-        className={`p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 h-[12vh] lg:h-[5vh] md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap ${
-          currentMode == "configuration" ? "" : "lg:hidden md:hidden sm:hidden"
-        }`}
-      >
-        <div>
-          <button
-            onClick={() => readConfigBtnFunc()}
-            className=" bg-blue-700 text-white text-xs p-1 lg:p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900  "
-          >
-            Read Config
-          </button>
-          <button
-            onClick={() => writeConfigBtnFunc()}
-            className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-1 lg:p-2 hover:bg-blue-900  "
-          >
-            Save Config
-          </button>
-          <button
-            onClick={() => factoryResetBtnFunc()}
-            className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-1 lg:p-2 hover:bg-blue-900  "
-          >
-            Factory Reset
-          </button>
+      {currentMode === "configuration" ? (
+        <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 h-[12vh] lg:h-[5vh] md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap">
+          <div>
+            <button
+              onClick={() => readConfigBtnFunc()}
+              className=" bg-blue-700 text-white text-xs p-1 lg:p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900  "
+            >
+              Read Config
+            </button>
+            <button
+              onClick={() => writeConfigBtnFunc()}
+              className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-1 lg:p-2 hover:bg-blue-900  "
+            >
+              Save Config
+            </button>
+            <button
+              onClick={() => factoryResetBtnFunc()}
+              className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-1 lg:p-2 hover:bg-blue-900  "
+            >
+              Factory Reset
+            </button>
+          </div>
+          <div className={`float right`}>
+            <TestModeSelect
+              testModeOptions={testModeOptions}
+              quickOptions={quickModeOptions}
+            />
+          </div>
         </div>
-        <div className={`float right`}>
-          <TestModeSelect
-            testModeOptions={testModeOptions}
-            quickOptions={quickModeOptions}
-          />
-        </div>
-      </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

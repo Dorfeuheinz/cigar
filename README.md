@@ -13,8 +13,7 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 ## Installation instructions
 
 - On Windows and macOS, use the corresponding installers for your system.
-- Linux users also need the `libudev` dependency installed on their system. Check if your distro has a package containing the term `libudev` in it and install.
-
+- Linux users also need other packages installed. Check the developer guide for additional info & commands regarding the same.
 ## Other Links
 
-- [Documentation for Developers](./CONTRIBUTING.md)
+- [Documentation for Developers](./DEVELOPER_GUIDE.md)

@@ -10,13 +10,12 @@ import { useState, createContext, useEffect } from "react";
 import { getConnectedDevice } from "./utils/connection_util";
 import DeviceInfo from "./components/DeviceInfo";
 import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
-import { Buffer } from "buffer";
 
-async function convertImageToBase64() {
+async function convertImageToBase64(): Promise<string> {
   const contents = await readBinaryFile("resources/icons/tinymesh-white.png", {
     dir: BaseDirectory.Resource,
   });
-  return Buffer.from(contents).toString("base64");
+  return btoa(String.fromCharCode(...new Uint8Array(contents)));
 }
 
 export const ConnectionContext = createContext({

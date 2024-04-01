@@ -1,3 +1,5 @@
+//! Converts a string read from the Communication Panel's textarea into a vector of bytes.
+
 #[derive(Debug, PartialEq)]
 pub enum InputError {
     InvalidByteSequence(String),
