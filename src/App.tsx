@@ -89,7 +89,7 @@ function App() {
               </Tabs.Item>
             </AppTabs>
           </div>
-          <div className="flex-1 w-full border-t overflow-y-scroll h-[25vh] max-h-[25vh] ">
+          <div className="flex-1 w-full border-t h-[25vh] max-h-[25vh] ">
             <TerminalPanel size={300} />
           </div>
           <footer className="w-full p-1 bg-gray-500 h-[5vh] max-h-[5vh] fixed bottom-0">

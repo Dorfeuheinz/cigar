@@ -29,7 +29,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
           </button>
         </div>
       </div>
-      <div className="h-[21vh] ">
+      <div className={`h-[21vh] overflow-y-auto`}>
         {logs.map((log, index) => (
           <>
             <p key={index}>
@@ -97,11 +97,10 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
                 })
                 .join(" ")}
             </p>
-            <hr />
           </>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <div ref={messagesEndRef} />
     </>
   );
 };
