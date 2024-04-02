@@ -26,8 +26,7 @@ const ButtonComp: React.FC<ButtonCompProps> = ({
       </div>
       <div className="md:w-[40%] sm:w-[40%] mt-2">
         <Button className="w-full" onClick={handlebutton}>
-          {" "}
-          {name}{" "}
+          {name}
         </Button>
       </div>
     </div>
