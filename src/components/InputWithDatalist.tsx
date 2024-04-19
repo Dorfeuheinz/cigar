@@ -12,7 +12,7 @@ const InputWithDatalist: React.FC<InputWithDatalistProps> = ({
   className,
   placeholder = "",
 }) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("19200");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
