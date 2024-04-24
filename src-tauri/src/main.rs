@@ -6,6 +6,7 @@ use tauri_plugin_log::{LogTarget, RotationStrategy, TimezoneStrategy};
 use tinymesh_cc_tool::data_types::DeviceEntity;
 use tinymesh_cc_tool::tinymesh_comm_mod::*;
 use tinymesh_cc_tool::tinymesh_config_mod::*;
+use tinymesh_cc_tool::tinymesh_calibration_mod::*;
 use tinymesh_cc_tool::tinymesh_device_info_mod::*;
 use tinymesh_cc_tool::tinymesh_serial_util::*;
 
@@ -31,6 +32,7 @@ fn main() {
             communication_task: Default::default(),
             is_communication_task_running: Arc::new(Mutex::new(false)),
             device_config: Arc::new(Mutex::new(None)),
+            device_calib: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             // communication functions
@@ -41,6 +43,9 @@ fn main() {
             set_device_config,
             execute_mode_sequence,
             factory_reset,
+            // calibration functions
+            get_device_calib,
+            set_device_calib,
             // serial functions
             reset_program_state,
             get_devices,

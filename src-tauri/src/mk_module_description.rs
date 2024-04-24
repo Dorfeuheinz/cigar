@@ -144,13 +144,13 @@ fn get_cells_and_remove_from_unknown(
 fn get_calibration_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
 ) -> Vec<MkDeviceCell> {
-    // find all keys of the format "M 0x<some hex number> <some text>"
+    // find all keys of the format "C 0x<some hex number> <some text>"
     let mut result: Vec<MkDeviceCell> = vec![Default::default(); 256];
     for i in 0..result.len() {
         result[i].address = i;
     }
     for (key, value) in &module_description.unknown_data {
-        // use regex matching on key. the format of the key is "M 0x<some hex number> <some text>"
+        // use regex matching on key. the format of the key is "C 0x<some hex number> <some text>"
         // we want to extract the hex number and some text
         if let Ok((address, name)) = check_cell_key("C", key) {
             // resize vector to fit the address
@@ -178,10 +178,10 @@ fn get_calibration_cells_and_remove_from_unknown(
         }
     }
 
-    // remove all keys starting from "M "
+    // remove all keys starting from "C "
     module_description
         .unknown_data
-        .retain(|k, _| !k.starts_with("M "));
+        .retain(|k, _| !k.starts_with("C "));
     return result;
 }
 
