@@ -89,7 +89,7 @@ const TestModeSelect: React.FC<TestModeSelectOptions> = ({
             onChange={handleSelectChange}
             className="w-full rounded-lg text-xs p-0 pl-2 pr-0 sm:py-1  bg-blue-600 text-white lg:p-2 "
           >
-            <option value="" selected>
+            <option value="" defaultValue={"true"}>
               Select Mode
             </option>
             <optgroup label="Quick Options">

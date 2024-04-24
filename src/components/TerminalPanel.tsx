@@ -64,9 +64,9 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
             className="h-[3.8vh] max-h[30px] text-sm p-0 pl-2 ml-2 bg-blue-600 text-white border border-blue-950 rounded-lg hover:bg-blue-900 lg:text-lg"
             onChange={handleSelectChange}
           >
-            <option value="hex">Hex</option>
-            <option value="decimal">Decimal</option>
-            <option value="ascii">ASCII</option>
+            <option value="hex" key="hex">Hex</option>
+            <option value="decimal" key="decimal">Decimal</option>
+            <option value="ascii" key="ascii">ASCII</option>
           </select>
         </div>
         &emsp;
