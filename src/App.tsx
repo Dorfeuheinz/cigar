@@ -10,7 +10,7 @@ import { useState, createContext, useEffect } from "react";
 import { getConnectedDevice } from "./utils/connection_util";
 import DeviceInfo from "./components/DeviceInfo";
 import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
-import Calibration from "./components/calibration";
+import Calibration from "./components/Calibration";
 
 async function convertImageToBase64(): Promise<string> {
   const contents = await readBinaryFile("resources/icons/tinymesh-white.png", {

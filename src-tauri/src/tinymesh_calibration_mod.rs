@@ -36,9 +36,12 @@ pub fn get_device_calib(
         .map_err(|err| err.to_string())?;
     let cloned_config = device_calib.clone();
     *device_calib_from_state = Some(cloned_config);
+
+    info!("\n\nResult is this here /// - {:?}", device_calib);
     return Ok(device_calib);
 }
 
+use log::info;
 pub fn get_device_calib_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
@@ -145,57 +148,3 @@ fn get_bytes_to_send_for_calib_change(
     return bytes_to_send;
 }
 
-// / This function executes a mode sequence on the connected serial device.
-// / It will send the input bytes of the sequence to the device,
-// / and match the device's output to the expected sequence.
-// / For example: The sequence string: `aG #>` means that we should
-// / send bytes `G` to the device and expect to receive `>`.
-// / # Arguments
-// / * `sequence_str` - The mode sequence to execute.
-// / * `device_entity` - The state of the program (provided by Tauri)
-// / * `app_handle` - The Tauri application handle (provided by Tauri)
-// /
-// / # Returns
-// / A boolean indicating whether the mode sequence was executed successfully.
-// #[tauri::command]
-// pub fn execute_mode_sequence(
-//     sequence_str: String,
-//     device_entity: State<DeviceEntity>,
-//     app_handle: AppHandle,
-// ) -> bool {
-//     let mut recv_buffer = vec![];
-//     if let Ok(mut device) = device_entity.port.lock() {
-//         if let Some(device) = device.as_mut() {
-//             clear_output_buffer_of_device(device);
-//             if let Some((send_seq, recv_seq)) = extract_send_recv_seq(&sequence_str) {
-//                 let send_result = send_bytes_to_device(device, &send_seq, &app_handle);
-//                 if recv_seq.ends_with(&[b'>']) {
-//                     read_bytes_till_3e_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
-//                     if send_result && recv_buffer == recv_seq[..recv_seq.len() - 1] {
-//                         return true;
-//                     }
-//                 } else {
-//                     read_bytes_from_device_to_buffer(device, &mut recv_buffer, &app_handle);
-//                     if send_result && recv_buffer == recv_seq {
-//                         return true;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     return false;
-// }
-
-// fn extract_send_recv_seq(sequence_str: &str) -> Option<(Vec<u8>, Vec<u8>)> {
-//     if let [send_seq, recv_seq] = sequence_str
-//         .trim()
-//         .split_whitespace()
-//         .collect::<Vec<&str>>()
-//         .as_slice()
-//     {
-//         let send = send_seq.trim_start_matches('a').as_bytes().to_vec();
-//         let recv = recv_seq.trim_start_matches('#').as_bytes().to_vec();
-//         return Some((send, recv));
-//     }
-//     None
-// }

@@ -20,7 +20,8 @@ pub fn parse_device_calib(
     rmd_file_path: Option<&Path>,
     app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceCalib, String> {
-    let (model, hw_version, firmware_version) = get_device_information(data)?;
+    info!("Data we get-> {:?}", data);
+    // let (model, _hw_version, _firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
     let module_description = if let Some(rmd_file_path) = rmd_file_path {
         let file_contents =
@@ -30,19 +31,20 @@ pub fn parse_device_calib(
         if app_handle.is_none() {
             return Err("App handle is None".to_string());
         }
-        MkModuleDescription::new_from_device_model(&model, app_handle.unwrap())?
+        // return Err("No file path specified".to_string());
+        let file_contents =
+            std::fs::read_to_string("resources/modules/RF TM4070.rmd").map_err(|err| err.to_string())?;
+        MkModuleDescription::new(&file_contents)
+        // MkModuleDescription::new_from_device_model(&model, app_handle.unwrap())?
     };
 
+
+
     let calibration_cells = read_unlocked_cells(data, &module_description);
-    let test_modes = module_description.testmodes;
-    let quick_modes = module_description.quickmodes;
+    // let test_modes = module_description.testmodes;
+    // let quick_modes = module_description.quickmodes;
     let result = MkDeviceCalib {
-        model,
-        hw_version,
-        firmware_version,
         calibration_cells,
-        test_modes,
-        quick_modes,
     };
     Ok(result)
 }
@@ -69,10 +71,31 @@ fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) ->
 ///
 /// # Returns
 /// A `Result` containing a tuple of three `String` objects if parsing is successful, or a `String` containing an error message if parsing fails
+
+use log::info;
+
+fn decimal_to_hex(input: &[u8]) -> Vec<String> {
+    input.iter()
+        .map(|&decimal| format!("{:02X}", decimal)) // Convert each decimal to hexadecimal
+        .collect()
+}
+
+fn decimal_to_ascii(input: &[u8]) -> Vec<char> {
+    input.iter()
+        .map(|&decimal| {
+            if decimal.is_ascii() { // Check if the decimal is within the ASCII range
+                decimal as char // Convert to ASCII character
+            } else {
+                '?' // If not in ASCII range, represent as '?' character
+            }
+        })
+        .collect()
+}
+
 pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
     if offset >= data.len() {
-        return Err("Invalid data format".to_string());
+        return Err("Invalid data format for calibration".to_string());
     }
     let model_end = data[offset..]
         .iter()
