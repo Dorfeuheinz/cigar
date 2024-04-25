@@ -8,12 +8,7 @@ type MkDeviceConfig = {
 };
 
 type MkDeviceCalib = {
-  model: string;
-  hw_version: string;
-  firmware_version: string;
-  calibrate_cells: MkDeviceCell[];
-  test_modes: MkDeviceTestMode[];
-  quick_modes: MkDeviceQuickMode[];
+  calibration_cells: MkDeviceCell[];
 };
 type MkDeviceCell = {
   address: number;

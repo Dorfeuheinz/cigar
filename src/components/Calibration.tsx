@@ -15,15 +15,12 @@ import {
   } from "react";
   import { invoke } from "@tauri-apps/api";
   import { ask, message } from "@tauri-apps/api/dialog";
-  import TestModeSelect from "./TestModeSelect";
   import { Tooltip } from "flowbite-react";
   import { getDeviceCalib, setDeviceCalib } from "../utils/device_info_util";
   import { error } from "tauri-plugin-log-api";
   
   import {
-    MkDeviceCell,
-    MkDeviceTestMode,
-    MkDeviceQuickMode,
+    MkDeviceCell
   } from "../DataTypes";
   import { ConnectionContext } from "../App";
   
@@ -40,16 +37,10 @@ import {
   
   const Calibration: React.FC = () => {
     const [data, setData] = useState<MkDeviceCell[]>(() => []);
-    const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>(
-      []
-    );
-    const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>(
-      []
-    );
     const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
     const [errorList, setErrorList] = useState<number[]>([]);
   
-    const { setModel, setFirmware, setHardware, currentMode, isConnected } =
+    const { currentMode, isConnected } =
       useContext(ConnectionContext);
   
     useEffect(() => {
@@ -61,25 +52,20 @@ import {
     }, [isConnected]);
   
     const readCalibFunc = async () => {
-      console.log("line 1")
       await invoke("stop_communication_task", {});
       await readCalib();
-      console.log("after read calib")
       await invoke("start_communication_task", {});
     };
   
     const readCalib = () => {
-      console.log("in read calib 1")
-
       let data =  getDeviceCalib()
         .then((result) => {
           console.log("this is result", result);
+          setData(result.calibration_cells);
         })
         .catch((err) => {
           error(`Error occurred while trying to read device calibration: ${err}`);
         });
-
-      console.log(data, "=== data")
 
       return data
 
@@ -330,12 +316,6 @@ import {
               >
                 Factory Reset
               </button>
-            </div>
-            <div className={`float right`}>
-              <TestModeSelect
-                testModeOptions={testModeOptions}
-                quickOptions={quickModeOptions}
-              />
             </div>
           </div>
         ) : (

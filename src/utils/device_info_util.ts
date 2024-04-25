@@ -28,10 +28,7 @@ export async function getDeviceConfig() {
 }
 
 export async function getDeviceCalib() {
-  console.log("Get data");
-
   let result: MkDeviceCalib = await invoke("get_device_calib");
-  console.log("result in data: ", result);
   return result;
 }
 
