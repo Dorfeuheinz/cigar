@@ -23,7 +23,7 @@ function getCurrentTime() {
   return formattedTime;
 }
 
-const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
+const TerminalPanel: React.FC<TerminalPanelProps> = ({ }) => {
   let [logs, setLogs] = useState<EventPayload[]>([]);
   const [displayMode, setDisplayMode] = useState("hex");
 
@@ -86,7 +86,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ size }) => {
               <b>[{log.data_type}]</b>&nbsp;
               <b>[{log.time}]</b>&nbsp;
               {log.data
-                .map((elem, index) => {
+                .map((elem, _index) => {
                   if (displayMode == "hex") {
                     return elem.toString(16).padStart(2, "0").toUpperCase();
                   } else if (displayMode == "decimal") {
