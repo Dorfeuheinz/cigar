@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { MkDeviceConfig, MkDeviceCell ,SJDeviceCalib} from "../DataTypes";
+import { MkDeviceConfig, MkDeviceCell, MkDeviceCalib} from "../DataTypes";
 
 export async function getRSSI() {
   return await invoke("get_device_rssi");
@@ -27,13 +27,20 @@ export async function getDeviceConfig() {
   return result;
 }
 
-export async function getDeviceCalibration() {
-  let result: SJDeviceCalib = await invoke("get_device_calib");
-  console.log("result in dat: ")
+export async function getDeviceCalib() {
+  console.log("Get data");
+
+  let result: MkDeviceCalib = await invoke("get_device_calib");
+  console.log("result in data: ", result);
   return result;
 }
 
 export async function setDeviceConfig(cells: MkDeviceCell[]) {
   let result: boolean = await invoke("set_device_config", { cells: cells });
+  return result;
+}
+
+export async function setDeviceCalib(cells: MkDeviceCell[]) {
+  let result: boolean = await invoke("set_device_calib", { cells: cells });
   return result;
 }

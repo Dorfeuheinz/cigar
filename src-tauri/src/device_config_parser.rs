@@ -15,11 +15,14 @@ use crate::mk_module_description::MkModuleDescription;
 ///
 /// # Returns
 /// A `Result` containing a `MkDeviceConfig` object if parsing is successful, or a `String` containing an error message if parsing fails
+use log::info;
+
 pub fn parse_device_config(
     data: &[u8],
     rmd_file_path: Option<&Path>,
     app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceConfig, String> {
+    info!("Data we get in config-> {:?}", data);
     let (model, hw_version, firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
     let module_description = if let Some(rmd_file_path) = rmd_file_path {
@@ -69,6 +72,7 @@ fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) ->
 ///
 /// # Returns
 /// A `Result` containing a tuple of three `String` objects if parsing is successful, or a `String` containing an error message if parsing fails
+
 pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
     if offset >= data.len() {

@@ -2855,7 +2855,7 @@ RF Power5
 [C 0x01 MIN_MAX]
 0 255
 
-[C 0x00 HINT]
+[C 0x01 HINT]
 Factory set, do not change
 []
 

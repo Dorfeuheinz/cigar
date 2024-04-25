@@ -182,6 +182,8 @@ fn get_calibration_cells_and_remove_from_unknown(
     module_description
         .unknown_data
         .retain(|k, _| !k.starts_with("C "));
+
+    info!("Here is the calibration data result ----> {:?}", result);
     return result;
 }
 

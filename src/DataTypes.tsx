@@ -7,7 +7,7 @@ type MkDeviceConfig = {
   quick_modes: MkDeviceQuickMode[];
 };
 
-type SJDeviceCalib = {
+type MkDeviceCalib = {
   model: string;
   hw_version: string;
   firmware_version: string;
@@ -47,5 +47,5 @@ export type {
   MkDeviceCell,
   MkDeviceTestMode,
   MkDeviceQuickMode,
-  SJDeviceCalib
+  MkDeviceCalib
 };

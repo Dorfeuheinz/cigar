@@ -17,7 +17,7 @@ import {
   import { ask, message } from "@tauri-apps/api/dialog";
   import TestModeSelect from "./TestModeSelect";
   import { Tooltip } from "flowbite-react";
-  import { getDeviceCalibration, setDeviceConfig } from "../utils/device_info_util";
+  import { getDeviceCalib, setDeviceCalib } from "../utils/device_info_util";
   import { error } from "tauri-plugin-log-api";
   
   import {
@@ -71,25 +71,24 @@ import {
     const readCalib = () => {
       console.log("in read calib 1")
 
-     let data =  getDeviceCalibration()
+      let data =  getDeviceCalib()
         .then((result) => {
           console.log("this is result", result);
         })
         .catch((err) => {
-          error(`Error occurred while trying to read device config: ${err}`);
+          error(`Error occurred while trying to read device calibration: ${err}`);
         });
 
-        console.log(data, "=== data")
+      console.log(data, "=== data")
 
-        return data
-
+      return data
 
     };
   
-    const writeConfigBtnFunc = async () => {
+    const writeCalibBtnFunc = async () => {
       if (errorList.length > 0) {
         await message(
-          `Incorrect parameters for the following config memory addresses:\n${errorList.join(
+          `Incorrect parameters for the following calibration memory addresses:\n${errorList.join(
             ","
           )}`,
           {
@@ -100,7 +99,7 @@ import {
         return;
       }
       await invoke("stop_communication_task", {});
-      let success = await setDeviceConfig(data);
+      let success = await setDeviceCalib(data);
       if (success) {
         await readCalib();
       }
@@ -320,7 +319,7 @@ import {
                 Read Calib
               </button>
               <button
-                onClick={() => writeConfigBtnFunc()}
+                onClick={() => writeCalibBtnFunc()}
                 className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-1 lg:p-2 hover:bg-blue-900  "
               >
                 Save Calib
