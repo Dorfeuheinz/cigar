@@ -10,6 +10,7 @@ import { useState, createContext, useEffect } from "react";
 import { getConnectedDevice } from "./utils/connection_util";
 import DeviceInfo from "./components/DeviceInfo";
 import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+import Calibration from "./components/calibration";
 
 async function convertImageToBase64(): Promise<string> {
   const contents = await readBinaryFile("resources/icons/tinymesh-white.png", {
@@ -75,13 +76,22 @@ function App() {
           <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
             <AppTabs aria-label="Tabs with underline" style="underline">
               <Tabs.Item
-                title="Configuration and Communication"
+                title="Configuration"
                 icon={HiAdjustments}
               >
                 <ConfigAndCommunicationTab />
               </Tabs.Item>
               <Tabs.Item
-                title="Device Information"
+                title="Calibration"
+                icon={HiAdjustments}
+                disabled={currentMode !== "configuration"}
+              >
+                <div className=" h-[55vh] max-h-[55vh] p-5 mt-[-10px] border-none">
+                  <Calibration></Calibration>
+                </div>
+              </Tabs.Item>
+              <Tabs.Item
+                title="Device Info"
                 icon={HiClipboardList}
                 disabled={currentMode !== "configuration"}
               >
