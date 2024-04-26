@@ -80,7 +80,7 @@ pub struct MkDeviceConfig {
 /// This struct represents the decoded device calib fetched from device
 #[derive(Clone, serde::Serialize, Default, Debug)]
 pub struct MkDeviceCalib {
-    // pub model: String,
+    pub model: String,
     // pub hw_version: String,
     // pub firmware_version: String,
     pub calibration_cells: Vec<MkDeviceCell>,

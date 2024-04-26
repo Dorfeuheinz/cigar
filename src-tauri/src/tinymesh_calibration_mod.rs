@@ -3,6 +3,7 @@
 
 use crate::data_types::{DeviceEntity, MkDeviceCell, MkDeviceCalib};
 use crate::device_calibration_parser::parse_device_calib;
+use crate::device_config_parser::parse_device_config;
 use crate::tinymesh_serial_util::{
     clear_output_buffer_of_device,
     read_bytes_till_3e_from_device_to_buffer, send_bytes_to_device,
@@ -30,6 +31,7 @@ pub fn get_device_calib(
         .as_mut()
         .ok_or("Could not lock the selected device".to_string())?;
     let device_calib = get_device_calib_from_device(device, &app_handle)?;
+
     let mut device_calib_from_state = device_entity
         .device_calib
         .lock()
@@ -37,7 +39,7 @@ pub fn get_device_calib(
     let cloned_config = device_calib.clone();
     *device_calib_from_state = Some(cloned_config);
 
-    info!("\n\nResult is this here /// - {:?}", device_calib);
+    info!("\ntinymesh_calibration_mod::get_device_calib---> device_calib = {:?}\n", device_calib);
     return Ok(device_calib);
 }
 
@@ -46,11 +48,33 @@ pub fn get_device_calib_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
 ) -> Result<MkDeviceCalib, String> {
+    info!("\ntinymesh_calibration_mod::get_device_calib_from_device(device, app_handle)\n");
+
     let mut config_bytes_buffer = vec![];
-    if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x72], &app_handle) {
+    if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
+        info!("\nCALIB_DEVICE ==== {:?}\n", device);
+
         read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
-        let device_calib = parse_device_calib(&config_bytes_buffer, None, Some(&app_handle))?;
-        return Ok(device_calib);
+        // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> config_bytes_buffer = {:?}\n", config_bytes_buffer);
+
+        let device_config_info = parse_device_config(&config_bytes_buffer, None, Some(&app_handle))?;
+        let model = device_config_info.model;
+
+        config_bytes_buffer = vec![];
+        if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x72], &app_handle) {
+            info!("\nCALIB_DEVICE 2 ==== {:?}\n", device);
+    
+            read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
+            // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> config_bytes_buffer = {:?}\n", config_bytes_buffer);
+    
+            let device_calib = parse_device_calib(&config_bytes_buffer, model, None, Some(&app_handle))?;
+    
+            // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> device_calib = {:?}\n", device_calib);
+            return Ok(device_calib);
+        }
+
+        // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> device_calib = {:?}\n", device_calib);
+        return Err("Unable to get calibration. Model not found.".to_string());
     }
     return Err("Unable to get calibration. Looks like sending bytes failed.".to_string());
 }
@@ -115,21 +139,21 @@ pub fn set_device_calib(
 ///
 /// # Returns
 /// A boolean value indicating whether the factory reset command was successful.
-// #[tauri::command]
-// pub fn factory_reset(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
-//     if let Ok(mut device) = device_entity.port.lock() {
-//         if let Some(device) = device.as_mut() {
-//             clear_output_buffer_of_device(device);
-//             let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
-//             if send_result {
-//                 let mut buffer = vec![];
-//                 read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
-//                 return buffer.len() == 0;
-//             }
-//         }
-//     }
-//     return false;
-// }
+#[tauri::command]
+pub fn factory_reset_calib(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
+    if let Ok(mut device) = device_entity.port.lock() {
+        if let Some(device) = device.as_mut() {
+            clear_output_buffer_of_device(device);
+            let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
+            if send_result {
+                let mut buffer = vec![];
+                read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
+                return buffer.len() == 0;
+            }
+        }
+    }
+    return false;
+}
 
 fn get_bytes_to_send_for_calib_change(
     device_calib: &MkDeviceCalib,

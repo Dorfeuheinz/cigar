@@ -43,6 +43,7 @@ fn main() {
             set_device_config,
             execute_mode_sequence,
             factory_reset,
+            factory_reset_calib,
             // calibration functions
             get_device_calib,
             set_device_calib,

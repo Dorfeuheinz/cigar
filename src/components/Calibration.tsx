@@ -102,7 +102,7 @@ import {
       );
       if (result) {
         await invoke("stop_communication_task", {});
-        if (await invoke("factory_reset", {})) {
+        if (await invoke("factory_reset_calib", {})) {
           await readCalib();
         }
         await invoke("start_communication_task", {});
