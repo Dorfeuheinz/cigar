@@ -100,6 +100,9 @@ fn check_cell_key(starting_str: &str, input: &str) -> Result<(usize, String), ()
 fn get_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
 ) -> Vec<MkDeviceCell> {
+    info!("\n\nmk_module_description::get_cells_and_remove_from_unknown(module_description)\n");
+    // info!("\nmk_module_description::get_cells_and_remove_from_unknown---> module_description = {:?}\n", module_description);
+
     // find all keys of the format "M 0x<some hex number> <some text>"
     let mut result: Vec<MkDeviceCell> = vec![Default::default(); 256];
     for i in 0..result.len() {
@@ -138,12 +141,16 @@ fn get_cells_and_remove_from_unknown(
     module_description
         .unknown_data
         .retain(|k, _| !k.starts_with("M "));
+    // info!("\nmk_module_description::get_cells_and_remove_from_unknown---> result = {:?}\n", result);
     return result;
 }
 
 fn get_calibration_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
 ) -> Vec<MkDeviceCell> {
+    info!("\n\nmk_module_description::get_calibration_cells_and_remove_from_unknown(module_description)\n");
+    // info!("\nmk_module_description::get_calibration_cells_and_remove_from_unknown---> module_description = {:?}\n", module_description);
+
     // find all keys of the format "C 0x<some hex number> <some text>"
     let mut result: Vec<MkDeviceCell> = vec![Default::default(); 256];
     for i in 0..result.len() {
@@ -182,8 +189,7 @@ fn get_calibration_cells_and_remove_from_unknown(
     module_description
         .unknown_data
         .retain(|k, _| !k.starts_with("C "));
-
-    info!("Here is the calibration data result ----> {:?}", result);
+    // info!("\nmk_module_description::get_calibration_cells_and_remove_from_unknown---> result = {:?}\n", result);
     return result;
 }
 
@@ -285,12 +291,15 @@ impl MkModuleDescription {
         model: &str,
         app_handle: &AppHandle,
     ) -> Result<MkModuleDescription, String> {
+        info!("\nmk_module_description::new_from_device_model(model, app_handle)\n");
+
         let file_path = app_handle
             .path_resolver()
             .resolve_resource(format!("resources/modules/{}.rmd", model))
             .ok_or("File not found".to_string())?;
-        info!("File path: {:?}", file_path);
+        // info!("\nmk_module_description::new_from_device_model---> File path: {:?}\n", file_path);
         let file_contents = std::fs::read_to_string(file_path).map_err(|err| err.to_string())?;
+        // info!("\nmk_module_description::new_from_device_model---> File contents: {:?}\n", file_contents);
         Ok(MkModuleDescription::new(&file_contents))
     }
 }

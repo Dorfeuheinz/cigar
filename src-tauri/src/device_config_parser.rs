@@ -22,7 +22,9 @@ pub fn parse_device_config(
     rmd_file_path: Option<&Path>,
     app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceConfig, String> {
-    info!("Data we get in config-> {:?}", data);
+    info!("\ndevice_config_parser::parse_device_config(data, rmd_file_path, app_handle)\n");
+    // info!("\ndevice_config_parser::parse_device_config---> data = {:?}", data);
+    // info!("Data we get-> {:?}", data);
     let (model, hw_version, firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd
     let module_description = if let Some(rmd_file_path) = rmd_file_path {
@@ -75,6 +77,8 @@ fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) ->
 
 pub fn get_device_information(data: &[u8]) -> Result<(String, String, String), String> {
     let mut offset = 0x3c;
+    info!("\ndevice_config_parser::get_device_information(data)");
+    // info!("\ndevice_config_parser::get_device_information---> data = {:?}", data);
     if offset >= data.len() {
         return Err("Invalid data format".to_string());
     }
