@@ -82,7 +82,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ }) => {
       <div className={`h-[21vh] overflow-y-auto`}>
         {logs.map((log, index) => (
           <>
-            <p key={index}>
+            <p key={index} className="h-fit">
               <b>[{log.data_type}]</b>&nbsp;
               <b>[{log.time}]</b>&nbsp;
               {log.data

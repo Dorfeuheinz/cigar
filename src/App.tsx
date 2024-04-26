@@ -55,7 +55,7 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col overflow-hidden md:max-h-screen md:min-h-screen fixed top-0">
+      <div className="flex flex-col overflow-hidden max-h-screen h-screen fixed top-0">
         <ConnectionContext.Provider
           value={{
             isConnected: isConnected,
@@ -75,10 +75,7 @@ function App() {
           </div>
           <div className="flex-1 h-[63vh] max-h-[63vh] border-none">
             <AppTabs aria-label="Tabs with underline" style="underline">
-              <Tabs.Item
-                title="Configuration"
-                icon={HiAdjustments}
-              >
+              <Tabs.Item title="Configuration" icon={HiAdjustments}>
                 <ConfigAndCommunicationTab />
               </Tabs.Item>
               <Tabs.Item
@@ -86,7 +83,7 @@ function App() {
                 icon={HiAdjustments}
                 disabled={currentMode !== "configuration"}
               >
-                <div className=" h-[55vh] max-h-[55vh] p-5 mt-[-10px] border-none">
+                <div className="h-[55vh] max-h-[55vh] px-[5vw] mt-[-5px] border-none">
                   <Calibration></Calibration>
                 </div>
               </Tabs.Item>
