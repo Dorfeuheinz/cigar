@@ -41,6 +41,9 @@ pub fn parse_device_config(
     let cells = read_unlocked_cells(data, &module_description);
     let test_modes = module_description.testmodes;
     let quick_modes = module_description.quickmodes;
+    let editable_cells = module_description.editable_cells;
+    let locked_cells = module_description.locked_cells;
+
     let result = MkDeviceConfig {
         model,
         hw_version,
@@ -48,6 +51,8 @@ pub fn parse_device_config(
         cells,
         test_modes,
         quick_modes,
+        editable_cells,
+        locked_cells
     };
     Ok(result)
 }
