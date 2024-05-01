@@ -293,13 +293,31 @@ impl MkModuleDescription {
     ) -> Result<MkModuleDescription, String> {
         info!("\nmk_module_description::new_from_device_model(model, app_handle)\n");
 
-        let file_path = app_handle
-            .path_resolver()
-            .resolve_resource(format!("resources/modules/{}.rmd", model))
-            .ok_or("File not found".to_string())?;
-        // info!("\nmk_module_description::new_from_device_model---> File path: {:?}\n", file_path);
-        let file_contents = std::fs::read_to_string(file_path).map_err(|err| err.to_string())?;
-        // info!("\nmk_module_description::new_from_device_model---> File contents: {:?}\n", file_contents);
+        // let file_path = app_handle
+        //     .path_resolver()
+        //     .resolve_resource(format!("/modules/{}.rmd", model))
+        //     .ok_or("File not found".to_string())?;
+        // // info!("\nmk_module_description::new_from_device_model---> File path: {:?}\n", file_path);
+        // let file_contents = std::fs::read_to_string(file_path).map_err(|err| err.to_string())?;
+        // // info!("\nmk_module_description::new_from_device_model---> File contents: {:?}\n", file_contents);
+
+
+        let exe_path = std::env::current_exe().map_err(|err| err.to_string())?;
+    
+        // Construct the path to the resource directory relative to the binary
+        let resource_dir = exe_path
+            .parent()
+            .ok_or("Failed to determine parent directory of executable".to_string())?
+            .join("modules");
+    
+        // Append the filename to the resource directory path
+        let file_path = resource_dir.join(format!("{}.rmd", model)); // Assuming `model` is defined elsewhere
+    
+        // Read the contents of the file
+        let file_contents = std::fs::read_to_string(&file_path)
+            .map_err(|err| format!("Failed to read file '{}': {}", file_path.display(), err))?;
+    
+
         Ok(MkModuleDescription::new(&file_contents))
     }
 }
