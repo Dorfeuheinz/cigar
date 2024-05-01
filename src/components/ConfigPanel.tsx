@@ -39,15 +39,14 @@ declare module "@tanstack/react-table" {
 }
 
 const ConfigPanel: React.FC = () => {
-  const [data, setData] = useState<MkDeviceCell[]>(() => []);
-  const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>(
-    []
-  );
-  const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>(
-    []
-  );
+  const [data, setData] = useState<MkDeviceCell[]>([]);
+  const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>([]);
+  const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>([]);
   const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
   const [errorList, setErrorList] = useState<number[]>([]);
+  const [editable, setEditable] = useState<number[]>(() => []);
+  const [locked, setLocked] = useState<number[]>(() => []);
+
 
   const { setModel, setFirmware, setHardware, currentMode, isConnected } =
     useContext(ConnectionContext);
@@ -69,13 +68,20 @@ const ConfigPanel: React.FC = () => {
   const readConfig = () => {
     return getDeviceConfig()
       .then((result) => {
-        setData(result.cells);
+        // setData(result.cells);
+        setData(result.cells.filter((_, index) => result.editable_cells.includes(index))
+        .map((item, index) => ({
+            ...item,
+            editable: !result.locked_cells.includes(index)
+        })));
         setTestModeOptions(result.test_modes);
         setQuickModeOptions(result.quick_modes);
         setModel(result.model);
         setFirmware(result.firmware_version);
         setHardware(result.hw_version);
         setErrorList([]);
+        setEditable(result.editable_cells);
+        setLocked(result.locked_cells);
       })
       .catch((err) => {
         error(`Error occurred while trying to read device config: ${err}`);
@@ -176,11 +182,12 @@ const ConfigPanel: React.FC = () => {
           row.max_value,
           row.allowed_values,
           row.address,
+          row.editable
         ],
         id: "current_value",
         cell: ({ getValue, column: { id }, table }) => {
-          const [initialValue, minValue, maxValue, allowedValues, address] =
-            getValue() as [number, number, number, number[], number];
+          const [initialValue, minValue, maxValue, allowedValues, address, editable] =
+            getValue() as [number, number, number, number[], number, boolean];
 
           const [value, setValue] = useState(initialValue.toString());
           const { errorList, setErrorList } = useContext(ConfigTableContext);
@@ -214,6 +221,7 @@ const ConfigPanel: React.FC = () => {
                 value={value}
                 onChange={handleOnChange}
                 onBlur={onBlur}
+                disabled={!editable}
                 className={`${
                   errorList.includes(address) &&
                   "border border-red-500 bg-red-100"
@@ -226,6 +234,8 @@ const ConfigPanel: React.FC = () => {
     ],
     []
   );
+
+  
 
   const table = useReactTable({
     data,
@@ -343,3 +353,5 @@ const ConfigPanel: React.FC = () => {
 };
 
 export default ConfigPanel;
+
+

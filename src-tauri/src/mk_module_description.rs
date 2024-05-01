@@ -312,11 +312,11 @@ impl MkModuleDescription {
     
         // Append the filename to the resource directory path
         let file_path = resource_dir.join(format!("{}.rmd", model)); // Assuming `model` is defined elsewhere
-    
+        println!("file path --> {:?}", file_path);
+
         // Read the contents of the file
         let file_contents = std::fs::read_to_string(&file_path)
             .map_err(|err| format!("Failed to read file '{}': {}", file_path.display(), err))?;
-    
 
         Ok(MkModuleDescription::new(&file_contents))
     }

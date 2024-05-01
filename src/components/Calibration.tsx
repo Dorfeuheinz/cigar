@@ -39,6 +39,8 @@ const Calibration: React.FC = () => {
   const [errorList, setErrorList] = useState<number[]>([]);
 
   const { currentMode, isConnected } = useContext(ConnectionContext);
+  const [editable, setEditable] = useState<number[]>(() => []);
+  const [locked, setLocked] = useState<number[]>(() => []);
 
   useEffect(() => {
     setShouldSkipPageReset(false);
@@ -57,7 +59,14 @@ const Calibration: React.FC = () => {
   const readCalib = () => {
     let data = getDeviceCalib()
       .then((result) => {
-        setData(result.calibration_cells);
+        setData(result.calibration_cells.filter((_, index) => result.editable_cells.includes(index))
+        .map((item, index) => ({
+            ...item,
+            editable: !result.locked_cells.includes(index)
+        })));
+        // setData(result.calibration_cells);
+        setEditable(result.editable_cells);
+        setLocked(result.locked_cells);
       })
       .catch((err) => {
         error(`Error occurred while trying to read device calibration: ${err}`);

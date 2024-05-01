@@ -75,6 +75,8 @@ pub struct MkDeviceConfig {
     pub cells: Vec<MkDeviceCell>,
     pub test_modes: Vec<MkDeviceTestMode>,
     pub quick_modes: Vec<MkDeviceQuickMode>,
+    pub editable_cells: Vec<usize>,
+    pub locked_cells: Vec<usize>
 }
 
 /// This struct represents the decoded device calib fetched from device
@@ -86,4 +88,6 @@ pub struct MkDeviceCalib {
     pub calibration_cells: Vec<MkDeviceCell>,
     // pub test_modes: Vec<MkDeviceTestMode>,
     // pub quick_modes: Vec<MkDeviceQuickMode>,
+    pub editable_cells: Vec<usize>,
+    pub locked_cells: Vec<usize>
 }
