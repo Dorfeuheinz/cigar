@@ -169,11 +169,12 @@ const Calibration: React.FC = () => {
           row.max_value,
           row.allowed_values,
           row.address,
+          row.editable
         ],
         id: "current_value",
         cell: ({ getValue, column: { id }, table }) => {
-          const [initialValue, minValue, maxValue, allowedValues, address] =
-            getValue() as [number, number, number, number[], number];
+          const [initialValue, minValue, maxValue, allowedValues, address, editable] =
+            getValue() as [number, number, number, number[], number, boolean];
 
           const [value, setValue] = useState(initialValue.toString());
           const { errorList, setErrorList } = useContext(ConfigTableContext);
@@ -207,10 +208,11 @@ const Calibration: React.FC = () => {
                 value={value}
                 onChange={handleOnChange}
                 onBlur={onBlur}
+                disabled={!editable}
                 className={`${
                   errorList.includes(address) &&
                   "border border-red-500 bg-red-100"
-                } text-center`}
+                } text-center ${ !editable && "hover:cursor-not-allowed" }`}
               />
             </>
           );
