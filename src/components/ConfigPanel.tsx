@@ -225,7 +225,7 @@ const ConfigPanel: React.FC = () => {
                 className={`${
                   errorList.includes(address) &&
                   "border border-red-500 bg-red-100"
-                } text-center`}
+                } text-center ${ !editable && "hover:cursor-not-allowed" }`}
               />
             </>
           );
