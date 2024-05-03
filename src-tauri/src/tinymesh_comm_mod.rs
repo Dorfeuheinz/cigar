@@ -32,14 +32,14 @@ pub fn start_communication_task(device_entity: State<DeviceEntity>, app_handle: 
                     }
                 }
                 let stream = tauri::async_runtime::spawn(async move {
-                    info!("Starting communication task");
+                    // info!("Starting communication task");
                     loop {
                         std::thread::sleep(Duration::from_millis(100));
                         if let Ok(is_communication_task_running) =
                             is_communication_task_running.lock()
                         {
                             if !*is_communication_task_running {
-                                info!("Stopping communication task");
+                                // info!("Stopping communication task");
                                 return;
                             }
                         }

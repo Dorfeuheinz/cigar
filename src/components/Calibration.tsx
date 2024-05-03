@@ -15,16 +15,11 @@ import React, {
 } from "react";
 import { invoke } from "@tauri-apps/api";
 import { ask, message } from "@tauri-apps/api/dialog";
-import TestModeSelect from "./TestModeSelect";
 import { Tooltip } from "flowbite-react";
-import { getDeviceConfig, setDeviceConfig } from "../utils/device_info_util";
+import { getDeviceCalib, setDeviceCalib } from "../utils/device_info_util";
 import { error } from "tauri-plugin-log-api";
 
-import {
-  MkDeviceCell,
-  MkDeviceTestMode,
-  MkDeviceQuickMode,
-} from "../DataTypes";
+import { MkDeviceCell } from "../DataTypes";
 import { ConnectionContext } from "../App";
 
 const ConfigTableContext = createContext({
@@ -38,18 +33,14 @@ declare module "@tanstack/react-table" {
   }
 }
 
-const ConfigPanel: React.FC = () => {
-  const [data, setData] = useState<MkDeviceCell[]>([]);
-  const [testModeOptions, setTestModeOptions] = useState<MkDeviceTestMode[]>([]);
-  const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>([]);
+const Calibration: React.FC = () => {
+  const [data, setData] = useState<MkDeviceCell[]>(() => []);
   const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
   const [errorList, setErrorList] = useState<number[]>([]);
+
+  const { currentMode, isConnected } = useContext(ConnectionContext);
   const [_editable, setEditable] = useState<number[]>(() => []);
   const [_locked, setLocked] = useState<number[]>(() => []);
-
-
-  const { setModel, setFirmware, setHardware, currentMode, isConnected } =
-    useContext(ConnectionContext);
 
   useEffect(() => {
     setShouldSkipPageReset(false);
@@ -59,39 +50,35 @@ const ConfigPanel: React.FC = () => {
     setData([]);
   }, [isConnected]);
 
-  const readConfigBtnFunc = async () => {
+  const readCalibFunc = async () => {
     await invoke("stop_communication_task", {});
-    await readConfig();
+    await readCalib();
     await invoke("start_communication_task", {});
   };
 
-  const readConfig = () => {
-    return getDeviceConfig()
+  const readCalib = () => {
+    let data = getDeviceCalib()
       .then((result) => {
-        // setData(result.cells);
-        setData(result.cells.filter((_, index) => result.editable_cells.includes(index))
+        setData(result.calibration_cells.filter((_, index) => result.c_editable_cells.includes(index))
         .map((item, index) => ({
             ...item,
-            editable: !result.locked_cells.includes(index)
+            editable: !result.c_locked_cells.includes(index)
         })));
-        setTestModeOptions(result.test_modes);
-        setQuickModeOptions(result.quick_modes);
-        setModel(result.model);
-        setFirmware(result.firmware_version);
-        setHardware(result.hw_version);
-        setErrorList([]);
-        setEditable(result.editable_cells);
-        setLocked(result.locked_cells);
+        // setData(result.calibration_cells);
+        setEditable(result.c_editable_cells);
+        setLocked(result.c_locked_cells);
       })
       .catch((err) => {
-        error(`Error occurred while trying to read device config: ${err}`);
+        error(`Error occurred while trying to read device calibration: ${err}`);
       });
+
+    return data;
   };
 
-  const writeConfigBtnFunc = async () => {
+  const writeCalibBtnFunc = async () => {
     if (errorList.length > 0) {
       await message(
-        `Incorrect parameters for the following config memory addresses:\n${errorList.join(
+        `Incorrect parameters for the following calibration memory addresses:\n${errorList.join(
           ","
         )}`,
         {
@@ -102,9 +89,9 @@ const ConfigPanel: React.FC = () => {
       return;
     }
     await invoke("stop_communication_task", {});
-    let success = await setDeviceConfig(data);
+    let success = await setDeviceCalib(data);
     if (success) {
-      await readConfig();
+      await readCalib();
     }
     await invoke("start_communication_task", {});
   };
@@ -120,7 +107,7 @@ const ConfigPanel: React.FC = () => {
     if (result) {
       await invoke("stop_communication_task", {});
       if (await invoke("factory_reset", {})) {
-        await readConfig();
+        await readCalib();
       }
       await invoke("start_communication_task", {});
     }
@@ -235,8 +222,6 @@ const ConfigPanel: React.FC = () => {
     []
   );
 
-  
-
   const table = useReactTable({
     data,
     columns,
@@ -306,8 +291,11 @@ const ConfigPanel: React.FC = () => {
     }
   }
 
+  let tableActionButtonClass =
+    " bg-blue-700 text-white text-xs border  border-blue-950 p-1 hover:bg-blue-900  ";
+
   return (
-    <div className="h-full flex flex-col border rounded-lg">
+    <div className="h-[50vh] flex flex-col border rounded-lg ">
       <ConfigTableContext.Provider
         value={{
           errorList: errorList,
@@ -317,32 +305,26 @@ const ConfigPanel: React.FC = () => {
         <div className="overflow-y-scroll h-full">{showTable(data)}</div>
       </ConfigTableContext.Provider>
       {currentMode === "configuration" ? (
-        <div className="p-2 bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 h-[12vh] lg:h-[5vh] md:flex md:flex-row md:justify-between md:flex-wrap lg:flex lg:flex-row lg:justify-between lg:flex-wrap">
+        <div className="p-[1vh] bg-gray-50 border rounded-t-none rounded-lg sticky bottom-0 h-[6vh] lg:h-[5vh]">
           <div>
             <button
-              onClick={() => readConfigBtnFunc()}
-              className=" bg-blue-700 text-white text-xs p-1 lg:p-2 border border-blue-950 rounded-l-lg hover:bg-blue-900  "
+              onClick={() => readCalibFunc()}
+              className={`${tableActionButtonClass} rounded-l-lg `}
             >
-              Read Config
+              Read Calib
             </button>
             <button
-              onClick={() => writeConfigBtnFunc()}
-              className=" bg-blue-700 text-white  border border-l-0 border-blue-950 text-xs p-1 lg:p-2 hover:bg-blue-900  "
+              onClick={() => writeCalibBtnFunc()}
+              className={`${tableActionButtonClass} border-l-0 `}
             >
-              Save Config
+              Save Calib
             </button>
             <button
               onClick={() => factoryResetBtnFunc()}
-              className=" bg-blue-700 text-white text-xs border border-l-0 border-blue-950 rounded-r-lg p-1 lg:p-2 hover:bg-blue-900  "
+              className={`${tableActionButtonClass} border-l-0 rounded-r-lg`}
             >
               Factory Reset
             </button>
-          </div>
-          <div className={`float right`}>
-            <TestModeSelect
-              testModeOptions={testModeOptions}
-              quickOptions={quickModeOptions}
-            />
           </div>
         </div>
       ) : (
@@ -352,6 +334,4 @@ const ConfigPanel: React.FC = () => {
   );
 };
 
-export default ConfigPanel;
-
-
+export default Calibration;

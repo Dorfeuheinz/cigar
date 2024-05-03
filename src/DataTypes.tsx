@@ -1,4 +1,6 @@
 type MkDeviceConfig = {
+  locked_cells: number[];
+  editable_cells: number[];
   model: string;
   hw_version: string;
   firmware_version: string;
@@ -7,6 +9,11 @@ type MkDeviceConfig = {
   quick_modes: MkDeviceQuickMode[];
 };
 
+type MkDeviceCalib = {
+  calibration_cells: MkDeviceCell[];
+  c_locked_cells: number[];
+  c_editable_cells: number[];
+};
 type MkDeviceCell = {
   address: number;
   name: string;
@@ -16,6 +23,7 @@ type MkDeviceCell = {
   allowed_values: number[];
   default_value: number;
   current_value: number;
+  editable: boolean;
 };
 
 type MkDeviceTestMode = {
@@ -39,4 +47,5 @@ export type {
   MkDeviceCell,
   MkDeviceTestMode,
   MkDeviceQuickMode,
+  MkDeviceCalib
 };

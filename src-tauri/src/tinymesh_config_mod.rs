@@ -30,23 +30,35 @@ pub fn get_device_config(
         .as_mut()
         .ok_or("Could not lock the selected device".to_string())?;
     let device_config = get_device_config_from_device(device, &app_handle)?;
+
     let mut device_config_from_state = device_entity
         .device_config
         .lock()
         .map_err(|err| err.to_string())?;
     let cloned_config = device_config.clone();
     *device_config_from_state = Some(cloned_config);
+
+    // info!("\ntinymesh_config_mod::get_device_config---> device_config = {:?}\n", device_config);
     return Ok(device_config);
 }
 
+use log::info;
 pub fn get_device_config_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
 ) -> Result<MkDeviceConfig, String> {
+    // info!("\nget_device_config_from_device::config_bytes_buffer(device, app_handle)\n");
+
     let mut config_bytes_buffer = vec![];
     if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
+        // info!("\nCONFIG_DEVICE ==== {:?}\n", device);
+
         read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
+        // info!("\nget_device_config_from_device::config_bytes_buffer, {:?}\n", config_bytes_buffer);
+
         let device_config = parse_device_config(&config_bytes_buffer, None, Some(&app_handle))?;
+        // info!("\nget_device_config_from_device::device_config, {:?}\n", device_config);
+
         return Ok(device_config);
     }
     return Err("Unable to get config. Looks like sending bytes failed.".to_string());
@@ -118,9 +130,11 @@ pub fn factory_reset(device_entity: State<DeviceEntity>, app_handle: AppHandle) 
         if let Some(device) = device.as_mut() {
             clear_output_buffer_of_device(device);
             let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
+
             if send_result {
                 let mut buffer = vec![];
                 read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
+
                 return buffer.len() == 0;
             }
         }

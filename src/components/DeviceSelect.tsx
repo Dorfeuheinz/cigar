@@ -46,7 +46,7 @@ const DeviceSelect: React.FC<SelectProps> = ({
           value={selectedOption}
           onChange={handleSelectChange}
         >
-          <option value="" selected>
+          <option value="" defaultValue={"true"}>
             Select Device
           </option>
           {options.map((option, index) => (

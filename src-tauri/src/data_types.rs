@@ -55,6 +55,8 @@ pub struct DeviceEntity {
 
     /// Device config is stored inside the state of the program
     pub device_config: Arc<Mutex<Option<MkDeviceConfig>>>,
+    /// Device calibration is stored inside the state of the program
+    pub device_calib: Arc<Mutex<Option<MkDeviceCalib>>>,
 }
 
 /// EventPayload contains the data that is sent to the frontend logging panel
@@ -73,4 +75,15 @@ pub struct MkDeviceConfig {
     pub cells: Vec<MkDeviceCell>,
     pub test_modes: Vec<MkDeviceTestMode>,
     pub quick_modes: Vec<MkDeviceQuickMode>,
+    pub editable_cells: Vec<usize>,
+    pub locked_cells: Vec<usize>
+}
+
+/// This struct represents the decoded device calib fetched from device
+#[derive(Clone, serde::Serialize, Default, Debug)]
+pub struct MkDeviceCalib {
+    pub model: String,
+    pub calibration_cells: Vec<MkDeviceCell>,
+    pub c_editable_cells: Vec<usize>,
+    pub c_locked_cells: Vec<usize>
 }
