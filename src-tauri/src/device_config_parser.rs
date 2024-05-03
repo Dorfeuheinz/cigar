@@ -22,7 +22,7 @@ pub fn parse_device_config(
     rmd_file_path: Option<&Path>,
     app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceConfig, String> {
-    info!("\ndevice_config_parser::parse_device_config(data, rmd_file_path, app_handle)\n");
+    // info!("\ndevice_config_parser::parse_device_config(data, rmd_file_path, app_handle)\n");
     // info!("\ndevice_config_parser::parse_device_config---> data = {:?}", data);
     // info!("Data we get-> {:?}", data);
     let (model, hw_version, firmware_version) = get_device_information(data)?;

@@ -211,7 +211,7 @@ pub struct RSSIEvent {
 /// * `app_handle` - The Tauri application handle (provided by Tauri)
 #[tauri::command]
 pub fn start_rssi_stream(device_entity: State<DeviceEntity>, app_handle: AppHandle) {
-    info!("Starting RSSI stream");
+    // info!("Starting RSSI stream");
     let device_port = device_entity.port.clone();
     let device_port_2 = device_entity.port.clone();
     if let Ok(mut is_rssi_task_running) = device_entity.is_rssi_task_running.lock() {

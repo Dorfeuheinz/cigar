@@ -39,7 +39,7 @@ pub fn get_device_calib(
     let cloned_config = device_calib.clone();
     *device_calib_from_state = Some(cloned_config);
 
-    info!("\ntinymesh_calibration_mod::get_device_calib---> device_calib = {:?}\n", device_calib);
+    // info!("\ntinymesh_calibration_mod::get_device_calib---> device_calib = {:?}\n", device_calib);
     return Ok(device_calib);
 }
 
@@ -48,11 +48,11 @@ pub fn get_device_calib_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
 ) -> Result<MkDeviceCalib, String> {
-    info!("\ntinymesh_calibration_mod::get_device_calib_from_device(device, app_handle)\n");
+    // info!("\ntinymesh_calibration_mod::get_device_calib_from_device(device, app_handle)\n");
 
     let mut config_bytes_buffer = vec![];
     if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x30], &app_handle) {
-        info!("\nCALIB_DEVICE ==== {:?}\n", device);
+        // info!("\nCALIB_DEVICE ==== {:?}\n", device);
 
         read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
         // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> config_bytes_buffer = {:?}\n", config_bytes_buffer);
@@ -62,7 +62,7 @@ pub fn get_device_calib_from_device(
 
         config_bytes_buffer = vec![];
         if clear_output_buffer_of_device(device) && send_bytes_to_device(device, &[0x72], &app_handle) {
-            info!("\nCALIB_DEVICE 2 ==== {:?}\n", device);
+            // info!("\nCALIB_DEVICE 2 ==== {:?}\n", device);
     
             read_bytes_till_3e_from_device_to_buffer(device, &mut config_bytes_buffer, &app_handle);
             // info!("\ntinymesh_calibration_mod::get_device_calib_from_device---> config_bytes_buffer = {:?}\n", config_bytes_buffer);
