@@ -23,7 +23,7 @@ Install the following tools on your system:
 - [VS Code](https://code.visualstudio.com/): The Development Editor recommended for this project.
 - [The Rust Programming Language](https://www.rust-lang.org/tools/install): The backend is written in Rust.
 - [Node.js and NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm): The `npm` (Node Package Manager) serves as the build and package management tool of our project.
-- Linux users also need a few dependencies installed on their system. Do that via the command: `sudo apt install libudev-dev libgtk-3-dev libatk1.0-dev libpango1.0-dev libgdk-pixbuf2.0-dev libgdk3.0-dev libwebkit2gtk-4.0-dev libjavascriptcoregtk-4.0-dev libsoup2.4-dev libgdk-pixbuf2.0-dev`. Any other errors (if occurring) can be individually resolved.
+- Linux users also need a few dependencies installed on their system. Do that via the command: `sudo apt install libudev-dev libgtk-3-dev libatk1.0-dev libpango1.0-dev libgdk-pixbuf2.0-dev libwebkit2gtk-4.0-dev libjavascriptcoregtk-4.0-dev libsoup2.4-dev libgdk-pixbuf2.0-dev`. Any other errors (if occurring) can be individually resolved.
 
 The following VS Code extensions are also recommended:
 
