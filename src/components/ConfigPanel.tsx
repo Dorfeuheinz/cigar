@@ -44,8 +44,8 @@ const ConfigPanel: React.FC = () => {
   const [quickModeOptions, setQuickModeOptions] = useState<MkDeviceQuickMode[]>([]);
   const [shouldSkipPageReset, setShouldSkipPageReset] = useState(false);
   const [errorList, setErrorList] = useState<number[]>([]);
-  const [editable, setEditable] = useState<number[]>(() => []);
-  const [locked, setLocked] = useState<number[]>(() => []);
+  const [_editable, setEditable] = useState<number[]>(() => []);
+  const [_locked, setLocked] = useState<number[]>(() => []);
 
 
   const { setModel, setFirmware, setHardware, currentMode, isConnected } =
@@ -111,7 +111,7 @@ const ConfigPanel: React.FC = () => {
 
   const factoryResetBtnFunc = async () => {
     let result = await ask(
-      "This action will factory reset the device and cannot be reverted. Are you sure?",
+      "This action will factory reset the device config & calibration memory, and cannot be reverted. Are you sure?",
       {
         title: "Tiny CC Tool",
         type: "warning",

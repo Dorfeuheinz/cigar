@@ -303,7 +303,7 @@ impl MkModuleDescription {
     pub fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
         result.unknown_data = parse_module_description(input);
-        info!("\n\nUNKNOWN DATA --->   {:?}\n\n", result.unknown_data);
+        // info!("\n\nUNKNOWN DATA --->   {:?}\n\n", result.unknown_data);?
         result.editable_cells = get_editable_cells_and_remove_from_unknown(&mut result);
         result.locked_cells = get_locked_cells_and_remove_from_unknown(&mut result);
         result.c_editable_cells = get_c_editable_cells_and_remove_from_unknown(&mut result);

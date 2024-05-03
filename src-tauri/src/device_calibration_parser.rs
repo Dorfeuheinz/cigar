@@ -20,7 +20,7 @@ pub fn parse_device_calib(
     rmd_file_path: Option<&Path>,
     app_handle: Option<&AppHandle>,
 ) -> Result<MkDeviceCalib, String> {
-    info!("\n\ndevice_calibration_parser::parse_device_calib(data, rmd_file_path, app_handle)\n\n");
+    // info!("\n\ndevice_calibration_parser::parse_device_calib(data, rmd_file_path, app_handle)\n\n");
     // info!("Data we get in device_calibration_parser::parse_device_calib-> {:?}", data);
     // let (model, _hw_version, _firmware_version) = get_device_information(data)?;
     // from the modules folder in the current working directory, read the contents of a file named <model>.rmd

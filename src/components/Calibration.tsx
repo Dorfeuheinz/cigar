@@ -39,8 +39,8 @@ const Calibration: React.FC = () => {
   const [errorList, setErrorList] = useState<number[]>([]);
 
   const { currentMode, isConnected } = useContext(ConnectionContext);
-  const [editable, setEditable] = useState<number[]>(() => []);
-  const [locked, setLocked] = useState<number[]>(() => []);
+  const [_editable, setEditable] = useState<number[]>(() => []);
+  const [_locked, setLocked] = useState<number[]>(() => []);
 
   useEffect(() => {
     setShouldSkipPageReset(false);
@@ -98,7 +98,7 @@ const Calibration: React.FC = () => {
 
   const factoryResetBtnFunc = async () => {
     let result = await ask(
-      "This action will factory reset the device and cannot be reverted. Are you sure?",
+      "This action will factory reset the device config & calibration memory, and cannot be reverted. Are you sure?",
       {
         title: "Tiny CC Tool",
         type: "warning",
@@ -106,7 +106,7 @@ const Calibration: React.FC = () => {
     );
     if (result) {
       await invoke("stop_communication_task", {});
-      if (await invoke("factory_reset_calib", {})) {
+      if (await invoke("factory_reset", {})) {
         await readCalib();
       }
       await invoke("start_communication_task", {});
