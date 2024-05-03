@@ -39,14 +39,14 @@ pub fn parse_device_calib(
     };
 
     let calibration_cells = read_unlocked_cells(data, &module_description);
-    let editable_cells = module_description.editable_cells;
-    let locked_cells = module_description.locked_cells;
+    let c_editable_cells = module_description.c_editable_cells;
+    let c_locked_cells = module_description.c_locked_cells;
 
     let result = MkDeviceCalib {
         model,
         calibration_cells,
-        editable_cells,
-        locked_cells
+        c_editable_cells,
+        c_locked_cells
     };
     Ok(result)
 }

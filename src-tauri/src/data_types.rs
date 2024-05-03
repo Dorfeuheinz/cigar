@@ -83,11 +83,7 @@ pub struct MkDeviceConfig {
 #[derive(Clone, serde::Serialize, Default, Debug)]
 pub struct MkDeviceCalib {
     pub model: String,
-    // pub hw_version: String,
-    // pub firmware_version: String,
     pub calibration_cells: Vec<MkDeviceCell>,
-    // pub test_modes: Vec<MkDeviceTestMode>,
-    // pub quick_modes: Vec<MkDeviceQuickMode>,
-    pub editable_cells: Vec<usize>,
-    pub locked_cells: Vec<usize>
+    pub c_editable_cells: Vec<usize>,
+    pub c_locked_cells: Vec<usize>
 }
