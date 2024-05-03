@@ -139,21 +139,21 @@ pub fn set_device_calib(
 ///
 /// # Returns
 /// A boolean value indicating whether the factory reset command was successful.
-#[tauri::command]
-pub fn factory_reset_calib(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
-    if let Ok(mut device) = device_entity.port.lock() {
-        if let Some(device) = device.as_mut() {
-            clear_output_buffer_of_device(device);
-            let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
-            if send_result {
-                let mut buffer = vec![];
-                read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
-                return buffer.len() == 0;
-            }
-        }
-    }
-    return false;
-}
+// #[tauri::command]
+// pub fn factory_reset_calib(device_entity: State<DeviceEntity>, app_handle: AppHandle) -> bool {
+//     if let Ok(mut device) = device_entity.port.lock() {
+//         if let Some(device) = device.as_mut() {
+//             clear_output_buffer_of_device(device);
+//             let send_result = send_bytes_to_device(device, &[b'@', b'T', b'M'], &app_handle);
+//             if send_result {
+//                 let mut buffer = vec![];
+//                 read_bytes_till_3e_from_device_to_buffer(device, &mut buffer, &app_handle);
+//                 return buffer.len() == 0;
+//             }
+//         }
+//     }
+//     return false;
+// }
 
 fn get_bytes_to_send_for_calib_change(
     device_calib: &MkDeviceCalib,

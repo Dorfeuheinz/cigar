@@ -59,14 +59,14 @@ const Calibration: React.FC = () => {
   const readCalib = () => {
     let data = getDeviceCalib()
       .then((result) => {
-        setData(result.calibration_cells.filter((_, index) => result.editable_cells.includes(index))
+        setData(result.calibration_cells.filter((_, index) => result.c_editable_cells.includes(index))
         .map((item, index) => ({
             ...item,
-            editable: !result.locked_cells.includes(index)
+            editable: !result.c_locked_cells.includes(index)
         })));
         // setData(result.calibration_cells);
-        setEditable(result.editable_cells);
-        setLocked(result.locked_cells);
+        setEditable(result.c_editable_cells);
+        setLocked(result.c_locked_cells);
       })
       .catch((err) => {
         error(`Error occurred while trying to read device calibration: ${err}`);

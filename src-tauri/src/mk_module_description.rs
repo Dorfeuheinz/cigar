@@ -20,6 +20,8 @@ pub struct MkModuleDescription {
 
     pub editable_cells: Vec<usize>,
     pub locked_cells: Vec<usize>,
+    pub c_editable_cells: Vec<usize>,
+    pub c_locked_cells: Vec<usize>,
 
     pub unknown_data: HashMap<String, String>,
 }
@@ -45,7 +47,7 @@ fn get_number_of_quickmodes_and_remove_from_unknown(
 fn get_editable_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
 ) -> Vec<usize> {
-    if let Some(editable_cells) = module_description.unknown_data.remove("EDITABLE_CELLS") {
+    if let Some(editable_cells) = module_description.unknown_data.remove("M EDITABLE_CELLS") {
         return editable_cells
             .split_whitespace()
             .filter_map(|s| {
@@ -63,8 +65,44 @@ fn get_editable_cells_and_remove_from_unknown(
 fn get_locked_cells_and_remove_from_unknown(
     module_description: &mut MkModuleDescription,
 ) -> Vec<usize> {
-    if let Some(locked_cells) = module_description.unknown_data.remove("LOCKED_CELLS") {
+    if let Some(locked_cells) = module_description.unknown_data.remove("M LOCKED_CELLS") {
         return locked_cells
+            .split_whitespace()
+            .filter_map(|s| {
+                if s.starts_with("0x") {
+                    usize::from_str_radix(&s.trim_start_matches("0x"), 16).ok()
+                } else {
+                    s.parse::<usize>().ok()
+                }
+            })
+            .collect();
+    }
+    return vec![];
+}
+
+fn get_c_editable_cells_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<usize> {
+    if let Some(c_editable_cells) = module_description.unknown_data.remove("C EDITABLE_CELLS") {
+        return c_editable_cells
+            .split_whitespace()
+            .filter_map(|s| {
+                if s.starts_with("0x") {
+                    usize::from_str_radix(&s.trim_start_matches("0x"), 16).ok()
+                } else {
+                    s.parse::<usize>().ok()
+                }
+            })
+            .collect();
+    }
+    return vec![];
+}
+
+fn get_c_locked_cells_and_remove_from_unknown(
+    module_description: &mut MkModuleDescription,
+) -> Vec<usize> {
+    if let Some(c_locked_cells) = module_description.unknown_data.remove("C LOCKED_CELLS") {
+        return c_locked_cells
             .split_whitespace()
             .filter_map(|s| {
                 if s.starts_with("0x") {
@@ -265,8 +303,11 @@ impl MkModuleDescription {
     pub fn new(input: &str) -> MkModuleDescription {
         let mut result: MkModuleDescription = Default::default();
         result.unknown_data = parse_module_description(input);
+        info!("\n\nUNKNOWN DATA --->   {:?}\n\n", result.unknown_data);
         result.editable_cells = get_editable_cells_and_remove_from_unknown(&mut result);
         result.locked_cells = get_locked_cells_and_remove_from_unknown(&mut result);
+        result.c_editable_cells = get_c_editable_cells_and_remove_from_unknown(&mut result);
+        result.c_locked_cells = get_c_locked_cells_and_remove_from_unknown(&mut result);
         result.device_model = get_device_model_and_remove_from_unknown(&mut result);
         result.number_of_testmodes = get_number_of_testmodes_and_remove_from_unknown(&mut result);
         result.testmodes = get_testmodes_and_remove_from_unknown(&mut result);

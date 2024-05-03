@@ -11,8 +11,8 @@ type MkDeviceConfig = {
 
 type MkDeviceCalib = {
   calibration_cells: MkDeviceCell[];
-  locked_cells: number[];
-  editable_cells: number[];
+  c_locked_cells: number[];
+  c_editable_cells: number[];
 };
 type MkDeviceCell = {
   address: number;
