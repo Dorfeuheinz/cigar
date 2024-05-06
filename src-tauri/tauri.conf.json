@@ -42,7 +42,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": "deb",
       "identifier": "com.tinymesh.cctool",
       "resources": [
         "resources/icons/*"
