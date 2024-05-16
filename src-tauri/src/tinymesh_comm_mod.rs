@@ -2,7 +2,7 @@
 //! These functions are used by the Tauri frontend for processing background communication.
 use crate::data_types::DeviceEntity;
 use crate::tinymesh_serial_util::read_bytes_from_device_to_buffer;
-use log::info;
+
 use std::time::Duration;
 use tauri::{AppHandle, State};
 

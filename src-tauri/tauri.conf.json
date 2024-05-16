@@ -58,6 +58,11 @@
         "depends": [
           "libudev1"
         ]
+      },
+      "windows": {
+        "wix": {
+          "language": "en-US"
+        }
       }
     }
   }

@@ -50,31 +50,28 @@ pub fn parse_device_calib(
     };
     Ok(result)
 }
+// use log::info;
 
+// Maheep sirs implementation, changed since unlocked cells arent required to be passed, but all cells must be passed & locked will be disabled
+// editing purposes in the UI. Requirements changed from clients end
 fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
+    // info!("------------READ UNLOKD CELLS-------------{:?}", data);
     data.iter()
         .enumerate()
         .filter_map(|(i, val)| {
-            if module_description.locked_cells.contains(&i) {
-                return None;
-            }
+            // if module_description.c_locked_cells.contains(&i) {
+            //     return None;
+            // }
             let mut cell = module_description.calibration_cells[i].clone();
             cell.address = i;
             cell.current_value = *val;
             Some(cell)
         })
         .collect()
+    // info!("------------READ UNLOKD CELLS AFTER ITER-------------{:?}", r);
 }
 
-/// This function extracts the model, hardware version, and firmware version from the device calibration data
-///
-/// # Arguments
-/// * `data` - A slice of bytes representing the device calibration data
-///
-/// # Returns
-/// A `Result` containing a tuple of three `String` objects if parsing is successful, or a `String` containing an error message if parsing fails
 
-use log::info;
 
 // fn decimal_to_hex(input: &[u8]) -> Vec<String> {
 //     input.iter()

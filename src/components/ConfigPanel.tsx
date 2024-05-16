@@ -57,7 +57,7 @@ const ConfigPanel: React.FC = () => {
 
   useEffect(() => {
     setData([]);
-  }, [isConnected]);
+  }, [isConnected, currentMode]);
 
   const readConfigBtnFunc = async () => {
     await invoke("stop_communication_task", {});
@@ -66,13 +66,13 @@ const ConfigPanel: React.FC = () => {
   };
 
   const readConfig = () => {
+    setData([]);
     return getDeviceConfig()
       .then((result) => {
-        // setData(result.cells);
-        setData(result.cells.filter((_, index) => result.editable_cells.includes(index))
-        .map((item, index) => ({
+        setData(result.cells.filter((item, _) => result.editable_cells.includes(item.address))
+        .map((item, _) => ({
             ...item,
-            editable: !result.locked_cells.includes(index)
+            editable: !result.locked_cells.includes(item.address)
         })));
         setTestModeOptions(result.test_modes);
         setQuickModeOptions(result.quick_modes);
@@ -84,6 +84,7 @@ const ConfigPanel: React.FC = () => {
         setLocked(result.locked_cells);
       })
       .catch((err) => {
+        alert("No matching RMD file available");
         error(`Error occurred while trying to read device config: ${err}`);
       });
   };
@@ -266,7 +267,7 @@ const ConfigPanel: React.FC = () => {
   }
 
   function showTable(data: Array<object>) {
-    if (data.length > 0 && isConnected) {
+    if (data.length > 0 && isConnected && currentMode === 'configuration') {
       return (
         <table className="w-full text-center table border border-collapse ">
           <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">

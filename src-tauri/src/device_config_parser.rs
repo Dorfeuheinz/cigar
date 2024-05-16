@@ -57,13 +57,15 @@ pub fn parse_device_config(
     Ok(result)
 }
 
+// Maheep sirs implementation, changed since unlocked cells arent required to be passed, but all cells must be passed & locked will be disabled
+// editing purposes in the UI. Requirements changed from clients end
 fn read_unlocked_cells(data: &[u8], module_description: &MkModuleDescription) -> Vec<MkDeviceCell> {
     data.iter()
         .enumerate()
         .filter_map(|(i, val)| {
-            if module_description.locked_cells.contains(&i) {
-                return None;
-            }
+            // if module_description.locked_cells.contains(&i) {
+            //     return None;
+            // }
             let mut cell = module_description.cells[i].clone();
             cell.address = i;
             cell.current_value = *val;

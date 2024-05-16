@@ -330,7 +330,7 @@ impl MkModuleDescription {
     /// An error of type `String` if the parsing failed.
     pub fn new_from_device_model(
         model: &str,
-        app_handle: &AppHandle,
+        _app_handle: &AppHandle,
     ) -> Result<MkModuleDescription, String> {
         info!("\nmk_module_description::new_from_device_model(model, app_handle)\n");
 

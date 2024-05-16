@@ -43,7 +43,7 @@ pub fn get_device_calib(
     return Ok(device_calib);
 }
 
-use log::info;
+
 pub fn get_device_calib_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,

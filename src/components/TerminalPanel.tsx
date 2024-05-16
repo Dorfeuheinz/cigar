@@ -81,8 +81,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ }) => {
       </div>
       <div className={`h-[21vh] overflow-y-auto`}>
         {logs.map((log, index) => (
-          <>
-            <p key={index} className="h-fit">
+            <p className="h-fit" key={index}>
               <b>[{log.data_type}]</b>&nbsp;
               <b>[{log.time}]</b>&nbsp;
               {log.data
@@ -97,7 +96,6 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ }) => {
                 })
                 .join(" ")}
             </p>
-          </>
         ))}
         <div ref={messagesEndRef} />
       </div>

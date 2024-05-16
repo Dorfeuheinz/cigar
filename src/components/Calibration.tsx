@@ -48,7 +48,7 @@ const Calibration: React.FC = () => {
 
   useEffect(() => {
     setData([]);
-  }, [isConnected]);
+  }, [isConnected, currentMode]);
 
   const readCalibFunc = async () => {
     await invoke("stop_communication_task", {});
@@ -57,18 +57,20 @@ const Calibration: React.FC = () => {
   };
 
   const readCalib = () => {
+    setData([]);
+
     let data = getDeviceCalib()
       .then((result) => {
-        setData(result.calibration_cells.filter((_, index) => result.c_editable_cells.includes(index))
-        .map((item, index) => ({
+        setData(result.calibration_cells.filter((item, _) => result.c_editable_cells.includes(item.address))
+        .map((item, _) => ({
             ...item,
-            editable: !result.c_locked_cells.includes(index)
+            editable: !result.c_locked_cells.includes(item.address)
         })));
-        // setData(result.calibration_cells);
         setEditable(result.c_editable_cells);
         setLocked(result.c_locked_cells);
       })
       .catch((err) => {
+        alert("No matching RMD file available");
         error(`Error occurred while trying to read device calibration: ${err}`);
       });
 
@@ -251,7 +253,7 @@ const Calibration: React.FC = () => {
   }
 
   function showTable(data: Array<object>) {
-    if (data.length > 0 && isConnected) {
+    if (data.length > 0 && isConnected && currentMode === 'configuration') {
       return (
         <table className="w-full text-center table border border-collapse ">
           <thead className="sticky top-0 bg-gray-50 text-center table-header-group border border-collapse  ">

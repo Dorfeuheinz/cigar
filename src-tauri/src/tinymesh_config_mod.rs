@@ -42,7 +42,7 @@ pub fn get_device_config(
     return Ok(device_config);
 }
 
-use log::info;
+
 pub fn get_device_config_from_device(
     device: &mut Box<dyn SerialPort>,
     app_handle: &AppHandle,
