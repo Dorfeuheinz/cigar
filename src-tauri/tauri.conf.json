@@ -42,10 +42,10 @@
     },
     "bundle": {
       "active": true,
-      "targets": "deb",
+      "targets": "all",
       "identifier": "com.tinymesh.cctool",
       "resources": [
-        "resources/icons/*"
+        "modules/"
       ],
       "icon": [
         "icons/32x32.png",
@@ -61,7 +61,18 @@
       },
       "windows": {
         "wix": {
-          "language": "en-US"
+          "bannerPath": null,
+          "componentGroupRefs": [],
+          "componentRefs": [],
+          "dialogImagePath": null,
+          "enableElevatedUpdateTask": false,
+          "featureGroupRefs": [],
+          "featureRefs": [],
+          "fragmentPaths": [],
+          "language": "en-US",
+          "mergeRefs": [],
+          "skipWebviewInstall": false,
+          "template": null
         }
       }
     }
