@@ -8,7 +8,7 @@ This tool is meant for working with Tinymesh TM-series RF modules. It provides t
 - [x] Communicating between different modules
 - [x] Reading module information
 - [x] Spectrum analysis
-- [ ] Calibration
+- [x] Calibration
 
 ## Installation instructions
 
